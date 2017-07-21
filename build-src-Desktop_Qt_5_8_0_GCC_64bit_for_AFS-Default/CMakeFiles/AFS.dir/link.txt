@@ -1,0 +1,1 @@
+/usr/bin/g++     CMakeFiles/AFS.dir/main.cpp.o CMakeFiles/AFS.dir/filesystem/master.cpp.o CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o  -o AFS -Wl,-rpath,/usr/local/lib /usr/local/lib/libboost_system.so /usr/local/lib/libboost_thread.so /usr/local/lib/libboost_chrono.so /usr/local/lib/libboost_date_time.so /usr/local/lib/libboost_atomic.so 

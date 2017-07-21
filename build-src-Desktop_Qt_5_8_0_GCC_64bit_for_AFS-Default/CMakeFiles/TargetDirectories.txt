@@ -1,0 +1,3 @@
+/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/rebuild_cache.dir
+/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/edit_cache.dir
+/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir

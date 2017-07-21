@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.cpp
+chunkserver.h
+/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.h
+
+/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.h
+server.h
+-
+
+/home/timemachine/Desktop/AFS/src/filesystem/master.cpp
+master.h
+/home/timemachine/Desktop/AFS/src/filesystem/master.h
+
+/home/timemachine/Desktop/AFS/src/filesystem/master.h
+setting.h
+/home/timemachine/Desktop/AFS/src/filesystem/setting.h
+
+/home/timemachine/Desktop/AFS/src/filesystem/server.h
+
+/home/timemachine/Desktop/AFS/src/filesystem/setting.h
+vector
+-
+string
+-
+
+/home/timemachine/Desktop/AFS/src/main.cpp
+iostream
+-
+
