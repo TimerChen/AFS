@@ -3,8 +3,80 @@ project(AFS)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES
-        main.cpp
-        src/components/extrie.hpp
-        src/components/sugar.hpp src/Filesystem/master.cpp src/Filesystem/master.h src/Filesystem/setting.h)
-add_executable(AFS ${SOURCE_FILES})
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.64.0 REQUIRED COMPONENTS system thread)
+
+if(Boost_FOUND)
+    set(SOURCE_FILES
+            main.cpp
+            ## ryw begin
+            src/components/extrie.hpp
+            src/components/sugar.hpp
+            src/filesystem/master.cpp src/filesystem/master.h
+            src/filesystem/setting.h
+
+
+
+
+
+
+
+
+
+
+
+
+            ## ryw end
+            ## cjx begin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ## cjx end
+            )
+    include_directories(
+            ## ryw begin
+            ${CMAKE_SOURCE_DIR}
+            ${Boost_INCLUDE_DIRS}
+            ${CMAKE_SOURCE_DIR}/src/components
+            ${CMAKE_SOURCE_DIR}/src/filesystem
+
+
+
+
+
+
+
+            ## ryw end
+            ## cjx begin
+
+
+
+
+
+
+
+
+
+
+            # cjx end
+             )
+    add_executable(AFS ${SOURCE_FILES})
+    target_link_libraries(AFS ${Boost_LIBRARIES})
+endif()

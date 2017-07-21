@@ -10,6 +10,10 @@
 #include <exception>
 #include <utility>
 #include <map>
+#include <boost/thread/shared_mutex.hpp>
+#include <mutex>
+#include <functional>
+#include <memory>
 #include "sugar.hpp"
 
 namespace AFS {
@@ -24,10 +28,14 @@ private:
     struct Node;
     using node_ptr = Node *;
     using mapUPtr = std::map<U, node_ptr>;
+    using readLock = boost::shared_lock<boost::shared_mutex>;
+    using writeLock = std::unique_lock<boost::shared_mutex>;
+
     struct Node {
         mapUPtr child;
         node_ptr pnt;
         T *value;
+        boost::shared_mutex m;
     };
 
     // 保存的数据结构
@@ -56,16 +64,21 @@ private:
         put_node(p);
     }
 
-    node_ptr _find(const std::vector<U> & index) const {
+    std::pair<node_ptr, std::unique_ptr<std::vector<readLock>>>
+    _find(const std::vector<U> & index) const {
+        auto rlks = std::make_unique<std::vector<readLock>>();
+        rlks->emplace_back(readLock(header->m));
+
         node_ptr p = header;
         typename std::map<U, node_ptr>::iterator tmp;
         for (auto && idx : index) {
             tmp = p->child.find(idx);
             if (tmp == p->child.end())
-                return nullptr;
+                return std::make_pair(p, std::move(rlks));
             p = tmp->second;
+            rlks->emplace_back(readLock(p->m));
         }
-        return p;
+        return std::make_pair(p, std::move(rlks));
     }
     void copy(node_ptr p, const node_ptr & op) {
         if (op->value)
@@ -79,117 +92,7 @@ private:
     }
 
 public:
-    class const_node_iterator;
-    class node_iterator {
-        friend class extrie;
-        friend class const_node_iterator;
-
-        node_ptr node;
-        typename mapUPtr::iterator iter;
-
-        node_iterator(node_ptr p, typename mapUPtr::iterator iter_)
-                : node(p), iter(iter_) {}
-    public:
-        node_iterator() : node(nullptr) {}
-
-        // iter++, etc.
-        auto operator++(int) {
-            auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-        auto& operator++() {
-            ++iter;
-            return *this;
-        }
-        auto operator--(int) {
-            auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-        auto & operator--() {
-            ++iter;
-            return *this;
-        }
-
-        // a operator to check whether two iterators are same (pointing to the same memory).
-        T & operator*() const {
-            return *(iter->second->value);
-        }
-        bool operator==(const node_iterator &rhs) const {
-            return (node == rhs.node && iter == rhs.iter);
-        }
-        bool operator==(const const_node_iterator &rhs) const {
-            return (node == rhs.node && iter == rhs.iter);
-        }
-        bool operator!=(const node_iterator &rhs) const {
-            return !(*this == rhs);
-        }
-        bool operator!=(const const_node_iterator &rhs) const {
-            return !(*this == rhs);
-        }
-
-        T* operator->() const noexcept {
-            return &(operator*());
-        }
-    };
-    class const_node_iterator {
-        friend class extrie;
-        friend class node_iterator;
-
-        node_ptr node;
-        typename mapUPtr::iterator iter;
-        const_node_iterator(node_ptr p, typename mapUPtr::iterator iter)
-                : node(p), iter(iter) {}
-    public:
-        const_node_iterator() : node(nullptr) {}
-        const_node_iterator(const node_iterator &other)
-                : node(other.node), iter(other.iter) {}
-
-        // iter++, etc.
-        auto operator++(int) {
-            auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-        auto& operator++() {
-            ++iter;
-            return *this;
-        }
-        auto operator--(int) {
-            auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-        auto & operator--() {
-            ++iter;
-            return *this;
-        }
-
-
-        // a operator to check whether two iterators are same (pointing to the same memory).
-        T & operator*() const {
-            return *(iter->second->value);
-        }
-        bool operator==(const node_iterator &rhs) const {
-            return (node == rhs.node && iter == rhs.iter);
-        }
-        bool operator==(const const_node_iterator &rhs) const {
-            return (node == rhs.node && iter == rhs.iter);
-        }
-        bool operator!=(const node_iterator &rhs) const {
-            return !(*this == rhs);
-        }
-        bool operator!=(const const_node_iterator &rhs) const {
-            return !(*this == rhs);
-        }
-
-        T* operator->() const noexcept {
-            return &(operator*());
-        }
-    };
-
-public:
+    // todo
     extrie() {
         init();
     }
@@ -222,6 +125,7 @@ public:
             destroy(header);
     }
 
+    // todo
     size_t size() const {
         return sz;
     }
@@ -229,6 +133,7 @@ public:
         return !sz;
     }
 
+    // todo
     // 返回insert是否成功
     template <class TT>
     bool insert(const std::vector<U> & index, TT && value) {
@@ -253,6 +158,7 @@ public:
         return 1;
     };
 
+    // todo
     // 返回remove是否成功
     bool remove(const std::vector<U> & index) {
         node_ptr p = header;
@@ -271,38 +177,21 @@ public:
         return true;
     }
 
+    // todo
     // 检查对应键值是否存在
     bool check(const std::vector<U> & index) const {
         return _find(index) != nullptr;
     }
 
+    // todo
     // 返回index对应值
     T & operator[](const std::vector<U> & index) {
         insert(index, T());
         return *_find(index)->value;
     }
 
-    // 返回对应结点的begin(), end()
     // 用于遍历一个文件夹
-    std::pair<node_iterator, node_iterator>
-    get_node_iter(const std::vector<U> & index) const {
-        node_ptr p = _find(index);
-        if (!p)
-            return std::make_pair(node_iterator(), node_iterator());
-        node_iterator beg(p, p->child.begin());
-        node_iterator end(p, p->child.end());
-        return std::make_pair(std::move(beg), std::move(end));
-    };
-
-    // 类似于 cd, cd ..
-    node_iterator enter(const node_iterator &iter, const U & idx) const {
-        node_ptr nxt = iter.node->child.find(idx);
-        return node_iterator(nxt, nxt->child.begin());
-    }
-    node_iterator exit(const node_iterator &iter) const {
-        node_ptr prev = iter.node->pnt;
-        return node_iterator(prev, prev->child.begin());
-    }
+    void get_node_iter(const std::vector<U> & index, std::function fn) const;
 };
 }
 
