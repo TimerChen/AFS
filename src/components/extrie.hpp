@@ -62,8 +62,10 @@ private:
         header = get_node();
     }
     void destroy(node_ptr p) {
+        writeLock lk(p->m);
         for (auto &&item : p->child)
             destroy(item.second);
+        lk.unlock();
         put_node(p);
     }
 
@@ -184,6 +186,7 @@ public:
     // todo
     // 返回remove是否成功
     bool remove(const std::vector<U> & index) {
+        throw ;
         auto rlks = std::make_unique<std::vector<readLock>>();
         auto wlks = std::make_unique<std::vector<writeLock>>();
 

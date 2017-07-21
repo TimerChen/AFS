@@ -10,6 +10,11 @@
 /// ACM File System
 namespace AFS {
 
+class Master {
+private:
+
+};
+
 }
 
 

@@ -11,11 +11,25 @@ find_package(Boost 1.64.0 REQUIRED COMPONENTS system thread)
 if(Boost_FOUND)
     set(SOURCE_FILES
             main.cpp
-            ## ryw begin
+            ## ryw begin 14
             components/extrie.hpp
             components/sugar.hpp
             filesystem/master.cpp filesystem/master.h
             filesystem/setting.h
+            filesystem/metadata.cpp filesystem/metadata.h
+
+
+
+
+
+
+
+
+
+
+
+            ## ryw end 31
+            ## cjx begin 32
 
 
 
@@ -28,27 +42,13 @@ if(Boost_FOUND)
 
 
 
-            ## ryw end
-            ## cjx begin
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-            ## cjx end
+            ## cjx end 51
             )
     include_directories(
             ## ryw begin
