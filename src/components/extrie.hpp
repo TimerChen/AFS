@@ -14,12 +14,14 @@
 #include <mutex>
 #include <functional>
 #include <memory>
+#include <exception>
 #include "sugar.hpp"
 
 namespace AFS {
 
-/// 和trie的区别在于，通过vector<U>来索引，
+class illegal_index : public std::exception {};
 
+/// 和trie的区别在于，通过vector<U>来索引，
 template<class U, class T>
 class extrie {
     friend class node_iterator;
@@ -80,6 +82,7 @@ private:
         }
         return std::make_pair(p, std::move(rlks));
     }
+
     void copy(node_ptr p, const node_ptr & op) {
         if (op->value)
             p->value = new T(*op->value);
@@ -125,35 +128,51 @@ public:
             destroy(header);
     }
 
-    // todo
     size_t size() const {
+        readLock rlk(header->m);
         return sz;
     }
     bool empty() const {
+        readLock rlk(header->m);
         return !sz;
     }
 
     // todo
     // 返回insert是否成功
     template <class TT>
-    bool insert(const std::vector<U> & index, TT && value) {
+    bool insert(const std::vector<U> & index, TT && value)  {
         // using universal reference to avoid overloading for rvalue & lvalue
+        auto rlks = std::make_unique<std::vector<readLock>>();
+        rlks->emplace_back(readLock(header->m));
+
 
         node_ptr p = header;
         typename std::map<U, node_ptr>::iterator iter;
-        bool insert_succeed = false;
-        for (auto &&idx : index) {
-            tie(iter, insert_succeed) = p->child.insert(std::make_pair(idx, node_ptr()));
-            // 如果原来没有这个节点，则需要初始化新得到的这个节点
-            if (insert_succeed) {
-                iter->second = get_node();
-                iter->second->pnt = p;
-                ++sz;
-            }
+
+        // 之前的都只需要获得读锁，最后两层需要获得写锁
+        int i = 0;
+        for (; i < (int)index.size() - 2; ++i) {
+            auto &idx = index[i];
+            iter = p->child.find(std::make_pair(idx, node_ptr()));
+            if (iter == p->child.end())
+                return false;
             p = iter->second;
+            rlks->emplace_back(readLock(p->m));
+        }
+        if (i != (int)index.size() - 1) {
+            auto &idx = index[i];
+            iter = p->child.find(std::make_pair(idx, node_ptr()));
+            if (iter == p->child.end())
+                return false;
+            p = iter->second;
+
+        }
+
+        {    p = iter->second;
+            rlks->emplace_back(readLock(p->m));
         }
         if (!insert_succeed)
-            return 0;
+            return false;
         iter->second->value = new T(std::forward<TT>(value));
         return 1;
     };
@@ -177,17 +196,17 @@ public:
         return true;
     }
 
-    // todo
     // 检查对应键值是否存在
     bool check(const std::vector<U> & index) const {
-        return _find(index) != nullptr;
+        return _find(index).first != nullptr;
     }
 
-    // todo
     // 返回index对应值
-    T & operator[](const std::vector<U> & index) {
-        insert(index, T());
-        return *_find(index)->value;
+    T operator[](const std::vector<U> & index) const {
+        auto ptr_vec = _find(index);
+        if (!ptr_vec.first)
+            throw illegal_index();
+        return *ptr_vec.first;
     }
 
     // 用于遍历一个文件夹

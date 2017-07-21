@@ -30,7 +30,11 @@ TieTemplate<U, V> tie(U & a, V & b) {
     return TieTemplate<U, V>(a, b);
 };
 
-
+template <class U, class V>
+void tie_move(U & a, V & b, std::pair<U, V> && p) {
+    a = std::move(p.first);
+    b = std::move(p.second);
+};
 
 }
 
