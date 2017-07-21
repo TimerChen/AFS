@@ -7,7 +7,6 @@
 
 #include <cstddef>
 #include <vector>
-#include <exception>
 #include <utility>
 #include <map>
 #include <boost/thread/shared_mutex.hpp>
@@ -19,9 +18,7 @@
 #include "sugar.hpp"
 
 namespace AFS {
-
 class illegal_index : public std::exception {};
-
 /// 和trie的区别在于，通过vector<U>来索引，
 template<class U, class T>
 class extrie {

@@ -8,10 +8,20 @@
 #include "extrie.hpp"
 #include "setting.h"
 #include <string>
+#include <map>
 
+// metadata
 namespace AFS {
 
-class Metadata {
+struct Metadata {
+    struct ChunkData {
+        Handle        handle;
+        ServerAddress address;
+    } chunk_data;
+
+    enum class Type {
+        folder, file, system
+    } type;
     // todo
 };
 
@@ -30,9 +40,29 @@ public:
         return ext.insert(path, std::forward(md));
     }
 
-    Metadata get_data(const Path & path) const {
+    bool checkData(const Path & path) const {
+        return ext.check(path);
+    }
+
+    Metadata getData(const Path & path) const {
         return ext[path];
     }
+};
+
+}
+
+// chunk server data
+namespace AFS {
+
+struct ChunkServerData {
+
+};
+
+class ChunkServerDataContainer {
+private:
+    std::map<ServerAddress, ChunkServerData> csd;
+public:
+
 };
 
 }
