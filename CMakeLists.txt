@@ -3,5 +3,5 @@ project(AFS)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp src/extrie.hpp src/sugar.hpp)
 add_executable(AFS ${SOURCE_FILES})
