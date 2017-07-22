@@ -9,13 +9,13 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.64.0 REQUIRED COMPONENTS system thread)
 
 if(Boost_FOUND)
-    set(SOURCE_FILES
-            main.cpp
-            ## ryw begin
-            components/extrie.hpp
-            components/sugar.hpp
-            filesystem/master.cpp filesystem/master.h
-            filesystem/setting.h
+	set(SOURCE_FILES
+			main.cpp
+			## ryw begin
+			components/extrie.hpp
+			components/sugar.hpp
+			filesystem/master.cpp filesystem/master.h
+			filesystem/setting.h
 
 
 
@@ -28,10 +28,10 @@ if(Boost_FOUND)
 
 
 
-            ## ryw end
-            ## cjx begin
-            filesystem/server.h
-            filesystem/chunkserver.h filesystem/chunkserver.cpp
+			## ryw end
+			## cjx begin
+			filesystem/server.h
+			filesystem/chunkserver.h filesystem/chunkserver.cpp
 
 
 
@@ -49,14 +49,14 @@ if(Boost_FOUND)
 
 
 
-            ## cjx end
-            )
-    include_directories(
-            ## ryw begin
-            ${CMAKE_SOURCE_DIR}
-            ${Boost_INCLUDE_DIRS}
-            ${CMAKE_SOURCE_DIR}/components
-            ${CMAKE_SOURCE_DIR}/filesystem
+			## cjx end
+			)
+	include_directories(
+			## ryw begin
+			${CMAKE_SOURCE_DIR}
+			${Boost_INCLUDE_DIRS}
+			${CMAKE_SOURCE_DIR}/components
+			${CMAKE_SOURCE_DIR}/filesystem
 
 
 
@@ -64,8 +64,8 @@ if(Boost_FOUND)
 
 
 
-            ## ryw end
-            ## cjx begin
+			## ryw end
+			## cjx begin
 
 
 
@@ -76,8 +76,8 @@ if(Boost_FOUND)
 
 
 
-            # cjx end
-             )
-    add_executable(AFS ${SOURCE_FILES})
-    target_link_libraries(AFS ${Boost_LIBRARIES})
+			# cjx end
+			 )
+	add_executable(AFS ${SOURCE_FILES})
+	target_link_libraries(AFS ${Boost_LIBRARIES})
 endif()

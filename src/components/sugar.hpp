@@ -13,21 +13,21 @@ namespace AFS {
 template <class U, class V>
 class TieTemplate {
 private:
-    U &a;
-    V &b;
+	U &a;
+	V &b;
 public:
-    TieTemplate(U &a_, V &b_)
-            : a(a_), b(b_) {}
-    TieTemplate& operator=(const std::pair<U, V> & p) {
-        a = p.first;
-        b = p.second;
-        return *this;
-    }
+	TieTemplate(U &a_, V &b_)
+			: a(a_), b(b_) {}
+	TieTemplate& operator=(const std::pair<U, V> & p) {
+		a = p.first;
+		b = p.second;
+		return *this;
+	}
 };
 
 template <class U, class V>
 TieTemplate<U, V> tie(U & a, V & b) {
-    return TieTemplate<U, V>(a, b);
+	return TieTemplate<U, V>(a, b);
 };
 
 
