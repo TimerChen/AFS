@@ -123,6 +123,33 @@ AFS/fast:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/build
 .PHONY : AFS/fast
 
+filesystem/chunk.o: filesystem/chunk.cpp.o
+
+.PHONY : filesystem/chunk.o
+
+# target to build an object file
+filesystem/chunk.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/chunk.cpp.o
+.PHONY : filesystem/chunk.cpp.o
+
+filesystem/chunk.i: filesystem/chunk.cpp.i
+
+.PHONY : filesystem/chunk.i
+
+# target to preprocess a source file
+filesystem/chunk.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/chunk.cpp.i
+.PHONY : filesystem/chunk.cpp.i
+
+filesystem/chunk.s: filesystem/chunk.cpp.s
+
+.PHONY : filesystem/chunk.s
+
+# target to generate assembly for a file
+filesystem/chunk.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/chunk.cpp.s
+.PHONY : filesystem/chunk.cpp.s
+
 filesystem/chunkserver.o: filesystem/chunkserver.cpp.o
 
 .PHONY : filesystem/chunkserver.o
@@ -213,6 +240,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... AFS"
+	@echo "... filesystem/chunk.o"
+	@echo "... filesystem/chunk.i"
+	@echo "... filesystem/chunk.s"
 	@echo "... filesystem/chunkserver.o"
 	@echo "... filesystem/chunkserver.i"
 	@echo "... filesystem/chunkserver.s"

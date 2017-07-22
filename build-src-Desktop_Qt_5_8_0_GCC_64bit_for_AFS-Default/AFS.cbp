@@ -96,6 +96,12 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/sugar.hpp">
 			<Option target="AFS"/>
 		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/chunk.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/chunk.h">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.cpp">
 			<Option target="AFS"/>
 		</Unit>

@@ -2,8 +2,6 @@
 namespace AFS {
 
 ChunkServer::ChunkServer()
-{
-
-}
+{}
 
 }

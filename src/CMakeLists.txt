@@ -32,6 +32,7 @@ if(Boost_FOUND)
 			## cjx begin
 			filesystem/server.h
 			filesystem/chunkserver.h filesystem/chunkserver.cpp
+                        filesystem/chunk.h filesystem/chunk.cpp
 
 
 

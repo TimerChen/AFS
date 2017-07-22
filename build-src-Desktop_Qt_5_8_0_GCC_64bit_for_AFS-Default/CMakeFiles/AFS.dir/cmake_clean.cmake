@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/AFS.dir/main.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/master.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
+  "CMakeFiles/AFS.dir/filesystem/chunk.cpp.o"
   "AFS.pdb"
   "AFS"
 )
