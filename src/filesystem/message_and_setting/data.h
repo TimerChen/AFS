@@ -8,6 +8,7 @@
 #include "extrie.hpp"
 #include "setting.h"
 #include <string>
+#include <boost/thread.hpp>
 #include <map>
 
 // metadata
@@ -59,10 +60,27 @@ struct ChunkServerData {
 };
 
 class ChunkServerDataContainer {
+    using readLock = boost::shared_lock<boost::shared_mutex>;
+    using writeLock = std::unique_lock<boost::shared_mutex>;
 private:
     std::map<ServerAddress, ChunkServerData> csd;
+	boost::shared_mutex m;
 public:
+	std::pair<ChunkServerData, bool>
+	getDate(const ServerAddress & address) {
+		auto lk = readLock(m);
+		auto iter = csd.find(address);
+		if (iter == csd.end())
+			return std::make_pair(ChunkServerData(), false);
+		return std::make_pair(iter->second, true);
+	}
 
+	template <class Csd>
+	bool writeData(const ServerAddress & address, Csd && d) {
+		auto lk = writeLock(m);
+		bool success = csd.insert(std::make_pair(address, std::forward(d))).second;
+		return success;
+	}
 };
 
 }

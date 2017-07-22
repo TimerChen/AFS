@@ -8,6 +8,7 @@
 #include "setting.h"
 #include "data.h"
 #include "server.h"
+#include "log.h"
 #include <map>
 
 /// ACM File System!
@@ -21,10 +22,11 @@ namespace AFS {
  *    chunk的信息等。
  */
 class Master {
-
 private:
 	MetadataContainer        mdc;
     ChunkServerDataContainer csdc;
+	LogContainer             lc;
+
 private:
     // createFolder
 
