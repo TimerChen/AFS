@@ -19,7 +19,7 @@ if(Boost_FOUND)
             filesystem/message_and_setting/data.cpp filesystem/message_and_setting/data.h
             filesystem/message_and_setting/rpc_structs.h
             filesystem/servers/server.cpp filesystem/servers/server.h
-
+            filesystem/message_and_setting/log.cpp filesystem/message_and_setting/log.h
 
 
 
@@ -49,7 +49,7 @@ if(Boost_FOUND)
 
 
             ## cjx end 51
-            )
+            tests/log_test.hpp)
     include_directories(
             ## ryw begin
             ${CMAKE_SOURCE_DIR}
@@ -57,7 +57,7 @@ if(Boost_FOUND)
             ${CMAKE_SOURCE_DIR}/components
             ${CMAKE_SOURCE_DIR}/filesystem/message_and_setting
             ${CMAKE_SOURCE_DIR}/filesystem/servers
-
+            ${CMAKE_SOURCE_DIR}/tests
 
 
 

@@ -23,7 +23,7 @@ namespace AFS {
 class Master {
 
 private:
-    MetadataContainer        mdc;
+	MetadataContainer        mdc;
     ChunkServerDataContainer csdc;
 private:
     // createFolder
@@ -35,6 +35,14 @@ private:
             throw NonexistentFile();
         return mdc.getData(path).chunk_data;
     }
+
+	void collectGarbage();
+
+	void detectExpiredChunk();
+
+	void loadBalance();
+
+	void checkpoint();
 
 public:
 
