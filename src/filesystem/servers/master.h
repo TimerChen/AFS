@@ -20,6 +20,7 @@ namespace AFS {
  *  · 保存的数据包括路径到元数据的映射（mdc）
  *  · 元数据中除了一般意义的元数据，还包括对应
  *    chunk的信息等。
+ *  · Background Activities
  */
 class Master {
 private:
@@ -31,12 +32,7 @@ private:
     // createFolder
 
     // fileRead & fileWrite & append
-    Metadata::ChunkData
-    getFileChunk(const Path & path) const {
-        if (mdc.checkData(path))
-            throw NonexistentFile();
-        return mdc.getData(path).chunk_data;
-    }
+//    ? getFileChunk(const Path & path) const;
 
 	void collectGarbage();
 
@@ -45,6 +41,21 @@ private:
 	void loadBalance();
 
 	void checkpoint();
+
+	/** reReplication:
+	 *  · 检查当前的副本情况，如果有文件的（某个chunk的）
+	 *    副本数不满足复制因子，则复制该chunk。
+	 *  · Master会选择某个含有该chunk的chunk服务器，以及
+	 *    新的chunk将处于的chunk服务器。命令前者传输一份chunk
+	 *    到后者上。
+	 *  · 此操作作为后台活动的一部分，同样是利用extrie的iterate
+	 *    来完成的。
+	 */
+	void reReplication(Metadata & md) {
+		if (md.type != Metadata::Type::file)
+			return;
+
+	}
 
 public:
 

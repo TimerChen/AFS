@@ -226,8 +226,11 @@ public:
     }
 
     // 用于遍历一个文件夹，对每一个文件进行操作
-    template <class Func>
-    void operate(const std::vector<U> & index, Func f) const;
+    void iterate(const std::vector<U> & index,
+                 std::vector<std::function<void(T&)>> fcs);
+
+    // 用于对某一特定文件进行操作
+	void operate(const std::vector<U> & index, std::function<void(T&)> f);
 
     // 选择fn结果最高者返回
     T choose(const std::vector<U> & index, std::function<int(const T&)> fn) const;

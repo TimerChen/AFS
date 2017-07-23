@@ -10,19 +10,27 @@
 #include <string>
 #include <boost/thread.hpp>
 #include <map>
+#include <vector>
 
 // metadata
 namespace AFS {
 
 struct Metadata {
-    struct ChunkData {
-        Handle        handle;
-        ServerAddress address;
-    } chunk_data;
+	struct FileData {
+		int replication_factor;
+
+		struct ChunkData {
+			Handle        handle;
+			ServerAddress address;
+		};
+
+		std::vector<ChunkData> chunkdata;
+	};
 
     enum class Type {
         folder, file, system
     } type;
+
     // todo
 };
 
