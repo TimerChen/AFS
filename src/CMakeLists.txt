@@ -30,9 +30,11 @@ if(Boost_FOUND)
 
 			## ryw end
 			## cjx begin
+                        filesystem/error.hpp
 			filesystem/server.h
-			filesystem/chunkserver.h filesystem/chunkserver.cpp
-                        filesystem/chunk.h filesystem/chunk.cpp
+                        filesystem/chunkserver.h    filesystem/chunkserver.cpp
+                        filesystem/chunk.h          filesystem/chunk.cpp
+                        filesystem/client.h         filesystem/client.cpp
 
 
 

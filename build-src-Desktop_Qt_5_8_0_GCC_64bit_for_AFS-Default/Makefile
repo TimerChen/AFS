@@ -177,6 +177,33 @@ filesystem/chunkserver.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.s
 .PHONY : filesystem/chunkserver.cpp.s
 
+filesystem/client.o: filesystem/client.cpp.o
+
+.PHONY : filesystem/client.o
+
+# target to build an object file
+filesystem/client.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/client.cpp.o
+.PHONY : filesystem/client.cpp.o
+
+filesystem/client.i: filesystem/client.cpp.i
+
+.PHONY : filesystem/client.i
+
+# target to preprocess a source file
+filesystem/client.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/client.cpp.i
+.PHONY : filesystem/client.cpp.i
+
+filesystem/client.s: filesystem/client.cpp.s
+
+.PHONY : filesystem/client.s
+
+# target to generate assembly for a file
+filesystem/client.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/client.cpp.s
+.PHONY : filesystem/client.cpp.s
+
 filesystem/master.o: filesystem/master.cpp.o
 
 .PHONY : filesystem/master.o
@@ -246,6 +273,9 @@ help:
 	@echo "... filesystem/chunkserver.o"
 	@echo "... filesystem/chunkserver.i"
 	@echo "... filesystem/chunkserver.s"
+	@echo "... filesystem/client.o"
+	@echo "... filesystem/client.i"
+	@echo "... filesystem/client.s"
 	@echo "... filesystem/master.o"
 	@echo "... filesystem/master.i"
 	@echo "... filesystem/master.s"

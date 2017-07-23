@@ -108,6 +108,15 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.h">
 			<Option target="AFS"/>
 		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/client.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/client.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/error.hpp">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master.cpp">
 			<Option target="AFS"/>
 		</Unit>

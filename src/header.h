@@ -88,7 +88,7 @@ namespace AFS
 		std::pair< ? ,AFSError > fileAppend
 			( const std::string &dir, const std::string &localDir );
 		//Floder opreations
-		sdt::pair< ? ,AFSError > fileMkdir
+		std::pair< ? ,AFSError > fileMkdir
 			( const std::string &dir );
 
 
