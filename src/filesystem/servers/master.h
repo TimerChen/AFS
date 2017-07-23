@@ -21,6 +21,10 @@ namespace AFS {
  *  · 元数据中除了一般意义的元数据，还包括对应
  *    chunk的信息等。
  *  · Background Activities
+ *  ·· 后台工作包括：
+ *  ·· 实现上全都利用extrie的iterate操作，
+ *     iterate接收一个索引（表示文件夹），以及一个
+ *     const vector<function<void(Metadata &)>> & f
  */
 class Master {
 private:
@@ -51,11 +55,21 @@ private:
 	 *  · 此操作作为后台活动的一部分，同样是利用extrie的iterate
 	 *    来完成的。
 	 */
-	void reReplication(Metadata & md) {
-		if (md.type != Metadata::Type::file)
-			return;
+	class reReplication {
+	private:
+		ChunkServerDataContainer & csdc;
+		LogContainer             & lc;
 
-	}
+	public:
+		reReplication(ChunkServerDataContainer & c,
+				      LogContainer & l) : csdc(c), lc(l) {}
+		void operator()(Metadata & md) {
+			if (md.type != Metadata::Type::file)
+				return;
+
+			// todo
+		}
+	};
 
 public:
 
