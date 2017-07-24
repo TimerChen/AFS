@@ -7,15 +7,23 @@
 
 #include <vector>
 #include <string>
+#include <exception>
 
+// alias
 namespace AFS {
 
-using Address = int;
+using ServerAddress = int;
 using Err = int;
 using PathType = std::string;
 using Path = std::vector<PathType>;
 using Handle = void*;
 
+}
+
+// exceptions
+namespace AFS {
+
+class NonexistentFile : public std::exception {};
 
 }
 

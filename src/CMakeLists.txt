@@ -9,13 +9,17 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.64.0 REQUIRED COMPONENTS system thread)
 
 if(Boost_FOUND)
-	set(SOURCE_FILES
-			main.cpp
-			## ryw begin
-			components/extrie.hpp
-			components/sugar.hpp
-			filesystem/master.cpp filesystem/master.h
-			filesystem/setting.h
+    set(SOURCE_FILES
+            main.cpp
+            ## ryw begin 14
+            components/extrie.hpp
+            components/sugar.hpp
+            filesystem/servers/master.cpp filesystem/servers/master.h
+            filesystem/message_and_setting/setting.h
+            filesystem/message_and_setting/data.cpp filesystem/message_and_setting/data.h
+            filesystem/message_and_setting/rpc_structs.h
+            filesystem/message_and_setting/log.cpp filesystem/message_and_setting/log.h
+            tests/log_test.hpp
 
 
 
@@ -24,19 +28,11 @@ if(Boost_FOUND)
 
 
 
-
-
-
-
-			## ryw end
-			## cjx begin
-			filesystem/server.h
-			filesystem/chunkserver.h filesystem/chunkserver.cpp
-                        filesystem/chunk.h filesystem/chunk.cpp
-
-
-
-
+            ## ryw end 31
+            ## cjx begin 32
+            filesystem/server.h
+            filesystem/chunkserver.h filesystem/chunkserver.cpp
+            filesystem/chunk.h filesystem/chunk.cpp
 
 
 
@@ -50,35 +46,32 @@ if(Boost_FOUND)
 
 
 
-			## cjx end
+
+
+            ## cjx end 51
 			)
-	include_directories(
-			## ryw begin
-			${CMAKE_SOURCE_DIR}
-			${Boost_INCLUDE_DIRS}
-			${CMAKE_SOURCE_DIR}/components
-			${CMAKE_SOURCE_DIR}/filesystem
+    include_directories(
+            ## ryw begin 54
+            ${CMAKE_SOURCE_DIR}
+            ${Boost_INCLUDE_DIRS}
+            ${CMAKE_SOURCE_DIR}/components
+            ${CMAKE_SOURCE_DIR}/filesystem/message_and_setting
+            ${CMAKE_SOURCE_DIR}/filesystem/servers
+            ${CMAKE_SOURCE_DIR}/tests
+
+
+
+
+            ## ryw end 65
+            ## cjx begin 66
 
 
 
 
 
 
-
-			## ryw end
-			## cjx begin
-
-
-
-
-
-
-
-
-
-
-			# cjx end
-			 )
-	add_executable(AFS ${SOURCE_FILES})
-	target_link_libraries(AFS ${Boost_LIBRARIES})
+            # cjx end 73
+             )
+    add_executable(AFS ${SOURCE_FILES})
+    target_link_libraries(AFS ${Boost_LIBRARIES})
 endif()

@@ -1,7 +1,7 @@
 #ifndef CHUNKSERVER_H
 #define CHUNKSERVER_H
 
-#include <server.h>
+#include "server.h"
 
 namespace AFS {
 
