@@ -10,6 +10,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <functional>
 #include <vector>
 #include <memory>
 #include <map>
@@ -77,6 +78,39 @@ class ExtrieTest {
 			cout << "AC" << endl;
 	}
 
+
+	void test_iterate() {
+		cout << "start test_iterate\n";
+		extrie<int, int> t;
+		map<vector<int>, int> stdt;
+		for (int i = 0; i < 100; ++i)
+			insert_something(t, &stdt);
+
+		auto fc1 = [](int & x) {
+			x *= 2;
+		};
+		auto fc2 = [](int & x) {
+			x++;
+		};
+		vector<function<void(int&)>> fcs;
+		fcs.push_back(fc1);
+		fcs.push_back(fc2);
+
+		// apply fc on every element in stdt
+		for (auto &&item : stdt) {
+			for (auto &&fc : fcs) {
+				fc(item.second);
+			}
+		}
+
+		t.iterate(vector<int>(), fcs);
+
+		if (check_equal(t, stdt))
+			cout << "AC" << endl;
+		else
+			cout << "WA" << endl;
+	}
+
 public:
 	static ExtrieTest & instance() {
 		static ExtrieTest in;
@@ -84,7 +118,8 @@ public:
 	}
 
 	void test() {
-		test_inesrt();
+//		test_inesrt();
+		test_iterate();
 	}
 
 private: // concurrency_test

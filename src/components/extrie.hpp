@@ -88,11 +88,15 @@ private:
         }
     }
 	void _iterate(node_ptr p, std::vector<std::function<void(T&)>> & fcs) {
+		writeLock wlk(p->m);
 		for (auto &&item : p->child) {
-			T& data = item.second;
-			for (auto &&fc : fcs) {
-
-			}
+			auto ptr = item.second;
+			_iterate(ptr, fcs);
+		}
+		if (p == header)
+			return;
+		for (auto &&fc : fcs) {
+			fc(*p->value);
 		}
 	}
 public:
@@ -254,10 +258,7 @@ public:
 	    std::unique_ptr<std::vector<readLock>> rlks;
 	    tie_move(p, rlks, _find(index.begin(), index.end()));
 	    rlks->pop_back();
-	    writeLock wlk_folder(p->m);
-
-	    // start iteration QAQ
-
+		_iterate(p, fcs);
     }
 
     // 用于对某一特定文件进行操作
