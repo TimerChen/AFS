@@ -21,7 +21,7 @@ if(Boost_FOUND)
             filesystem/message_and_setting/log.cpp filesystem/message_and_setting/log.h
             tests/log_test.hpp
             filesystem/common.h
-
+            tests/extrie_test.hpp
 
 
 
@@ -49,7 +49,7 @@ if(Boost_FOUND)
 
 
             ## cjx end 51
-			)
+            )
     include_directories(
             ## ryw begin 54
             ${CMAKE_SOURCE_DIR}
