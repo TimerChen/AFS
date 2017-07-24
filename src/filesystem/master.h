@@ -8,6 +8,8 @@
 #include "setting.h"
 #include "data.h"
 #include "log.h"
+#include "common.h"
+#include <string>
 #include <map>
 
 /// ACM File System!
