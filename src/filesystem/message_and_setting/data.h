@@ -25,7 +25,7 @@ struct Metadata {
 		};
 
 		std::vector<ChunkData> chunkdata;
-	};
+	} filedata;
 
     enum class Type {
         folder, file, system

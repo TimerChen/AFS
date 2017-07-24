@@ -61,21 +61,28 @@ private:
 		ChunkServerDataContainer & csdc;
 		LogContainer             & lc;
 
+		void replicate(Metadata & md) {
+			throw ; // todo
+		}
 	public:
 		reReplication(ChunkServerDataContainer & c,
 		              LogContainer & l) : csdc(c), lc(l) {}
 		void operator()(Metadata & md) {
 			if (md.type != Metadata::Type::file)
 				return;
-
-			// todo
+			if (md.filedata.chunkdata.size() < md.filedata.replication_factor)
+				replicate(md);
 		}
 	};
 
 protected:
 	// BackgroundActivity does all the background activities:
 	// dead chunkserver handling, garbage collection, stale replica detection, etc
-	void BackgroundActivity();
+	void BackgroundActivity() {
+		std::vector<std::function<void(Metadata&)>> fcs;
+		fcs.emplace_back(reReplication(csdc, lc));
+		// todo
+	}
 
 	// RPCHeartbeat is called by chunkserver to let the master know that a chunkserver is alive.
 	std::tuple<GFSError, std::vector<ChunkHandle> /*Garbage Chunks*/>
