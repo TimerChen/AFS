@@ -16,8 +16,8 @@
 #include <set>
 #include <utility>
 
-#define PRINT_CHECK
-#define PRINT_GET
+//#define PRINT_CHECK
+//#define PRINT_GET
 
 using namespace std;
 using AFS::extrie;
@@ -87,7 +87,6 @@ public:
 		test_inesrt();
 	}
 
-
 private: // concurrency_test
 	pair<vector<vector<int>>, vector<vector<int>>> // index, val
 	get_something_to_insert(int sz = 100, int len = 7) {
@@ -114,6 +113,7 @@ private: // concurrency_test
 			indexes.push_back(*index);
 			vals.push_back(val);
 		}
+#ifdef PRINT_GET
 		for (int i = 0; i < (int)indexes.size(); ++i) {
 			cout << "idx: ";
 			for (auto &&item : indexes[i])
@@ -123,6 +123,7 @@ private: // concurrency_test
 				cout << item << ' ';
 			cout << endl;
 		}
+#endif
 		return make_pair(indexes, vals);
 	}
 
@@ -169,16 +170,56 @@ private: // concurrency_test
 			item.join();
 
 		// = ?
-		cout << "\nstart check_equal" << endl;
+		cout << "start check_equal" << endl << "con_insert_test ";
 		if (check_equal(t, stdt))
 			cout << "AC" << endl;
 		else
 			cout << "WA" << endl;
 	}
 
+	void con_test_at() {
+		cout << "start con_test_at\n";
+		extrie<int, int> t;
+		map<vector<int>, int> stdt;
+		for (int i = 0; i < 100; ++i)
+			insert_something(t, &stdt);
+
+		vector<vector<int>> indexes;
+		for (auto &&item : stdt)
+			indexes.push_back(item.first);
+
+		auto at_t = [&](int beg, int end) {
+			for (; beg < end; ++beg) {
+				if (t[indexes[beg]] != stdt[indexes[beg]]) {
+					cout << "WA" << endl;
+					throw ;
+				}
+			}
+		};
+
+		int beg = 0;
+		vector<thread> ts;
+		int thread_num = 5/*+1*/;
+		int chunk_size = (int)indexes.size() / thread_num;
+		for (int i = 0; i < thread_num; ++i) {
+			cout << "thread " << i << " is processing tasks " << beg << " to "
+			     << beg + chunk_size << endl;
+			ts.emplace_back(thread(at_t, beg, beg + chunk_size));
+			beg += chunk_size;
+		}
+		cout << "thread " << thread_num << " is processing tasks " << beg << " to "
+		     << indexes.size() << endl;
+		ts.emplace_back(thread(at_t, beg, (int)indexes.size()));
+		for (auto && item : ts)
+			item.join();
+		cout << "con_test_at AC" << endl;
+	}
+
 public:
 	void concurrency_test() {
 		con_test_insert();
+		cout << endl;
+		con_test_at();
 	}
 };
 

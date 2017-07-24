@@ -252,7 +252,7 @@ public:
                  std::vector<std::function<void(T&)>> & fcs) {
 	    node_ptr p;
 	    std::unique_ptr<std::vector<readLock>> rlks;
-	    tie_move(p, rlks, _find(index));
+	    tie_move(p, rlks, _find(index.begin(), index.end()));
 	    rlks->pop_back();
 	    writeLock wlk_folder(p->m);
 
