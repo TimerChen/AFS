@@ -22,7 +22,7 @@ namespace AFS
 		void restart();
 
 
-	}
+	};
 	class Master : public Server {
 	public:
 		Master();
@@ -40,13 +40,13 @@ namespace AFS
 		std::pair< ?, AFSError > fileAppend();
 		//Floder opreations
 		sdt::pair< ?, AFSError > fileMkdir();
-	}
+	};
 
 
 	class Master_Dup : public Master {
 	public:
 		Master_Dup();
-	}
+	};
 
 	class ChunkServer : public Server {
 	public:

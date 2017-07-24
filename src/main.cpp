@@ -16,6 +16,6 @@ int main(int argc, char *argv[])
 
 	for( auto i : vs )
 		cout << i << endl;
-
+		
 	return 0;
 }
