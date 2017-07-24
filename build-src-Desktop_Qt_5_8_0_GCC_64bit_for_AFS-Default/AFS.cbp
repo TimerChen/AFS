@@ -90,7 +90,13 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/components/error.hpp">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/extrie.hpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/components/message.hpp">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/sugar.hpp">
@@ -112,9 +118,6 @@
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/client.h">
-			<Option target="AFS"/>
-		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/error.hpp">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master.cpp">

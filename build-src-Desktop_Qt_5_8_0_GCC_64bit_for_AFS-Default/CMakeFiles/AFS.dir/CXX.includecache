@@ -27,10 +27,16 @@ chunk.h
 /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
 client.h
 /home/timemachine/Desktop/AFS/src/filesystem/client.h
+error.hpp
+/home/timemachine/Desktop/AFS/src/filesystem/error.hpp
+master.h
+/home/timemachine/Desktop/AFS/src/filesystem/master.h
 
 /home/timemachine/Desktop/AFS/src/filesystem/client.h
 string
 -
+
+/home/timemachine/Desktop/AFS/src/filesystem/error.hpp
 
 /home/timemachine/Desktop/AFS/src/filesystem/master.cpp
 master.h

@@ -11,6 +11,9 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/s
 
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/client.h
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/error.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master.h
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/setting.h
 
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master.cpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master.h

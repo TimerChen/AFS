@@ -10,17 +10,24 @@ public:
 	Error(){}
 };
 
+class ChunckError : public Error
+{
+public:
+	ChunckError(){}
+};
+
+
 class ClientError : public Error
 {
 public:
 	ClientError(){}
 };
 
-class ChunckError : public Error
+class MasterNotFind : public ClientError
 {
-public:
-	ChunckError(){}
+
 };
+
 
 }
 
