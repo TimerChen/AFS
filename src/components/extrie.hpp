@@ -28,6 +28,7 @@ private:
     struct Node;
     using node_ptr = Node *;
     using mapUPtr = std::map<U, node_ptr>;
+	using indexIter = typename std::vector<U>::const_iterator;
     using readLock = boost::shared_lock<boost::shared_mutex>;
     using writeLock = std::unique_lock<boost::shared_mutex>;
 
@@ -43,16 +44,8 @@ private:
     size_t sz = 0;
 
 private:
-    node_ptr get_node() {
-        node_ptr result = new Node;
-        result->value = nullptr;
-        result->pnt = header;
-        return result;
-    }
-    void put_node(node_ptr p) {
-        delete p->value;
-        delete p;
-    }
+    node_ptr get_node();
+    void put_node(node_ptr p);
 
     void init() {
         sz = 0;
@@ -67,13 +60,14 @@ private:
     }
 
     std::pair<node_ptr, std::unique_ptr<std::vector<readLock>>>
-    _find(const std::vector<U> & index) const {
+    _find(indexIter beg, const indexIter & end) const {
         auto rlks = std::make_unique<std::vector<readLock>>();
         rlks->emplace_back(readLock(header->m));
 
         node_ptr p = header;
         typename std::map<U, node_ptr>::iterator tmp;
-        for (auto && idx : index) {
+        for (; beg != end; ++beg) {
+	        auto & idx = *beg;
             tmp = p->child.find(idx);
             if (tmp == p->child.end())
                 return std::make_pair(p, std::move(rlks));
@@ -93,6 +87,18 @@ private:
             q->pnt = p;
         }
     }
+	void _iterate(node_ptr p, std::vector<std::function<void(T&)>> & fcs) {
+		writeLock wlk(p->m);
+		for (auto &&item : p->child) {
+			auto ptr = item.second;
+			_iterate(ptr, fcs);
+		}
+		if (p == header)
+			return;
+		for (auto &&fc : fcs) {
+			fc(*p->value);
+		}
+	}
 public:
     // todo
     extrie() {
@@ -137,9 +143,9 @@ public:
     }
 
     // 返回insert是否成功
-    template <class TT>
-    bool insert(const std::vector<U> & index, TT && value) {
-        /* 考虑一次插入 a/b/c/d/e，真正被修改的是d的child数组以及
+	template <class TT>
+	bool insert(indexIter beg, const indexIter & end, TT & value) {
+	    /* 考虑一次插入 a/b/c/d/e，真正被修改的是d的child数组以及
          * e本身，所以只需要获得d和e的写锁，而abc以及header则只需
          * 要获得读锁。
          * 实现如下：为了获得一系列锁，所以使用一个readLock的vector和
@@ -147,41 +153,55 @@ public:
          * index直到size-3，在每一次进入下一层结点之前获得当前结点的读锁。
          * 同理，再获得最后第二层的写锁。（注意插入路径为a的情况）
          */
-        auto rlks = std::make_unique<std::vector<readLock>>();
-        auto wlks = std::make_unique<std::vector<writeLock>>();
+	    auto rlks = std::make_unique<std::vector<readLock>>();
+	    auto wlks = std::make_unique<std::vector<writeLock>>();
 
-        node_ptr p = header;
-        typename std::map<U, node_ptr>::iterator iter;
-        int i = 0;
-        auto foo = [&]() {
-            auto &idx = index[i];
-            iter = p->child.find(idx);
-            if (iter == p->child.end())
-                return false;
-            p = iter->second;
-            return true;
-        };
-        for (; i < (int)index.size() - 2; ++i) {
-            rlks->emplace_back(readLock(p->m));
-            if (!foo()) return false;
-        }
-        if (i != (int)index.size() - 1) {
-            wlks->emplace_back(writeLock(p->m));
-            if (!foo()) return false;
-        }
-        bool insert = false;
-        tie(iter, insert) = p->child.insert(std::make_pair(index.back(), get_node()));
-        if (!insert) return false;
-        iter->second->pnt = p;
-        p = iter->second;
-        wlks->emplace_back(writeLock(p->m));
-        p->value = new T(std::forward<TT>(value));
-        ++sz;
-        return true;
+	    node_ptr p = header;
+	    typename std::map<U, node_ptr>::iterator iter;
+
+	    auto foo = [&]() {
+		    auto &idx = *beg;
+		    iter = p->child.find(idx);
+		    if (iter == p->child.end())
+			    return false;
+		    p = iter->second;
+		    return true;
+	    };
+	    /* 对于一次创建a/b/c，可以把a/，a/b/，和a/b/c理解为点，
+	     * 而将a，b，c理解为边。这样p就是当前所处的结点，而beg
+	     * 就是下一条要走的边。我们希望获得最后两个点（一个已有，
+	     * 一个需新建）的写锁，也就是说，如果当前要走的边是最后一条
+	     * 的话，那么我们要获得这个点的写锁。之后我们走过这条边，
+	     * 对于这条边，走过它意味着创建一个新的结点，然后我们获得这个
+	     * 新创建结点的写锁。
+	     */
+	    for (; beg < end - 1; ++beg) {
+		    rlks->emplace_back(readLock(p->m));
+		    if (!foo())
+			    return false;
+	    }
+	    wlks->emplace_back(writeLock(p->m));
+	    bool insert = false;
+	    tie(iter, insert) = p->child.insert(std::make_pair(*(end - 1), get_node()));
+	    if (!insert)
+		    return false;
+	    iter->second->pnt = p;
+	    p = iter->second;
+	    wlks->emplace_back(writeLock(p->m));
+	    p->value = new T(std::forward<TT>(value));
+	    ++sz;
+	    return true;
+    }
+    template <class TT>
+    bool insert(const std::vector<U> & index, TT && value) {
+	    return insert(index.cbegin(), index.cend(), std::forward<TT>(value));
     };
 
     // todo
     // 返回remove是否成功
+	bool remove(indexIter beg, const indexIter & end) {
+	    throw ;
+    }
     bool remove(const std::vector<U> & index) {
         throw ;
         auto rlks = std::make_unique<std::vector<readLock>>();
@@ -213,21 +233,33 @@ public:
     }
 
     // 检查对应键值是否存在
-    bool check(const std::vector<U> & index) const {
-        return _find(index).first != nullptr;
+	bool check(indexIter beg, const indexIter & end) const {
+	    return _find(beg, end).first != nullptr;
+    }
+	bool check(const std::vector<U> & index) const {
+		return check(index.cbegin(), index.cend());
     }
 
     // 返回index对应值
+	T at(indexIter beg, const indexIter & end) const {
+	    auto ptr_vec = _find(beg, end);
+	    if (!ptr_vec.first->value)
+		    throw illegal_index();
+	    return *ptr_vec.first->value;
+    }
     T operator[](const std::vector<U> & index) const {
-        auto ptr_vec = _find(index);
-        if (!ptr_vec.first->value)
-            throw illegal_index();
-        return *ptr_vec.first->value;
+	    return at(index.cbegin(), index.cend());
     }
 
     // 用于遍历一个文件夹，对每一个文件进行操作
     void iterate(const std::vector<U> & index,
-                 std::vector<std::function<void(T&)>> fcs);
+                 std::vector<std::function<void(T&)>> & fcs) {
+	    node_ptr p;
+	    std::unique_ptr<std::vector<readLock>> rlks;
+	    tie_move(p, rlks, _find(index.begin(), index.end()));
+	    rlks->pop_back();
+		_iterate(p, fcs);
+    }
 
     // 用于对某一特定文件进行操作
 	void operate(const std::vector<U> & index, std::function<void(T&)> f);
@@ -235,6 +267,25 @@ public:
     // 选择fn结果最高者返回
     T choose(const std::vector<U> & index, std::function<int(const T&)> fn) const;
 };
+}
+
+// implement
+namespace AFS {
+
+template <class U, class V>
+typename extrie<U, V>::node_ptr extrie<U, V>::get_node() {
+	auto result = new Node;
+	result->value = nullptr;
+	result->pnt = header;
+	return result;
+}
+
+template <class U, class V>
+void extrie<U, V>::put_node(node_ptr p) {
+	delete p->value;
+	delete p;
+}
+
 }
 
 #endif //AFS_EXTRIE_HPP
