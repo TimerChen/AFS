@@ -7,7 +7,6 @@
 
 #include "setting.h"
 #include "data.h"
-#include "server.h"
 #include "log.h"
 #include <map>
 

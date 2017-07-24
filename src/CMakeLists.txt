@@ -18,7 +18,6 @@ if(Boost_FOUND)
             filesystem/message_and_setting/setting.h
             filesystem/message_and_setting/data.cpp filesystem/message_and_setting/data.h
             filesystem/message_and_setting/rpc_structs.h
-            filesystem/servers/server.cpp filesystem/servers/server.h
             filesystem/message_and_setting/log.cpp filesystem/message_and_setting/log.h
 
 
