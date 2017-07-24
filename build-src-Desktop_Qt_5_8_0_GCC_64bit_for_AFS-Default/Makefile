@@ -123,6 +123,33 @@ AFS/fast:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/build
 .PHONY : AFS/fast
 
+JsonCPP/jsoncpp.o: JsonCPP/jsoncpp.cpp.o
+
+.PHONY : JsonCPP/jsoncpp.o
+
+# target to build an object file
+JsonCPP/jsoncpp.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o
+.PHONY : JsonCPP/jsoncpp.cpp.o
+
+JsonCPP/jsoncpp.i: JsonCPP/jsoncpp.cpp.i
+
+.PHONY : JsonCPP/jsoncpp.i
+
+# target to preprocess a source file
+JsonCPP/jsoncpp.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.i
+.PHONY : JsonCPP/jsoncpp.cpp.i
+
+JsonCPP/jsoncpp.s: JsonCPP/jsoncpp.cpp.s
+
+.PHONY : JsonCPP/jsoncpp.s
+
+# target to generate assembly for a file
+JsonCPP/jsoncpp.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.s
+.PHONY : JsonCPP/jsoncpp.cpp.s
+
 filesystem/chunk.o: filesystem/chunk.cpp.o
 
 .PHONY : filesystem/chunk.o
@@ -321,6 +348,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... AFS"
+	@echo "... JsonCPP/jsoncpp.o"
+	@echo "... JsonCPP/jsoncpp.i"
+	@echo "... JsonCPP/jsoncpp.s"
 	@echo "... filesystem/chunk.o"
 	@echo "... filesystem/chunk.i"
 	@echo "... filesystem/chunk.s"

@@ -2,6 +2,7 @@
 
 #include "error.hpp"
 #include "master.h"
+#include "message.hpp"
 
 namespace AFS {
 
@@ -16,9 +17,9 @@ Client::Client()
 void Client::fileCreate	( const std::string &dir ) {
 	if( !masterAdd ) throw( MasterNotFind() );
 	//call master
-	Message::cm_Create msg;
-	Message::cm_Create_r rmsg;
-	rmsg = masterAdd->call_fileCreate( msg );
+	Message::cmCreate msg;
+	Message::cmCreate_r rmsg;
+	//rmsg = masterAdd->call_fileCreate( msg );
 
 
 

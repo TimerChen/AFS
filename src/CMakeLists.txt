@@ -55,7 +55,7 @@ if(Boost_FOUND)
             LightDS/include/rpc.hpp
             LightDS/include/service.hpp
 
-
+            JsonCPP/jsoncpp.cpp
 
 
 
@@ -79,6 +79,7 @@ if(Boost_FOUND)
             ## ryw end 65
             ## cjx begin 66
             ${CMAKE_SOURCE_DIR}/LightDS/include
+            ${CMAKE_SOURCE_DIR}/JsonCPP/json
 
 
 

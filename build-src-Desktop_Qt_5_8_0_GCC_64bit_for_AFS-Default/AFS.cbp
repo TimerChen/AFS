@@ -51,6 +51,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>
@@ -80,6 +81,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>
@@ -96,6 +98,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/JsonCPP/jsoncpp.cpp">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp">
 			<Option target="AFS"/>
 		</Unit>
