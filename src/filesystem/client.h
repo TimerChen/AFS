@@ -1,5 +1,5 @@
-#ifndef CLIENT_H
-#define CLIENT_H
+#ifndef AFS_CLIENT_H
+#define AFS_CLIENT_H
 
 #include <string>
 

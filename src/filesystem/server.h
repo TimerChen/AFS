@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef AFS_SERVER_H
+#define AFS_SERVER_H
 
 namespace AFS {
 

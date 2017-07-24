@@ -1,5 +1,5 @@
-#ifndef ERROR_HPP
-#define ERROR_HPP
+#ifndef AFS_ERROR_HPP
+#define AFS_ERROR_HPP
 
 namespace AFS
 {

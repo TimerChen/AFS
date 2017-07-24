@@ -1,7 +1,9 @@
-#ifndef GFS_COMMON_H
-#define GFS_COMMON_H
+#ifndef AFS_COMMON_H
+#define AFS_COMMON_H
 
 #include <msgpack.hpp>
+
+namespace AFS {
 
 typedef std::uint64_t ChunkHandle;
 typedef std::uint64_t ChunkVersion;
@@ -18,5 +20,7 @@ struct GFSError
 
 //	MSGPACK_DEFINE(errCode, description);
 };
+
+}
 
 #endif

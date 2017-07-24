@@ -1,5 +1,5 @@
-#ifndef MESSAGE_HPP
-#define MESSAGE_HPP
+#ifndef AFS_MESSAGE_HPP
+#define AFS_MESSAGE_HPP
 
 //messages for args and return between different part of AFS
 namespace AFS {

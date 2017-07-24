@@ -1,5 +1,5 @@
-#ifndef CHUNK_H
-#define CHUNK_H
+#ifndef AFS_CHUNK_H
+#define AFS_CHUNK_H
 
 #include <vector>
 
