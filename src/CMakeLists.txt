@@ -38,16 +38,22 @@ if(Boost_FOUND)
 
 
 
-			## ryw end
-			## cjx begin
+            ## ryw end
+            ## cjx begin
             components/error.hpp
             components/message.hpp
-			filesystem/server.h
-            filesystem/chunkserver.h    filesystem/chunkserver.cpp
-            filesystem/chunk.h          filesystem/chunk.cpp
-            filesystem/client.h         filesystem/client.cpp
+            filesystem/server.h
+            filesystem/chunkserver.h        filesystem/chunkserver.cpp
+            filesystem/chunk.h              filesystem/chunk.cpp
+            filesystem/client.h             filesystem/client.cpp
 
-
+            LightDS/include/log.hpp
+            LightDS/include/netclient.hpp
+            LightDS/include/netmsg.hpp
+            LightDS/include/netserver.hpp
+            LightDS/include/pool.hpp
+            LightDS/include/rpc.hpp
+            LightDS/include/service.hpp
 
 
 
@@ -72,7 +78,7 @@ if(Boost_FOUND)
 
             ## ryw end 65
             ## cjx begin 66
-
+            ${CMAKE_SOURCE_DIR}/LightDS/include
 
 
 

@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/timemachine/Desktop/AFS/src -I/usr/local/include -I/home/timemachine/Desktop/AFS/src/components -I/home/timemachine/Desktop/AFS/src/filesystem 
+CXX_INCLUDES = -I/home/timemachine/Desktop/AFS/src -I/usr/local/include -I/home/timemachine/Desktop/AFS/src/components -I/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting -I/home/timemachine/Desktop/AFS/src/filesystem/servers -I/home/timemachine/Desktop/AFS/src/tests -I/home/timemachine/Desktop/AFS/src/LightDS/include 
 

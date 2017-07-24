@@ -231,6 +231,60 @@ filesystem/master.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master.cpp.s
 .PHONY : filesystem/master.cpp.s
 
+filesystem/message_and_setting/data.o: filesystem/message_and_setting/data.cpp.o
+
+.PHONY : filesystem/message_and_setting/data.o
+
+# target to build an object file
+filesystem/message_and_setting/data.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o
+.PHONY : filesystem/message_and_setting/data.cpp.o
+
+filesystem/message_and_setting/data.i: filesystem/message_and_setting/data.cpp.i
+
+.PHONY : filesystem/message_and_setting/data.i
+
+# target to preprocess a source file
+filesystem/message_and_setting/data.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.i
+.PHONY : filesystem/message_and_setting/data.cpp.i
+
+filesystem/message_and_setting/data.s: filesystem/message_and_setting/data.cpp.s
+
+.PHONY : filesystem/message_and_setting/data.s
+
+# target to generate assembly for a file
+filesystem/message_and_setting/data.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.s
+.PHONY : filesystem/message_and_setting/data.cpp.s
+
+filesystem/message_and_setting/log.o: filesystem/message_and_setting/log.cpp.o
+
+.PHONY : filesystem/message_and_setting/log.o
+
+# target to build an object file
+filesystem/message_and_setting/log.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o
+.PHONY : filesystem/message_and_setting/log.cpp.o
+
+filesystem/message_and_setting/log.i: filesystem/message_and_setting/log.cpp.i
+
+.PHONY : filesystem/message_and_setting/log.i
+
+# target to preprocess a source file
+filesystem/message_and_setting/log.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.i
+.PHONY : filesystem/message_and_setting/log.cpp.i
+
+filesystem/message_and_setting/log.s: filesystem/message_and_setting/log.cpp.s
+
+.PHONY : filesystem/message_and_setting/log.s
+
+# target to generate assembly for a file
+filesystem/message_and_setting/log.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.s
+.PHONY : filesystem/message_and_setting/log.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -279,6 +333,12 @@ help:
 	@echo "... filesystem/master.o"
 	@echo "... filesystem/master.i"
 	@echo "... filesystem/master.s"
+	@echo "... filesystem/message_and_setting/data.o"
+	@echo "... filesystem/message_and_setting/data.i"
+	@echo "... filesystem/message_and_setting/data.s"
+	@echo "... filesystem/message_and_setting/log.o"
+	@echo "... filesystem/message_and_setting/log.i"
+	@echo "... filesystem/message_and_setting/log.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

@@ -8,6 +8,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/timemachine/Desktop/AFS/src/filesystem/chunkserver.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
   "/home/timemachine/Desktop/AFS/src/filesystem/client.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/filesystem/client.cpp.o"
   "/home/timemachine/Desktop/AFS/src/filesystem/master.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/filesystem/master.cpp.o"
+  "/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o"
+  "/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o"
   "/home/timemachine/Desktop/AFS/src/main.cpp" "/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles/AFS.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
@@ -17,7 +19,10 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/timemachine/Desktop/AFS/src"
   "/usr/local/include"
   "/home/timemachine/Desktop/AFS/src/components"
-  "/home/timemachine/Desktop/AFS/src/filesystem"
+  "/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting"
+  "/home/timemachine/Desktop/AFS/src/filesystem/servers"
+  "/home/timemachine/Desktop/AFS/src/tests"
+  "/home/timemachine/Desktop/AFS/src/LightDS/include"
   )
 
 # Targets to which this target links.

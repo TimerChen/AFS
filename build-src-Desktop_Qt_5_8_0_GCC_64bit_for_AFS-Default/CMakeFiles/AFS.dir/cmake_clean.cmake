@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/AFS.dir/main.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/master.cpp.o"
+  "CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o"
+  "CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/chunk.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/client.cpp.o"
