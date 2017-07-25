@@ -8,10 +8,10 @@
 #include "setting.h"
 #include "data.h"
 #include "log.h"
+#include "parser.hpp"
 #include "common.h"
-
-#include "server.h"
 #include <string>
+#include <service.hpp>
 #include <map>
 
 /// ACM File System!
@@ -29,11 +29,26 @@ namespace AFS {
  *     iterate接收一个索引（表示文件夹），以及一个
  *     const vector<function<void(Metadata &)>> & f
  */
-class Master : public Server{
+class Master {
 private:
 	MetadataContainer        mdc;
 	ChunkServerDataContainer csdc;
 	LogContainer             lc;
+
+private:
+	GFSErrorCode metadataErrToGFSErr(const MetadataContainer::Error err) const {
+		switch ((int)err) {
+			case (int)MetadataContainer::Error::OK:
+				return GFSErrorCode::OK;
+			case (int)MetadataContainer::Error::Exist:
+				return GFSErrorCode::FileDirAlreadyExists;
+			case (int)MetadataContainer::Error::NotExist:
+				return GFSErrorCode::NoSuchFileDir;
+			default:
+				break;
+		}
+		return GFSErrorCode::UnknownErr;
+	}
 
 private:
 	// createFolder
@@ -72,7 +87,7 @@ private:
 		void operator()(Metadata & md) {
 			if (md.type != Metadata::Type::file)
 				return;
-			if (md.filedata.chunkdata.size() < md.filedata.replication_factor)
+			if (md.fileData.chunkData.size() < md.fileData.replication_factor)
 				replicate(md);
 		}
 	};
@@ -105,7 +120,21 @@ protected:
 
 	// RPCCreateFile is called by client to create a new file
 	GFSError
-	RPCCreateFile(std::string path);
+	RPCCreateFile(std::string path_str) {
+		/* 此操作仅仅是在元数据中创建对应的文件，而不会和
+		 * chunk server交互，只有当真正往文件中写数据的
+		 * 时候，才会通知某个chunk server来创建对应chunk
+		 */
+		GFSError result;
+		try {
+			auto path = PathParser::instance().parse(path_str);
+			MetadataContainer::Error err = mdc.createFile(*path);
+			result.errCode = metadataErrToGFSErr(err);
+		} catch(...) {
+			result.errCode = GFSErrorCode::UnknownErr;
+		}
+		return result;
+	}
 
 	// RPCCreateFile is called by client to delete a file
 	GFSError
@@ -113,7 +142,17 @@ protected:
 
 	// RPCMkdir is called by client to make a new directory
 	GFSError
-	RPCMkdir(std::string path);
+	RPCMkdir(std::string path_str) {
+		GFSError result;
+		try {
+			auto path = PathParser::instance().parse(path_str);
+			MetadataContainer::Error err = mdc.createFile(*path);
+			result.errCode = metadataErrToGFSErr(err);
+		} catch(...) {
+			result.errCode = GFSErrorCode::UnknownErr;
+		}
+		return result;
+	}
 
 	// RPCListFile is called by client to get the file list
 	std::tuple<GFSError, std::vector<std::string> /*FileNames*/>
@@ -125,11 +164,11 @@ protected:
 	RPCGetChunkHandle(std::string path, std::uint64_t chunkIndex);
 
 protected:
-//	LightDS::Service &srv;
+	LightDS::Service &srv;
 	std::string rootDir;
 
 public:
-//	Master(LightDS::Service &srv, const std::string &rootDir);
+	Master(LightDS::Service &srv, const std::string &rootDir);
 	void Start();
 	void Shutdown();
 

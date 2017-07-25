@@ -31,7 +31,7 @@ if(Boost_FOUND)
             tests/log_test.hpp
             filesystem/common.h
             tests/extrie_test.hpp
-
+            components/parser.hpp
 
 
 

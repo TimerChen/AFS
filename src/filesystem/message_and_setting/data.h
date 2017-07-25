@@ -11,51 +11,64 @@
 #include <boost/thread.hpp>
 #include <map>
 #include <vector>
+#include <utility>
 
 // metadata
 namespace AFS {
 
 struct Metadata {
 	struct FileData {
-		int replication_factor;
+		int replication_factor = 3;
 
 		struct ChunkData {
 			Handle        handle;
 			ServerAddress address;
 		};
 
-		std::vector<ChunkData> chunkdata;
-	} filedata;
+		std::vector<ChunkData> chunkData;
+	};
+	struct FolderData {};
 
-    enum class Type {
-        folder, file, system
-    } type;
+	enum class Type {
+		folder, file, system
+	} type;
 
-    // todo
+	FileData   fileData;
+	FolderData folderData;
+	// todo
 };
 
 class MetadataContainer {
+public:
+	using Error = extrie<PathType, Metadata>::Error;
 private:
-    extrie<PathType, Metadata> ext;
+	extrie<PathType, Metadata> ext;
 
 public:
-    template <class Md>
-    bool mkdir(const Path &path, Md && md) {
-        return ext.insert(path, std::forward(md));
-    }
+	Error createFolder(const Path & path) {
+		Metadata md;
+		md.type = Metadata::Type::folder;
+		// todo
+		return ext.insert(path, std::move(md));
+	}
 
-    template <class Md>
-    bool create(const Path & path, Md && md) {
-        return ext.insert(path, std::forward(md));
-    }
+	Error createFile(const Path & path) {
+		Metadata md;
+		md.type = Metadata::Type::file;
+		// todo
+		return ext.insert(path, std::move(md));
+	}
 
-    bool checkData(const Path & path) const {
-        return ext.check(path);
-    }
+	bool checkData(const Path & path) const {
+		return ext.check(path);
+	}
 
-    Metadata getData(const Path & path) const {
-        return ext[path];
-    }
+	std::pair<Metadata, bool>
+	getData(const Path & path) const {
+		if (!checkData(path))
+			return std::make_pair(Metadata(), false);
+		return std::make_pair(ext[path], true);
+	}
 };
 
 }
@@ -68,10 +81,10 @@ struct ChunkServerData {
 };
 
 class ChunkServerDataContainer {
-    using readLock = boost::shared_lock<boost::shared_mutex>;
-    using writeLock = std::unique_lock<boost::shared_mutex>;
+	using readLock = boost::shared_lock<boost::shared_mutex>;
+	using writeLock = std::unique_lock<boost::shared_mutex>;
 private:
-    std::map<ServerAddress, ChunkServerData> csd;
+	std::map<ServerAddress, ChunkServerData> csd;
 	boost::shared_mutex m;
 public:
 	std::pair<ChunkServerData, bool>
