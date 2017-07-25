@@ -13,7 +13,7 @@ enum class GFSErrorCode : std::uint32_t
 	OK = 0, UnknownErr,
 
 	// err returned by master
-			NoSuchFileDir, FileDirAlreadyExists
+	NoSuchFileDir, FileDirAlreadyExists
 };
 
 

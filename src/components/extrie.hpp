@@ -246,6 +246,20 @@ public:
 		_iterate(p, fcs);
 	}
 
+	template <class D>
+	std::unique_ptr<std::vector<D>>
+	nonsub_collect(const std::vector<U> & index, const std::function<D(const T&)> & fc) const {
+		node_ptr p;
+		std::unique_ptr<std::vector<readLock>> rlks;
+		tie_move(p, rlks, _find(index.begin(), index.end()));
+		auto result = std::make_unique<std::vector<D>>();
+		for (auto &&item : p->child) {
+			readLock lk(item.second->m);
+			result->push_back(fc(*item.second->value));
+		}
+		return result;
+	}
+
 	// 用于对某一特定文件进行操作
 	void operate(const std::vector<U> & index, std::function<void(T&)> f);
 

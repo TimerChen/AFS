@@ -11,6 +11,7 @@
 #include <boost/thread.hpp>
 #include <map>
 #include <vector>
+#include <memory>
 #include <utility>
 
 // metadata
@@ -19,12 +20,10 @@ namespace AFS {
 struct Metadata {
 	struct FileData {
 		int replication_factor = 3;
-
 		struct ChunkData {
 			Handle        handle;
 			ServerAddress address;
 		};
-
 		std::vector<ChunkData> chunkData;
 	};
 	struct FolderData {};
@@ -33,8 +32,9 @@ struct Metadata {
 		folder, file, system
 	} type;
 
-	FileData   fileData;
-	FolderData folderData;
+	std::string name;
+	FileData    fileData;
+	FolderData  folderData;
 	// todo
 };
 
@@ -44,6 +44,9 @@ public:
 private:
 	extrie<PathType, Metadata> ext;
 
+	bool checkData(const Path & path) const {
+		return ext.check(path);
+	}
 public:
 	Error createFolder(const Path & path) {
 		Metadata md;
@@ -59,15 +62,35 @@ public:
 		return ext.insert(path, std::move(md));
 	}
 
-	bool checkData(const Path & path) const {
-		return ext.check(path);
+	Error deleteFile(const Path & path) {
+		auto mdErr = getData(path);
+		if (mdErr.first == Error::NotExist)
+			return Error::NotExist;
+		if (mdErr.second.type != Metadata::Type::file)
+			return Error::NotExist;
+		return ext.remove(path);
 	}
 
-	std::pair<Metadata, bool>
+	std::pair<Error, std::unique_ptr<std::vector<std::string>>>
+	listName(const Path & path) const {
+		auto errMd = getData(path);
+		auto result2 = std::make_unique<std::vector<std::string>>();
+		if (errMd.first == Error::NotExist)
+			return std::make_pair(Error::NotExist, std::move(result2));
+		if (errMd.second.type != Metadata::Type::folder)
+			return std::make_pair(Error::NotExist, std::move(result2));
+		auto collect_name = [](const Metadata & md)->std::string {
+			return md.name;
+		};
+		result2 = ext.nonsub_collect<std::string>(path, collect_name);
+		return std::make_pair(Error::OK, std::move(result2));
+	};
+
+	std::pair<Error, Metadata>
 	getData(const Path & path) const {
 		if (!checkData(path))
-			return std::make_pair(Metadata(), false);
-		return std::make_pair(ext[path], true);
+			return std::make_pair(Error::NotExist, Metadata());
+		return std::make_pair(Error::OK, ext[path]);
 	}
 };
 

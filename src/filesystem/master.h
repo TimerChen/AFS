@@ -49,6 +49,12 @@ private:
 		}
 		return GFSErrorCode::UnknownErr;
 	}
+	GFSError sorry() const {
+		GFSError result;
+		result.errCode = GFSErrorCode::UnknownErr;
+		result.description = "Sorry, my code has broken.";
+		return result;
+	}
 
 private:
 	// createFolder
@@ -131,14 +137,24 @@ protected:
 			MetadataContainer::Error err = mdc.createFile(*path);
 			result.errCode = metadataErrToGFSErr(err);
 		} catch(...) {
-			result.errCode = GFSErrorCode::UnknownErr;
+			result = sorry();
 		}
 		return result;
 	}
 
 	// RPCCreateFile is called by client to delete a file
 	GFSError
-	RPCDeleteFile(std::string path);
+	RPCDeleteFile(std::string path_str) {
+		GFSError result;
+		try {
+			auto path = PathParser::instance().parse(path_str);
+			MetadataContainer::Error err = mdc.deleteFile(*path);
+			result.errCode = metadataErrToGFSErr(err);
+		} catch(...) {
+			result = sorry();
+		}
+		return result;
+	}
 
 	// RPCMkdir is called by client to make a new directory
 	GFSError
