@@ -199,6 +199,9 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.h">
 			<Option target="AFS"/>
 		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/extrie_test.hpp">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/log_test.hpp">
 			<Option target="AFS"/>
 		</Unit>
