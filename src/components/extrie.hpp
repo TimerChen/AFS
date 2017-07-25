@@ -152,14 +152,6 @@ public:
 		node_ptr p = header;
 		typename std::map<U, node_ptr>::iterator iter;
 
-		auto foo = [&]() {
-			auto &idx = *beg;
-			iter = p->child.find(idx);
-			if (iter == p->child.end())
-				return false;
-			p = iter->second;
-			return true;
-		};
 		/* 对于一次创建a/b/c，可以把a/，a/b/，和a/b/c理解为点，
 		 * 而将a，b，c理解为边。这样p就是当前所处的结点，而beg
 		 * 就是下一条要走的边。我们希望获得最后两个点（一个已有，
@@ -170,8 +162,11 @@ public:
 		 */
 		for (; beg < end - 1; ++beg) {
 			rlks->emplace_back(readLock(p->m));
-			if (!foo())
+			auto &idx = *beg;
+			iter = p->child.find(idx);
+			if (iter == p->child.end())
 				return Error::NotExist;
+			p = iter->second;
 		}
 		wlks->emplace_back(writeLock(p->m));
 		bool insert = false;
@@ -190,39 +185,36 @@ public:
 		return insert(index.cbegin(), index.cend(), std::forward<TT>(value));
 	};
 
-	// todo
 	// 返回remove是否成功
-	bool remove(indexIter beg, const indexIter & end) {
-		throw ;
-	}
-	bool remove(const std::vector<U> & index) {
-		throw ;
+	Error remove(indexIter beg, const indexIter & end) {
 		auto rlks = std::make_unique<std::vector<readLock>>();
 		auto wlks = std::make_unique<std::vector<writeLock>>();
 
 		node_ptr p = header;
 		typename std::map<U, node_ptr>::iterator iter;
-		int i = 0;
-		auto foo = [&]() {
-			auto &idx = index[i];
+
+		for (; beg < end - 1; ++beg) {
+			rlks->emplace_back(readLock(p->m));
+			auto &idx = *beg;
 			iter = p->child.find(idx);
 			if (iter == p->child.end())
-				return false;
+				return Error::NotExist;
 			p = iter->second;
-			return true;
-		};
-		for (; i < (int)index.size() - 2; ++i) {
-			rlks->emplace_back(readLock(p->m));
-			if (!foo()) return false;
 		}
-		for (; i < (int)index.size(); ++i) {
-//            wlk1 = writeLock(p->m);
-			if (!foo()) return false;
-		}
-		--sz;
-		p->pnt->child.erase(p->pnt->child.find(index.back()));
-		put_node(p);
-		return true;
+		rlks->emplace_back(readLock(p->m));
+		iter = p->child.find(*(end - 1));
+		if (iter == p->child.end())
+			return Error::NotExist;
+		rlks->pop_back();
+		wlks->push_back(writeLock(p->m));
+		p->child.erase(iter);
+		wlks->pop_back();
+		destroy(iter->second);
+
+		return Error::OK;
+	}
+	Error remove(const std::vector<U> & index) {
+		return remove(index.begin(), index.end());
 	}
 
 	// 检查对应键值是否存在
@@ -292,6 +284,7 @@ void extrie<U, V>::destroy(node_ptr p) {
 		destroy(item.second);
 	lk.unlock();
 	put_node(p);
+	--sz;
 }
 
 }

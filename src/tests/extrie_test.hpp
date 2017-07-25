@@ -78,7 +78,6 @@ class ExtrieTest {
 			cout << "AC" << endl;
 	}
 
-
 	void test_iterate() {
 		cout << "start test_iterate\n";
 		extrie<int, int> t;
@@ -111,6 +110,64 @@ class ExtrieTest {
 			cout << "WA" << endl;
 	}
 
+	void test_remove() {
+//#define ERASE_FILE
+
+		cout << "start test_remove: \n";
+		extrie<int, int> t;
+		mapViI stdt;
+		vector<vector<int>> indexes;
+		vector<vector<int>> vals;
+
+		tie(indexes, vals) = get_something_to_insert();
+		for (int i = 0; i < (int)indexes.size(); ++i) {
+			for (int j = 0; j < (int)indexes[i].size(); ++j)
+				stdt.insert(make_pair(
+						vector<int>(&indexes[i][0], &indexes[i][j + 1]),
+						vals[i][j]));
+		}
+		auto ins_t = [&](int beg, int end) {
+			for (; beg < end; ++beg) {
+				for (int i = 0; i < (int)indexes[beg].size(); ++i)
+					t.insert(vector<int>(&indexes[beg][0], &indexes[beg][i + 1]),
+					         vals[beg][i]);
+			}
+		};
+		ins_t(0, (int)indexes.size());
+		cout << "Insert completed\n";
+#ifdef ERASE_FILE
+		for (auto &&idx : indexes) {
+			stdt.erase(stdt.find(idx));
+			t.remove(idx);
+		}
+#else
+		for (auto &&idx : indexes) {
+			for (auto iter = idx.begin(); iter != idx.end(); ++iter) {
+				int flag = rand() % 5;
+				if (flag)
+					continue;
+				t.remove(idx.begin(), iter + 1);
+
+				for (; iter != idx.end(); ++iter) {
+					auto nowidx = vector<int>(idx.begin(), iter + 1);
+//					for (auto &&item : nowidx)
+//						cout << item << ' ';
+//					cout << endl;
+					stdt.erase(stdt.find(nowidx));
+				}
+				break;
+			}
+		}
+#endif
+		cout << "removal completed\n";
+
+		cout << "test_remove ";
+		if (check_equal(t, stdt))
+			cout << "AC" << endl;
+		else
+			cout << "WA" << endl;
+	}
+
 public:
 	static ExtrieTest & instance() {
 		static ExtrieTest in;
@@ -118,13 +175,14 @@ public:
 	}
 
 	void test() {
-//		test_inesrt();
+		test_inesrt();
 		test_iterate();
+		test_remove();
 	}
 
 private: // concurrency_test
 	pair<vector<vector<int>>, vector<vector<int>>> // index, val
-	get_something_to_insert(int sz = 100, int len = 7) {
+	get_something_to_insert(int sz = 10000, int len = 20) {
 		set<vector<int>> vis;
 		vector<vector<int>> indexes;
 		vector<vector<int>> vals;
@@ -248,6 +306,32 @@ private: // concurrency_test
 		for (auto && item : ts)
 			item.join();
 		cout << "con_test_at AC" << endl;
+	}
+
+	void con_test_remove() {
+		cout << "start con_test_remove: \n";
+		extrie<int, int> t;
+		mapViI stdt;
+		vector<vector<int>> indexes;
+		vector<vector<int>> vals;
+
+		tie(indexes, vals) = get_something_to_insert();
+		for (int i = 0; i < (int)indexes.size(); ++i) {
+			for (int j = 0; j < (int)indexes[i].size(); ++j)
+				stdt.insert(make_pair(
+						vector<int>(&indexes[i][0], &indexes[i][j + 1]),
+						vals[i][j]));
+		}
+		auto ins_t = [&](int beg, int end) {
+			for (; beg < end; ++beg) {
+				for (int i = 0; i < (int)indexes[beg].size(); ++i)
+					t.insert(vector<int>(&indexes[beg][0], &indexes[beg][i + 1]),
+					         vals[beg][i]);
+			}
+		};
+		ins_t(0, (int)indexes.size());
+		cout << "Insert completed\n";
+		// todo
 	}
 
 public:
