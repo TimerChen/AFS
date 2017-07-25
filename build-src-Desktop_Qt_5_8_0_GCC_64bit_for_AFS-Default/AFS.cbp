@@ -50,6 +50,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
 					<Add directory="/usr/include/c++/5"/>
@@ -80,6 +81,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
 					<Add directory="/usr/include/c++/5"/>
@@ -183,6 +185,18 @@
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/main.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.h">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/log_test.hpp">

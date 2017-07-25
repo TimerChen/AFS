@@ -8,6 +8,15 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.64.0 REQUIRED COMPONENTS system thread)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
+
 if(Boost_FOUND)
     set(SOURCE_FILES
             main.cpp
@@ -57,7 +66,8 @@ if(Boost_FOUND)
 
             JsonCPP/jsoncpp.cpp
 
-
+            tests/LightDSTest/servera.h     tests/LightDSTest/servera.cpp
+            tests/LightDSTest/serverb.h     tests/LightDSTest/serverb.cpp
 
 
 
@@ -78,6 +88,7 @@ if(Boost_FOUND)
 
             ## ryw end 65
             ## cjx begin 66
+            ${CMAKE_SOURCE_DIR}/filesystem
             ${CMAKE_SOURCE_DIR}/LightDS/include
             ${CMAKE_SOURCE_DIR}/JsonCPP/json
 
@@ -89,4 +100,9 @@ if(Boost_FOUND)
              )
     add_executable(AFS ${SOURCE_FILES})
     target_link_libraries(AFS ${Boost_LIBRARIES})
+
+
+    target_link_libraries(AFS ${CMAKE_THREAD_LIBS_INIT})
+    set_property(TARGET AFS PROPERTY COMPILE_OPTIONS "-pthread")
+
 endif()

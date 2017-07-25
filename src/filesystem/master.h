@@ -9,6 +9,8 @@
 #include "data.h"
 #include "log.h"
 #include "common.h"
+
+#include "server.h"
 #include <string>
 #include <map>
 
@@ -27,7 +29,7 @@ namespace AFS {
  *     iterate接收一个索引（表示文件夹），以及一个
  *     const vector<function<void(Metadata &)>> & f
  */
-class Master {
+class Master : public Server{
 private:
 	MetadataContainer        mdc;
 	ChunkServerDataContainer csdc;

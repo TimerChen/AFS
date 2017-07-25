@@ -339,6 +339,60 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+tests/LightDSTest/servera.o: tests/LightDSTest/servera.cpp.o
+
+.PHONY : tests/LightDSTest/servera.o
+
+# target to build an object file
+tests/LightDSTest/servera.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o
+.PHONY : tests/LightDSTest/servera.cpp.o
+
+tests/LightDSTest/servera.i: tests/LightDSTest/servera.cpp.i
+
+.PHONY : tests/LightDSTest/servera.i
+
+# target to preprocess a source file
+tests/LightDSTest/servera.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.i
+.PHONY : tests/LightDSTest/servera.cpp.i
+
+tests/LightDSTest/servera.s: tests/LightDSTest/servera.cpp.s
+
+.PHONY : tests/LightDSTest/servera.s
+
+# target to generate assembly for a file
+tests/LightDSTest/servera.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.s
+.PHONY : tests/LightDSTest/servera.cpp.s
+
+tests/LightDSTest/serverb.o: tests/LightDSTest/serverb.cpp.o
+
+.PHONY : tests/LightDSTest/serverb.o
+
+# target to build an object file
+tests/LightDSTest/serverb.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o
+.PHONY : tests/LightDSTest/serverb.cpp.o
+
+tests/LightDSTest/serverb.i: tests/LightDSTest/serverb.cpp.i
+
+.PHONY : tests/LightDSTest/serverb.i
+
+# target to preprocess a source file
+tests/LightDSTest/serverb.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.i
+.PHONY : tests/LightDSTest/serverb.cpp.i
+
+tests/LightDSTest/serverb.s: tests/LightDSTest/serverb.cpp.s
+
+.PHONY : tests/LightDSTest/serverb.s
+
+# target to generate assembly for a file
+tests/LightDSTest/serverb.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.s
+.PHONY : tests/LightDSTest/serverb.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -372,6 +426,12 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... tests/LightDSTest/servera.o"
+	@echo "... tests/LightDSTest/servera.i"
+	@echo "... tests/LightDSTest/servera.s"
+	@echo "... tests/LightDSTest/serverb.o"
+	@echo "... tests/LightDSTest/serverb.i"
+	@echo "... tests/LightDSTest/serverb.s"
 .PHONY : help
 
 

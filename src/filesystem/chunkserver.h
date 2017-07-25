@@ -1,6 +1,12 @@
 #ifndef AFS_CHUNKSERVER_H
 #define AFS_CHUNKSERVER_H
 
+#include <string>
+#include <service.hpp>
+
+#include "common.h"
+#include "server.h"
+#include "chunk.h"
 
 namespace AFS {
 
@@ -30,12 +36,7 @@ public:
 
 
 
-#include <string>
-#include <service.hpp>
 
-#include "common.h"
-#include "server.h"
-#include "chunk.h"
 
 class ChunkServer : public Server
 {
@@ -108,6 +109,10 @@ protected:
 	std::string rootDir;
 };
 
+
+
 }
+
+MSGPACK_ADD_ENUM(AFS::ChunkServer::MutationType);
 
 #endif

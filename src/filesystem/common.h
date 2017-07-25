@@ -13,14 +13,19 @@ enum class GFSErrorCode : std::uint32_t
 	OK = 0,
 };
 
+
 struct GFSError
 {
 	GFSErrorCode errCode;
 	std::string description;
 
-//	MSGPACK_DEFINE(errCode, description);
+	MSGPACK_DEFINE(errCode, description);
 };
 
+
+
 }
+
+MSGPACK_ADD_ENUM(AFS::GFSErrorCode);
 
 #endif

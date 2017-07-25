@@ -27,6 +27,18 @@ void Client::fileCreate	( const std::string &dir ) {
 
 void Client::fileRead	( const std::string &dir, const std::string &localDir ) {
 	if( !masterAdd ) throw( MasterNotFind() );
+
+	/*
+	//use split
+
+	string s = "Hello,World deep,dark,fantasy,, fantasy";
+	cout << s << endl;
+	boost::split(vs,s,boost::is_any_of(", "),boost::token_compress_off);
+
+	for( auto i : vs )
+		cout << i << endl;
+
+	 */
 }
 
 void Client::fileWrite	( const std::string &dir, const std::string &localDir ) {
