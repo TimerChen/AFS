@@ -11,8 +11,8 @@
 
 // alias
 namespace AFS {
-using uint = unsigned int;
-using ServerAddress = uint;
+using uint = std::uint64_t;
+using ServerAddress = std::string;
 using PathType = std::string;
 using Path = std::vector<PathType>;
 

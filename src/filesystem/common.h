@@ -8,12 +8,13 @@ namespace AFS {
 typedef std::uint64_t ChunkHandle;
 typedef std::uint64_t ChunkVersion;
 
-enum class GFSErrorCode : std::uint32_t
-{
+enum class GFSErrorCode : std::uint32_t {
 	OK = 0, UnknownErr,
 
 	// err returned by master
-	NoSuchFileDir, FileDirAlreadyExists
+	NoSuchFileDir, FileDirAlreadyExists,
+	WrongOperation, // 对于文件夹进行文件操作等
+	NoSuchChunk
 };
 
 

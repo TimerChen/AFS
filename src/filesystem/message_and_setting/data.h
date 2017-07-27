@@ -10,20 +10,86 @@
 #include "common.h"
 #include <string>
 #include <boost/thread.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <map>
+#include <mutex>
 #include <vector>
 #include <memory>
 #include <utility>
+#include <ctime>
+#include <functional>
 
 // chunk data
 namespace AFS {
 struct ChunkData {
-	ChunkHandle   handle;
-	ChunkVersion  version;
+	std::vector<ServerAddress>
+				 location;    // 各副本位置
+	uint         primary{0};  // 主chunk索引
+	std::time_t  stamp{0};    // 租约到期时间
+	ChunkVersion version;
 };
 
+
 class ChunkDataMap {
+private:
+	std::time_t lease_time{60}; // 默认租约时间(秒)以及每次延长至的时间
 	std::map<ChunkHandle, ChunkData> mp;
+	mutable boost::shared_mutex m;
+	using readLock = boost::shared_lock<boost::shared_mutex>;
+	using writeLock = std::unique_lock<boost::shared_mutex>;
+
+public:
+	void extendLease(const ChunkHandle & handle) {
+		writeLock lk(m);
+		mp[handle].stamp = time(nullptr) + lease_time;
+	}
+
+	bool expired(const ChunkHandle & handle, const ChunkHandle & version) {
+		readLock rlk(m);
+		auto & data = mp[handle];
+		if (data.version > version)
+			return true;
+		rlk.unlock();
+		writeLock wlk(m); // todo ???
+		data.version = version;
+		return false;
+	}
+
+	void removeHandle(const std::vector<ChunkHandle> & handles) {
+		writeLock lk(m);
+		for (auto &&handle : handles) {
+			auto iter = mp.find(handle);
+			if (iter != mp.end())
+				mp.erase(iter);
+		}
+	}
+
+	bool checkHandle(const ChunkHandle & handle) const {
+		readLock lk(m);
+		return mp.find(handle) != mp.cend();
+	}
+
+	std::pair<bool, ChunkData>
+	getData(const ChunkHandle & handle) const {
+		readLock lk(m);
+		auto iter = mp.find(handle);
+		if (iter == mp.end())
+			return std::make_pair(false, ChunkData());
+		return std::make_pair(true, iter->second);
+	}
+
+	std::pair<bool, ChunkData>
+	getData(const ChunkHandle & handle,
+	        std::function<bool(const ChunkData & data)> condition,
+			std::function<void(ChunkData & data)> f) {
+		writeLock lk(m);
+		auto iter = mp.find(handle);
+		if (iter == mp.end())
+			return std::make_pair(false, ChunkData());
+		if (condition(iter->second))
+			f(iter->second);
+		return std::make_pair(true, iter->second);
+	};
 };
 
 }
@@ -34,7 +100,7 @@ namespace AFS {
 struct Metadata {
 	struct FileData {
 		int replication_factor = 3;
-		std::vector<std::shared_ptr<ChunkData>> chunkData;
+		std::vector<ChunkHandle> handles;
 	};
 	struct FolderData {};
 
@@ -72,12 +138,13 @@ public:
 		return ext.insert(path, std::move(md));
 	}
 
-	Error deleteFile(const Path & path) {
+	Error deleteFile(const Path & path, std::function<void(const Metadata&)> del) {
 		auto mdErr = getData(path);
 		if (mdErr.first == Error::NotExist)
 			return Error::NotExist;
 		if (mdErr.second.type != Metadata::Type::file)
 			return Error::NotExist;
+		del(mdErr.second);
 		return ext.remove(path);
 	}
 
@@ -102,39 +169,7 @@ public:
 			return std::make_pair(Error::NotExist, Metadata());
 		return std::make_pair(Error::OK, ext[path]);
 	}
-};
 
-}
-
-// chunk server data
-namespace AFS {
-
-struct ChunkServerData {
-
-};
-
-class ChunkServerDataContainer {
-	using readLock = boost::shared_lock<boost::shared_mutex>;
-	using writeLock = std::unique_lock<boost::shared_mutex>;
-private:
-	std::map<ServerAddress, ChunkServerData> csd;
-	boost::shared_mutex m;
-public:
-	std::pair<ChunkServerData, bool>
-	getDate(const ServerAddress & address) {
-		auto lk = readLock(m);
-		auto iter = csd.find(address);
-		if (iter == csd.end())
-			return std::make_pair(ChunkServerData(), false);
-		return std::make_pair(iter->second, true);
-	}
-
-	template <class Csd>
-	bool writeData(const ServerAddress & address, Csd && d) {
-		auto lk = writeLock(m);
-		bool success = csd.insert(std::make_pair(address, std::forward(d))).second;
-		return success;
-	}
 };
 
 }

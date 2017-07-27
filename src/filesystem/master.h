@@ -13,6 +13,8 @@
 #include <string>
 #include <service.hpp>
 #include <map>
+#include <set>
+#include <filesystem/message_and_setting/data.h>
 
 /// ACM File System!
 namespace AFS {
@@ -31,10 +33,9 @@ namespace AFS {
  */
 class Master {
 private:
-	MetadataContainer        mdc;
-	ChunkDataMap             cdm;
-	ChunkServerDataContainer csdc;
-	LogContainer             lc;
+	MetadataContainer mdc;
+	ChunkDataMap      cdm;
+	LogContainer      lc;
 
 private:
 	GFSErrorCode metadataErrToGFSErr(const MetadataContainer::Error err) const {
@@ -75,86 +76,98 @@ private:
 	 *  · 此操作作为后台活动的一部分，同样是利用extrie的iterate
 	 *    来完成的。
 	 */
-	class reReplication {
-	private:
-		ChunkServerDataContainer & csdc;
-		LogContainer             & lc;
-
-		void replicate(Metadata & md) {
-			throw ; // todo
-		}
-	public:
-		reReplication(ChunkServerDataContainer & c,
-		              LogContainer & l) : csdc(c), lc(l) {}
-		void operator()(Metadata & md) {
-			if (md.type != Metadata::Type::file)
-				return;
-			if (md.fileData.chunkData.size() < md.fileData.replication_factor)
-				replicate(md);
-		}
-	};
+	class reReplication {};
 
 protected:
 	// BackgroundActivity does all the background activities:
 	// dead chunkserver handling, garbage collection, stale replica detection, etc
-	void BackgroundActivity() {
-		std::vector<std::function<void(Metadata&)>> fcs;
-		fcs.emplace_back(reReplication(csdc, lc));
-		// todo
-	}
+	void BackgroundActivity();
 
 	// RPCHeartbeat is called by chunkserver to let the master know that a chunkserver is alive.
 	std::tuple<GFSError, std::vector<ChunkHandle> /*Garbage Chunks*/>
 	RPCHeartbeat(std::vector<ChunkHandle> leaseExtensions,
 	             std::vector<std::tuple<ChunkHandle, ChunkVersion>> chunks,
 	             std::vector<ChunkHandle> failedChunks) {
-		// todo
-		throw ;
+		GFSError err;
+		// lease extension
+		for (auto &&handle : leaseExtensions) {
+			cdm.extendLease(handle);
+		}
+		err.errCode = GFSErrorCode::OK;
+
+		/* garbage collection
+		 * 对于每一个不在failed Chunks中的chunk，首先检索
+		 * 对于的chunk handle是否存在，如果不存在，意味着对应
+		 * 文件已经被删除了，加入garbage。否则检查它的version，
+		 * 如果低于master的版本，同样加入garbage
+		 */
+		std::vector<ChunkHandle> garbage;
+		std::set<ChunkHandle> failed;
+		for (auto &&chunk : failedChunks)
+			failed.insert(chunk);
+		ChunkHandle handle;
+		ChunkVersion version;
+		for (auto &&chunk : chunks) {
+			std::tie(handle, version) = chunk;
+			if (failed.find(handle) != failed.end())
+				continue;
+			if (!cdm.checkHandle(handle)) {
+				garbage.push_back(handle);
+				continue;
+			}
+			if (cdm.expired(handle, version)) {
+				garbage.push_back(handle);
+			}
+		}
+
+		return std::make_tuple(err, garbage);
 	};
 
 	// RPCGetPrimaryAndSecondaries returns lease holder and secondaries of a chunk.
 	// If no one holds the lease currently, grant one.
-	std::tuple<GFSError, std::string /*Primary Address*/, std::vector<std::string> /*Secondary Addresses*/, std::uint64_t /*Expire Timestamp*/>
-	RPCGetPrimaryAndSecondaries(ChunkHandle handle);
+	std::tuple<GFSError,
+			std::string /*Primary Address*/,
+			std::vector<std::string> /*Secondary Addresses*/,
+			std::uint64_t /*Expire Timestamp*/>
+	RPCGetPrimaryAndSecondaries(ChunkHandle handle) {
+		GFSError err;
+		auto flagData = cdm.getData(handle);
+		if (!flagData.first) {
+			err.errCode = GFSErrorCode::NoSuchChunk;
+			return std::make_tuple(err, std::string(),
+			                       std::vector<std::string>(), uint64_t());
+		}
+		err.errCode = GFSErrorCode::OK;
+		// todo get lease
+		throw ;
+	};
 
 	// RPCGetReplicas is called by client to find all chunkservers that hold the chunk.
 	std::tuple<GFSError, std::vector<std::string> /*Locations*/>
-	RPCGetReplicas(ChunkHandle handle);
+	RPCGetReplicas(ChunkHandle handle);;
 
 	// RPCGetFileInfo is called by client to get file information
-	std::tuple<GFSError, bool /*IsDir*/, std::uint64_t /*Length*/, std::uint64_t /*Chunks*/>
+	std::tuple<GFSError,
+			bool /*IsDir*/,
+			std::uint64_t /*Length*/,
+			std::uint64_t /*Chunks*/>
 	RPCGetFileInfo(std::string path);
 
 	// RPCCreateFile is called by client to create a new file
 	GFSError
-	RPCCreateFile(std::string path_str) {
-		/* 此操作仅仅是在元数据中创建对应的文件，而不会和
-		 * chunk server交互，只有当真正往文件中写数据的
-		 * 时候，才会通知某个chunk server来创建对应chunk
-		 */
-		GFSError result;
-		try {
-			auto path = PathParser::instance().parse(path_str);
-			MetadataContainer::Error err = mdc.createFile(*path);
-			result.errCode = metadataErrToGFSErr(err);
-		} catch(...) {
-			result = sorry();
-		}
-		return result;
-	}
+	RPCCreateFile(std::string path_str);
 
 	// RPCCreateFile is called by client to delete a file
 	GFSError
 	RPCDeleteFile(std::string path_str) {
 		// todo
 		GFSError result;
-		try {
-			auto path = PathParser::instance().parse(path_str);
-			MetadataContainer::Error err = mdc.deleteFile(*path);
-			result.errCode = metadataErrToGFSErr(err);
-		} catch(...) {
-			result = sorry();
-		}
+		auto path = PathParser::instance().parse(path_str);
+		MetadataContainer::Error err
+				= mdc.deleteFile(*path, [&](const Metadata & md) {
+					cdm.removeHandle(md.fileData.handles);
+				});
+		result.errCode = metadataErrToGFSErr(err);
 		return result;
 	}
 
@@ -164,12 +177,12 @@ protected:
 
 	// RPCListFile is called by client to get the file list
 	std::tuple<GFSError, std::vector<std::string> /*FileNames*/>
-	RPCListFile(std::string path_str);;
+	RPCListFile(std::string path_str);
 
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.
 	std::tuple<GFSError, ChunkHandle>
-	RPCGetChunkHandle(std::string path, std::uint64_t chunkIndex);
+	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex);;
 
 protected:
 	LightDS::Service &srv;
