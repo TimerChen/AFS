@@ -2,6 +2,7 @@
 #define AFS_COMMON_H
 
 #include <msgpack.hpp>
+#include <error.hpp>
 
 namespace AFS {
 

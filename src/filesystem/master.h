@@ -10,7 +10,7 @@
 #include "log.h"
 #include "common.h"
 
-#include "server.h"
+#include "server.hpp"
 #include <string>
 #include <map>
 
@@ -124,14 +124,10 @@ protected:
 	std::tuple<GFSError, ChunkHandle>
 	RPCGetChunkHandle(std::string path, std::uint64_t chunkIndex);
 
-protected:
-//	LightDS::Service &srv;
-	std::string rootDir;
 
 public:
-//	Master(LightDS::Service &srv, const std::string &rootDir);
-	void Start();
-	void Shutdown();
+	virtual void Start();
+	virtual void Shutdown();
 
 };
 

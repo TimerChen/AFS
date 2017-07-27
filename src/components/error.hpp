@@ -1,23 +1,30 @@
 #ifndef AFS_ERROR_HPP
 #define AFS_ERROR_HPP
 
+#include <exception>
+
 namespace AFS
 {
 
-class Error
+class AFSError : std::exception
 {
 public:
-	Error(){}
+	//AFSError(){}
 };
 
-class ChunckError : public Error
+class ServerIllegalOperation : public AFSError
+{
+
+};
+
+class ChunckserverError : public AFSError
 {
 public:
-	ChunckError(){}
+	ChunckserverError(){}
 };
 
 
-class ClientError : public Error
+class ClientError : public AFSError
 {
 public:
 	ClientError(){}

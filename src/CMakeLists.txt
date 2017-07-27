@@ -39,7 +39,7 @@ if(Boost_FOUND)
 
             ## ryw end 31
             ## cjx begin 32
-            filesystem/server.h
+            filesystem/server.hpp
             filesystem/chunkserver.h filesystem/chunkserver.cpp
             filesystem/chunk.h filesystem/chunk.cpp
 
@@ -51,7 +51,6 @@ if(Boost_FOUND)
             ## cjx begin
             components/error.hpp
             components/message.hpp
-            filesystem/server.h
             filesystem/chunkserver.h        filesystem/chunkserver.cpp
             filesystem/chunk.h              filesystem/chunk.cpp
             filesystem/client.h             filesystem/client.cpp
