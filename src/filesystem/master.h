@@ -32,6 +32,7 @@ namespace AFS {
 class Master {
 private:
 	MetadataContainer        mdc;
+	ChunkDataMap             cdm;
 	ChunkServerDataContainer csdc;
 	LogContainer             lc;
 
@@ -57,11 +58,6 @@ private:
 	}
 
 private:
-	// createFolder
-
-	// fileRead & fileWrite & append
-//    ? getFileChunk(const Path & path) const;
-
 	void collectGarbage();
 
 	void detectExpiredChunk();
@@ -109,7 +105,12 @@ protected:
 
 	// RPCHeartbeat is called by chunkserver to let the master know that a chunkserver is alive.
 	std::tuple<GFSError, std::vector<ChunkHandle> /*Garbage Chunks*/>
-	RPCHeartbeat(std::vector<ChunkHandle> leaseExtensions, std::vector<std::tuple<ChunkHandle, ChunkVersion>> chunks, std::vector<ChunkHandle> failedChunks);
+	RPCHeartbeat(std::vector<ChunkHandle> leaseExtensions,
+	             std::vector<std::tuple<ChunkHandle, ChunkVersion>> chunks,
+	             std::vector<ChunkHandle> failedChunks) {
+		// todo
+		throw ;
+	};
 
 	// RPCGetPrimaryAndSecondaries returns lease holder and secondaries of a chunk.
 	// If no one holds the lease currently, grant one.
@@ -145,6 +146,7 @@ protected:
 	// RPCCreateFile is called by client to delete a file
 	GFSError
 	RPCDeleteFile(std::string path_str) {
+		// todo
 		GFSError result;
 		try {
 			auto path = PathParser::instance().parse(path_str);
@@ -158,21 +160,11 @@ protected:
 
 	// RPCMkdir is called by client to make a new directory
 	GFSError
-	RPCMkdir(std::string path_str) {
-		GFSError result;
-		try {
-			auto path = PathParser::instance().parse(path_str);
-			MetadataContainer::Error err = mdc.createFile(*path);
-			result.errCode = metadataErrToGFSErr(err);
-		} catch(...) {
-			result.errCode = GFSErrorCode::UnknownErr;
-		}
-		return result;
-	}
+	RPCMkdir(std::string path_str);
 
 	// RPCListFile is called by client to get the file list
 	std::tuple<GFSError, std::vector<std::string> /*FileNames*/>
-	RPCListFile(std::string path);
+	RPCListFile(std::string path_str);;
 
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.

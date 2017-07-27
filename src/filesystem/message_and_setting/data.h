@@ -7,6 +7,7 @@
 
 #include "extrie.hpp"
 #include "setting.h"
+#include "common.h"
 #include <string>
 #include <boost/thread.hpp>
 #include <map>
@@ -14,23 +15,32 @@
 #include <memory>
 #include <utility>
 
+// chunk data
+namespace AFS {
+struct ChunkData {
+	ChunkHandle   handle;
+	ChunkVersion  version;
+};
+
+class ChunkDataMap {
+	std::map<ChunkHandle, ChunkData> mp;
+};
+
+}
+
 // metadata
 namespace AFS {
 
 struct Metadata {
 	struct FileData {
 		int replication_factor = 3;
-		struct ChunkData {
-			Handle        handle;
-			ServerAddress address;
-		};
-		std::vector<ChunkData> chunkData;
+		std::vector<std::shared_ptr<ChunkData>> chunkData;
 	};
 	struct FolderData {};
 
 	enum class Type {
-		folder, file, system
-	} type;
+		folder, file, system, unknown
+	} type{Type::unknown};
 
 	std::string name;
 	FileData    fileData;

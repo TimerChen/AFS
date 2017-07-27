@@ -11,12 +11,10 @@
 
 // alias
 namespace AFS {
-
-using ServerAddress = int;
-using Err = int;
+using uint = unsigned int;
+using ServerAddress = uint;
 using PathType = std::string;
 using Path = std::vector<PathType>;
-using Handle = void*;
 
 }
 
