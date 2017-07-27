@@ -65,6 +65,7 @@ class ExtrieTest {
 			}
 		}
 	}
+
 	void test_inesrt() {
 		cout << "test_insert: ";
 

@@ -173,5 +173,35 @@ public:
 
 }
 
+// chunk server data
+namespace AFS {
+struct ChunkServerData {
+	time_t last_time{0};
+};
+
+class ChunkServerDataContainer {
+private:
+	static constexpr time_t ExpiredTime = 60;
+	std::map<ServerAddress, ChunkServerData> mp;
+
+public:
+	std::unique_ptr<std::vector<ServerAddress>>
+	getSomeServers(uint sz = 1) {
+		auto result = std::make_unique<std::vector<ServerAddress>>();
+		auto iter = mp.begin();
+		for (int i = 0; i < sz; ++i) {
+			if (iter->second.last_time + ExpiredTime < time(nullptr)) {
+				mp.erase(iter++);
+				continue;
+			}
+			result->push_back(iter->first);
+			++iter;
+		}
+		return result;
+	}
+
+};
+
+}
 
 #endif //AFS_METADATA_H

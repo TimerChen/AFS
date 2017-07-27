@@ -35,7 +35,10 @@ class Master : public Server {
 private:
 	MetadataContainer mdc;
 	ChunkDataMap      cdm;
+	ChunkServerDataContainer
+			          csdc;
 //	LogContainer      lc;
+	uint64_t          chunkHandleID{0};
 
 private:
 	GFSErrorCode metadataErrToGFSErr(const MetadataContainer::Error err) const {
@@ -63,7 +66,7 @@ private:
 
 	void detectExpiredChunk();
 
-	void loadBalance();
+	void loadBalanwce();
 
 	void checkpoint();
 
@@ -171,7 +174,6 @@ protected:
 	// RPCCreateFile is called by client to delete a file
 	GFSError
 	RPCDeleteFile(std::string path_str) {
-		// todo
 		GFSError result;
 		auto path = PathParser::instance().parse(path_str);
 		MetadataContainer::Error err
@@ -198,26 +200,50 @@ protected:
 public:
 	Master(LightDS::Service &srv, const std::string &rootDir)
 			: Server(srv, rootDir) {
-		srv.RPCBind<
-				std::tuple<GFSError, std::vector<ChunkHandle>>
-						(std::vector<ChunkHandle>,
-						 std::vector<std::tuple<ChunkHandle, ChunkVersion>>,
-						 std::vector<ChunkHandle>)>
-				              ("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
+		srv.RPCBind<std::tuple<GFSError, std::vector<ChunkHandle>>
+				(std::vector<ChunkHandle>, std::vector<std::tuple<ChunkHandle, ChunkVersion>>, std::vector<ChunkHandle>)>
+				("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
 				                        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-		srv.RPCBind<
-				std::tuple<GFSError,
-				std::string,
-				std::vector<std::string>,
-				std::uint64_t>
-						(ChunkHandle)>
-						("GetPrimaryAndSecondaries", std::bind(&Master::RPCGetPrimaryAndSecondaries, this,
-						std::placeholders::_1));
-		srv.RPCBind<
-				std::tuple<GFSError,
-						std::vector<std::string>>
-						(ChunkHandle)>
-				("GetReplicas", std::bind(&Master::RPCGetReplicas, this, std::placeholders::_1));
+
+		srv.RPCBind<std::tuple<GFSError, std::string, std::vector<std::string>, std::uint64_t>
+				(ChunkHandle)>
+				("GetPrimaryAndSecondaries", std::bind(&Master::RPCGetPrimaryAndSecondaries, this,
+				                                       std::placeholders::_1));
+
+		srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
+				(ChunkHandle)>
+				("GetReplicas", std::bind(&Master::RPCGetReplicas, this,
+				                          std::placeholders::_1));
+
+		srv.RPCBind<std::tuple<GFSError, bool, std::uint64_t, std::uint64_t>
+				(std::string)>
+				("GetFileInfo", std::bind(&Master::RPCGetFileInfo, this,
+				                          std::placeholders::_1));
+
+		srv.RPCBind<GFSError
+				(std::string)>
+				("CreateFile", std::bind(&Master::RPCCreateFile, this,
+				                         std::placeholders::_1));
+
+		srv.RPCBind<GFSError
+				(std::string)>
+				("DeleteFile", std::bind(&Master::RPCDeleteFile, this,
+				                         std::placeholders::_1));
+
+		srv.RPCBind<GFSError
+				(std::string)>
+				("Mkdir", std::bind(&Master::RPCMkdir, this,
+				                    std::placeholders::_1));
+
+		srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
+				(std::string)>
+				("ListFile", std::bind(&Master::RPCListFile, this,
+				                       std::placeholders::_1));
+
+		srv.RPCBind<std::tuple<GFSError, ChunkHandle>
+				(std::string, std::uint64_t)>
+				("GetChunkHandle", std::bind(&Master::RPCGetChunkHandle, this,
+				                             std::placeholders::_1, std::placeholders::_2));
 	}
 
 	void Start();

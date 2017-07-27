@@ -3,6 +3,8 @@
 //
 
 #include "master.h"
+#include "parser.hpp"
+
 
 AFS::GFSError AFS::Master::RPCMkdir(std::string path_str) {
 	GFSError result;
@@ -35,6 +37,11 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		return std::make_tuple(err, ChunkHandle());
 	}
 	// todo chunk不够则创建
+	auto & handles = errMd.second.fileData.handles;
+	auto addresses = csdc.getSomeServers(chunkIndex - handles.size() + 1);
+	for (auto &&address : *addresses)
+		srv.RPCCall({address, Port}, "CreateChunk", chunkHandleID++);
+	
 	auto handle = errMd.second.fileData.handles[chunkIndex];
 	return std::make_tuple(err, handle);
 }

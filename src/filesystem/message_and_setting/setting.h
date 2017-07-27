@@ -18,10 +18,9 @@ using Path = std::vector<PathType>;
 
 }
 
-// exceptions
 namespace AFS {
 
-class NonexistentFile : public std::exception {};
+const int Port = 0;
 
 }
 
