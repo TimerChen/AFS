@@ -2,6 +2,7 @@
 
 #include <functional>
 
+
 ServerA::ServerA( LightDS::Service &Srv )
 	:srv(Srv)
 {

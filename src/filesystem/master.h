@@ -10,11 +10,11 @@
 #include "log.h"
 #include "parser.hpp"
 #include "common.h"
+#include "server.hpp"
 #include <string>
 #include <service.hpp>
 #include <map>
 #include <set>
-#include <filesystem/message_and_setting/data.h>
 
 /// ACM File System!
 namespace AFS {
@@ -31,11 +31,11 @@ namespace AFS {
  *     iterate接收一个索引（表示文件夹），以及一个
  *     const vector<function<void(Metadata &)>> & f
  */
-class Master {
+class Master : public Server {
 private:
 	MetadataContainer mdc;
 	ChunkDataMap      cdm;
-	LogContainer      lc;
+//	LogContainer      lc;
 
 private:
 	GFSErrorCode metadataErrToGFSErr(const MetadataContainer::Error err) const {
@@ -193,14 +193,33 @@ protected:
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.
 	std::tuple<GFSError, ChunkHandle>
-	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex);;
-
-protected:
-	LightDS::Service &srv;
-	std::string rootDir;
+	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex);
 
 public:
-	Master(LightDS::Service &srv, const std::string &rootDir);
+	Master(LightDS::Service &srv, const std::string &rootDir)
+			: Server(srv, rootDir) {
+		srv.RPCBind<
+				std::tuple<GFSError, std::vector<ChunkHandle>>
+						(std::vector<ChunkHandle>,
+						 std::vector<std::tuple<ChunkHandle, ChunkVersion>>,
+						 std::vector<ChunkHandle>)>
+				              ("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
+				                        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+		srv.RPCBind<
+				std::tuple<GFSError,
+				std::string,
+				std::vector<std::string>,
+				std::uint64_t>
+						(ChunkHandle)>
+						("GetPrimaryAndSecondaries", std::bind(&Master::RPCGetPrimaryAndSecondaries, this,
+						std::placeholders::_1));
+		srv.RPCBind<
+				std::tuple<GFSError,
+						std::vector<std::string>>
+						(ChunkHandle)>
+				("GetReplicas", std::bind(&Master::RPCGetReplicas, this, std::placeholders::_1));
+	}
+
 	void Start();
 	void Shutdown();
 

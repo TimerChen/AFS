@@ -181,7 +181,7 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/setting.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/server.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/server.hpp">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/main.cpp">

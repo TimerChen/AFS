@@ -255,6 +255,8 @@ log.hpp
 /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 
 /home/timemachine/Desktop/AFS/src/components/error.hpp
+exception
+-
 
 /home/timemachine/Desktop/AFS/src/components/extrie.hpp
 cstddef
@@ -305,8 +307,8 @@ service.hpp
 -
 common.h
 /home/timemachine/Desktop/AFS/src/filesystem/common.h
-server.h
-/home/timemachine/Desktop/AFS/src/filesystem/server.h
+server.hpp
+/home/timemachine/Desktop/AFS/src/filesystem/server.hpp
 chunk.h
 /home/timemachine/Desktop/AFS/src/filesystem/chunk.h
 
@@ -327,6 +329,8 @@ string
 /home/timemachine/Desktop/AFS/src/filesystem/common.h
 msgpack.hpp
 -
+error.hpp
+-
 
 /home/timemachine/Desktop/AFS/src/filesystem/master.cpp
 master.h
@@ -341,8 +345,8 @@ log.h
 /home/timemachine/Desktop/AFS/src/filesystem/log.h
 common.h
 /home/timemachine/Desktop/AFS/src/filesystem/common.h
-server.h
-/home/timemachine/Desktop/AFS/src/filesystem/server.h
+server.hpp
+/home/timemachine/Desktop/AFS/src/filesystem/server.hpp
 string
 -
 map
@@ -394,7 +398,11 @@ string
 exception
 -
 
-/home/timemachine/Desktop/AFS/src/filesystem/server.h
+/home/timemachine/Desktop/AFS/src/filesystem/server.hpp
+service.hpp
+-
+common.h
+/home/timemachine/Desktop/AFS/src/filesystem/common.h
 
 /home/timemachine/Desktop/AFS/src/main.cpp
 iostream

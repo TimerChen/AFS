@@ -5,7 +5,7 @@
 #include <service.hpp>
 
 #include "common.h"
-#include "server.h"
+#include "server.hpp"
 #include "chunk.h"
 
 namespace AFS {
@@ -48,9 +48,10 @@ public:
 		MutationPad
 	};
 public:
-	ChunkServer(LightDS::Service &srv, const std::string &rootDir);
-	void Start();
-	void Shutdown();
+	ChunkServer(LightDS::Service &Srv, const std::string &RootDir);
+	~ChunkServer();
+	virtual void Start();
+	virtual void Shutdown();
 
 protected:
 	void Heartbeat();
@@ -104,9 +105,6 @@ protected:
 	GFSError
 		RPCPushData(std::uint64_t dataID, std::string data);
 
-protected:
-	LightDS::Service &srv;
-	std::string rootDir;
 };
 
 

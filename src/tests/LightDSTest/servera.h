@@ -13,6 +13,7 @@ public:
 	ServerA( LightDS::Service &srv );
 	LightDS::Service &srv;
 	void sendMessage(  short port, std::string words );
+
 protected:
 	AFS::GFSError PRCHello( std::string words );
 };

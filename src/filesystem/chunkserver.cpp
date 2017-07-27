@@ -4,8 +4,26 @@ namespace AFS {
 /*ChunkServer::ChunkData::ChunkData()
 {}
 */
-/*
-ChunkServer::ChunkServer()
-{}*/
+
+ChunkServer::ChunkServer(LightDS::Service &Srv, const std::string &RootDir)
+	:Server(Srv, RootDir)//srv(Srv), rootDir(RootDir)
+{
+
+
+}
+
+ChunkServer::~ChunkServer()
+{
+	//Shutdown();
+}
+
+void ChunkServer::Start()
+{
+
+}
+void ChunkServer::Shutdown()
+{
+
+}
 
 }
