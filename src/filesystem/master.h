@@ -151,7 +151,18 @@ protected:
 			bool /*IsDir*/,
 			std::uint64_t /*Length*/,
 			std::uint64_t /*Chunks*/>
-	RPCGetFileInfo(std::string path);
+	RPCGetFileInfo(std::string path_str) {
+		GFSError err;
+		auto path = PathParser::instance().parse(path_str);
+		auto errMd = mdc.getData(*path);
+		err.errCode = metadataErrToGFSErr(errMd.first);
+		if (errMd.first == MetadataContainer::Error::NotExist)
+			return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
+		if (errMd.second.type == Metadata::Type::folder)
+			return std::make_tuple(err, true, std::uint64_t(), std::uint64_t());
+		// todo length
+		return std::make_tuple(err, false, -1, errMd.second.fileData.handles.size());
+	};
 
 	// RPCCreateFile is called by client to create a new file
 	GFSError

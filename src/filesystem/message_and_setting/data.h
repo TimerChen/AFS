@@ -29,7 +29,6 @@ struct ChunkData {
 	ChunkVersion version;
 };
 
-
 class ChunkDataMap {
 private:
 	std::time_t lease_time{60}; // 默认租约时间(秒)以及每次延长至的时间
@@ -80,8 +79,8 @@ public:
 
 	std::pair<bool, ChunkData>
 	getData(const ChunkHandle & handle,
-	        std::function<bool(const ChunkData & data)> condition,
-			std::function<void(ChunkData & data)> f) {
+	        const std::function<bool(const ChunkData & data)> & condition,
+			const std::function<void(ChunkData & data)> & f) {
 		writeLock lk(m);
 		auto iter = mp.find(handle);
 		if (iter == mp.end())
