@@ -68,3 +68,51 @@ AFS::GFSError AFS::Master::RPCCreateFile(std::string path_str) {
 	result.errCode = metadataErrToGFSErr(err);
 	return result;
 }
+
+AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
+		: Server(srv, rootDir)  {
+	srv.RPCBind<std::tuple<GFSError, std::vector<ChunkHandle>>
+			(std::vector<ChunkHandle>, std::vector<std::tuple<ChunkHandle, ChunkVersion>>, std::vector<ChunkHandle>)>
+			("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
+			                        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+	srv.RPCBind<std::tuple<GFSError, std::string, std::vector<std::string>, std::uint64_t>
+			(ChunkHandle)>
+			("GetPrimaryAndSecondaries", std::bind(&Master::RPCGetPrimaryAndSecondaries, this,
+			                                       std::placeholders::_1));
+
+	srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
+			(ChunkHandle)>
+			("GetReplicas", std::bind(&Master::RPCGetReplicas, this,
+			                          std::placeholders::_1));
+
+	srv.RPCBind<std::tuple<GFSError, bool, std::uint64_t, std::uint64_t>
+			(std::string)>
+			("GetFileInfo", std::bind(&Master::RPCGetFileInfo, this,
+			                          std::placeholders::_1));
+
+	srv.RPCBind<GFSError
+			(std::string)>
+			("CreateFile", std::bind(&Master::RPCCreateFile, this,
+			                         std::placeholders::_1));
+
+	srv.RPCBind<GFSError
+			(std::string)>
+			("DeleteFile", std::bind(&Master::RPCDeleteFile, this,
+			                         std::placeholders::_1));
+
+	srv.RPCBind<GFSError
+			(std::string)>
+			("Mkdir", std::bind(&Master::RPCMkdir, this,
+			                    std::placeholders::_1));
+
+	srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
+			(std::string)>
+			("ListFile", std::bind(&Master::RPCListFile, this,
+			                       std::placeholders::_1));
+
+	srv.RPCBind<std::tuple<GFSError, ChunkHandle>
+			(std::string, std::uint64_t)>
+			("GetChunkHandle", std::bind(&Master::RPCGetChunkHandle, this,
+			                             std::placeholders::_1, std::placeholders::_2));
+}
