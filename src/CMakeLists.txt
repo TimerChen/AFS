@@ -23,7 +23,7 @@ if(Boost_FOUND)
             ## ryw begin 14
             components/extrie.hpp
             components/sugar.hpp
-            filesystem/master.cpp filesystem/master.h
+            filesystem/master/master.cpp filesystem/master/master.h
             filesystem/message_and_setting/setting.h
             filesystem/message_and_setting/data.cpp filesystem/message_and_setting/data.h
             filesystem/message_and_setting/rpc_structs.h
@@ -78,7 +78,7 @@ if(Boost_FOUND)
             ${CMAKE_SOURCE_DIR}/filesystem/message_and_setting
             ${CMAKE_SOURCE_DIR}/filesystem/servers
             ${CMAKE_SOURCE_DIR}/tests
-
+            ${CMAKE_SOURCE_DIR}/filesystem/master
 
 
 
