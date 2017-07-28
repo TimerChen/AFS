@@ -91,3 +91,8 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	deleteFailedChunks(srv.getRPCCaller(), failedChunks);
 	return std::make_tuple(GFSError(result1), result2);
 }
+
+void AFS::Master::checkDeadChunkServer() {
+	asdm.checkDeadChunkServer(std::bind(&HandleChunkdata::eraseDeadServersChunk, &hcdm,
+	                                    std::placeholders::_1, std::placeholders::_2));
+}

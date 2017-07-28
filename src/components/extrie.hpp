@@ -92,6 +92,33 @@ private:
 			fc(*p->value);
 		}
 	}
+	template <class D>
+	void _collect(node_ptr p, std::unique_ptr<std::vector<D>> vec,
+	              const std::function<bool(const T&)> &condition,
+	              const std::function<D(const T&)> &fc) const {
+		readLock rlk(p->m);
+		for (auto &&item : p->child)
+			_collect(item.second, vec, condition, fc);
+		if (p == header)
+			return;
+		if (condition(*p->value))
+			vec->push_back(fc(*p->value));
+	}
+
+	void _remove_if(node_ptr p, node_ptr pnt, const U & idx,
+	                const std::function<bool(const T&)> & condition,
+					const std::function<void(const T&)> & fuck) {
+		writeLock wlk(p->m);
+		for (auto &&item : p->child)
+			_remove_if(item.second, p, item.first, condition, fuck);
+		if (p == header)
+			return;
+		if (condition(*p->value)) {
+			fuck(*p->value);
+			pnt->child.erase(pnt->child.find(idx));
+			put_node(p);
+		}
+	}
 public:
 	// todo
 	extrie() {
@@ -238,13 +265,14 @@ public:
 
 	// 用于遍历一个文件夹，对每一个文件进行操作
 	void iterate(const std::vector<U> & index,
-	             std::vector<std::function<void(T&)>> & fcs) {
+	             std::vector<std::function<void(T&)>> fcs) {
 		node_ptr p;
 		std::unique_ptr<std::vector<readLock>> rlks;
 		tie_move(p, rlks, _find(index.begin(), index.end()));
 		rlks->pop_back();
 		_iterate(p, fcs);
 	}
+	void conditoinal_iteraote(std::vector<>)
 
 	template <class D>
 	std::unique_ptr<std::vector<D>>
@@ -258,6 +286,26 @@ public:
 			result->push_back(fc(*item.second->value));
 		}
 		return result;
+	}
+
+	template <class D>
+	std::unique_ptr<std::vector<D>>
+	collect_if(const std::vector<U> & index,
+	           std::function<bool(const T&)> condition,
+	           std::function<D(const T&)> fc) const {
+		node_ptr p;
+		std::unique_ptr<std::vector<readLock>> rlks;
+		tie_move(p, rlks, _find(index.begin(), index.end()));
+		auto result = std::make_unique<std::vector<D>>();
+		rlks->pop_back();
+		_collect(p, result, condition, fc);
+		return result;
+	}
+
+	// fuck is used to delete the chunk handles in the handle-chunk-container
+	void remove_if(const std::function<bool(const T&)> & condition,
+	               const std::function<void(const T&)> & fuck) {
+		_remove_if(header, nullptr, U(), condition, fuck);
 	}
 
 	// 用于对某一特定文件进行操作

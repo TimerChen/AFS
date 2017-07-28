@@ -41,10 +41,26 @@ private:
 	MasterError updateChunkServer(const Address & addr,
 	                       const std::vector<std::tuple<ChunkHandle, ChunkVersion>> & chunks);
 
+	void checkDeadChunkServer();
+
+	void collectGarbage() {
+		// if this function does not work properly, I will not be surprised al all
+		pfdm.deleteDeletedFiles(std::bind(&HandleChunkdata::eraseDeletedFileCHunk,
+		                                  &hcdm, std::placeholders::_1));
+	}
+
+	void reReplicate() {
+		std::unique_ptr<std::priority_queue<std::pair<int /*left space*/, Address>>> pq
+		= asdm.get_pq();
+	}
 protected:
 	// BackgroundActivity does all the background activities:
 	// dead chunkserver handling, garbage collection, stale replica detection, etc
-	void BackgroundActivity() {throw;}
+	void BackgroundActivity() {
+		checkDeadChunkServer();
+		collectGarbage();
+		throw;
+	}
 
 	// RPCHeartbeat is called by chunkserver to let the master know that a chunkserver is alive.
 	std::tuple<GFSError, std::vector<ChunkHandle> /*Garbage Chunks*/>

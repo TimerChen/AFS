@@ -63,3 +63,17 @@ void AFS::HandleChunkdata::updateChunkServer(const AFS::Address &addr,
 			locations.emplace_back(addr);
 	}
 }
+
+void AFS::HandleChunkdata::eraseDeadServersChunk(const AFS::Address &addr, AFS::ChunkHandle handle) {
+	writeLock lk(m);
+	auto iter = mp.find(handle);
+	if (iter == mp.end())
+		return;
+	Chunkdata & data = iter->second;
+	auto eiter = std::find(data.location.begin(), data.location.end(), addr);
+	if (eiter == data.location.end())
+		return;
+	if (eiter - data.location.begin() == data.primary)
+		data.leaseGrantTime = 0;
+	data.location.erase(eiter);
+}

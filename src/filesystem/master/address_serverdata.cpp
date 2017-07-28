@@ -36,3 +36,26 @@ void AFS::AddressServerdata::updateChunkServer(const AFS::Address &addr,
 	data.lastBeatTime = time(nullptr);
 	data.handles = std::move(chunks);
 }
+
+bool AFS::AddressServerdata::isDead(const AFS::Serverdata &data) const {
+	return data.lastBeatTime + ExpiredTime < time(nullptr);
+}
+
+void AFS::AddressServerdata::checkDeadChunkServer(std::function<void(const Address &, ChunkHandle)> f) {
+	readLock lk(m);
+	std::vector<std::map<Address, Serverdata>::iterator> iterErased;
+	for (auto iter = mp.begin(); iter != mp.end(); ++iter) {
+		Serverdata & data = iter->second;
+		if (isDead(data)) {
+			iterErased.push_back(iter);
+			for (auto &&handleVersion : data.handles)
+				f(iter->first, std::get<0>(handleVersion));
+		}
+	}
+
+	lk.unlock();
+	writeLock wlk(m);
+	for (auto &&eiter : iterErased) {
+		mp.erase(eiter);
+	}
+}

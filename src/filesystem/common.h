@@ -31,7 +31,7 @@ struct GFSError
 			: errCode(_errCode), description(std::move(_des)) {}
 };
 
-
+constexpr size_t ChunkNumPerServer = 20;
 
 }
 

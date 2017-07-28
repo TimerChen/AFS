@@ -15,7 +15,7 @@ namespace AFS {
 struct Chunkdata {
 	static constexpr time_t ExpiredTime = 60;
 	std::vector<Address> location; // the locations of the replicas
-	size_t               primary{100};  // the index of the primary chunk
+	size_t               primary{0};  // the index of the primary chunk
 	time_t               leaseGrantTime{0};   // the time the primary chunk granted the lease
 	ChunkVersion         version{0};  // the version of this chunk
 };
@@ -38,6 +38,15 @@ public:
 
 	void updateChunkServer(const Address & addr,
 	                       const std::vector<std::tuple<ChunkHandle, ChunkVersion>> & chunks);
+
+	void eraseDeadServersChunk(const Address & addr, ChunkHandle handle);
+
+	void eraseDeletedFileCHunk(ChunkHandle handle) {
+		writeLock lk(m);
+		auto iter = mp.find(handle);
+		if (iter != mp.end())
+			mp.erase(iter);
+	}
 };
 }
 

@@ -33,7 +33,10 @@ class PathFiledata {
 	using PathType = std::string;
 	using Path     = std::vector<PathType>;
 private:
+	static constexpr time_t TimeToDelete = 3 * 24 * 60 * 60;
+	// a file which has been "deleted" after "TimeToDelete" seconds
 	extrie<PathType, Filedata> mp;
+	readWriteMutex m;
 
 	bool checkData(const Path & path) const;
 public:
@@ -42,6 +45,17 @@ public:
 
 	std::pair<MasterError, std::unique_ptr<std::vector<std::string>>>
 	listName(const Path & path) const;
+
+	void deleteDeletedFiles(std::function<void(ChunkHandle)> f) {
+		auto Expired = [](const Filedata & data) {
+			return data.deleteTime + TimeToDelete < time(nullptr);
+		};
+		auto Delete = [&](const Filedata & data) {
+			for (auto &&item : data.handles)
+				f(item);
+		};
+		mp.remove_if(Expired, Delete);
+	}
 
 };
 }
