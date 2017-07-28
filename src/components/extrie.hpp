@@ -19,13 +19,13 @@
 
 namespace AFS {
 class illegal_index : public std::exception {};
-/// 和trie的区别在于，通过vector<U>来索引，
+
+enum class ExtrieError {
+	OK = 0, Exist, NotExist, FUCKU
+};
+
 template<class U, class T>
 class extrie {
-public:
-	enum class Error {
-		OK = 0, Exist, NotExist, FUCKU
-	};
 private:
 	struct Node;
 	using node_ptr = Node *;
@@ -137,7 +137,7 @@ public:
 
 	// 返回insert是否成功
 	template <class TT>
-	Error insert(indexIter beg, const indexIter end, TT && value) {
+	ExtrieError insert(indexIter beg, const indexIter end, TT && value) {
 		/* 考虑一次插入 a/b/c/d/e，真正被修改的是d的child数组以及
 		 * e本身，所以只需要获得d和e的写锁，而abc以及header则只需
 		 * 要获得读锁。
@@ -165,28 +165,28 @@ public:
 			auto &idx = *beg;
 			iter = p->child.find(idx);
 			if (iter == p->child.end())
-				return Error::NotExist;
+				return ExtrieError::NotExist;
 			p = iter->second;
 		}
 		wlks->emplace_back(writeLock(p->m));
 		bool insert = false;
 		tie(iter, insert) = p->child.insert(std::make_pair(*(end - 1), get_node()));
 		if (!insert)
-			return Error::Exist;
+			return ExtrieError::Exist;
 		iter->second->pnt = p;
 		p = iter->second;
 		wlks->emplace_back(writeLock(p->m));
 		p->value = new T(std::forward<TT>(value));
 		++sz;
-		return Error::OK;
+		return ExtrieError::OK;
 	}
 	template <class TT>
-	Error insert(const std::vector<U> & index, TT && value) {
+	ExtrieError insert(const std::vector<U> & index, TT && value) {
 		return insert(index.cbegin(), index.cend(), std::forward<TT>(value));
 	};
 
 	// 返回remove是否成功
-	Error remove(indexIter beg, const indexIter & end) {
+	ExtrieError remove(indexIter beg, const indexIter & end) {
 		auto rlks = std::make_unique<std::vector<readLock>>();
 		auto wlks = std::make_unique<std::vector<writeLock>>();
 
@@ -198,22 +198,22 @@ public:
 			auto &idx = *beg;
 			iter = p->child.find(idx);
 			if (iter == p->child.end())
-				return Error::NotExist;
+				return ExtrieError::NotExist;
 			p = iter->second;
 		}
 		rlks->emplace_back(readLock(p->m));
 		iter = p->child.find(*(end - 1));
 		if (iter == p->child.end())
-			return Error::NotExist;
+			return ExtrieError::NotExist;
 		rlks->pop_back();
 		wlks->push_back(writeLock(p->m));
 		p->child.erase(iter);
 		wlks->pop_back();
 		destroy(iter->second);
 
-		return Error::OK;
+		return ExtrieError::OK;
 	}
-	Error remove(const std::vector<U> & index) {
+	ExtrieError remove(const std::vector<U> & index) {
 		return remove(index.begin(), index.end());
 	}
 

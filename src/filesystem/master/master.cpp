@@ -3,71 +3,6 @@
 //
 
 #include "master.h"
-#include "parser.hpp"
-
-
-AFS::GFSError AFS::Master::RPCMkdir(std::string path_str) {
-	GFSError result;
-	auto path = PathParser::instance().parse(path_str);
-	MetadataContainer::Error err = mdc.createFile(*path);
-	result.errCode = metadataErrToGFSErr(err);
-	return result;
-}
-
-std::tuple<AFS::GFSError, std::vector<std::string>> AFS::Master::RPCListFile(std::string path_str) {
-	std::tuple<GFSError, std::vector<std::string>> result;
-	auto path = PathParser::instance().parse(path_str);
-	auto errPtr = mdc.listName(*path);
-	std::get<0>(result).errCode = metadataErrToGFSErr(errPtr.first);
-	std::get<1>(result) = *errPtr.second;
-	return result;
-}
-
-std::tuple<AFS::GFSError, AFS::ChunkHandle>
-AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
-	GFSError err;
-	auto path = PathParser::instance().parse(path_str);
-	auto errMd = mdc.getData(*path);
-	if (errMd.first != MetadataContainer::Error::OK) {
-		err.errCode = metadataErrToGFSErr(errMd.first);
-		return std::make_tuple(err, ChunkHandle());
-	}
-	if (errMd.second.type != Metadata::Type::file) {
-		err.errCode = GFSErrorCode::WrongOperation;
-		return std::make_tuple(err, ChunkHandle());
-	}
-	// todo chunk不够则创建
-	auto & handles = errMd.second.fileData.handles;
-	auto addresses = csdc.getSomeServers(chunkIndex - handles.size() + 1);
-	for (auto &&address : *addresses)
-		srv.RPCCall({address, Port}, "CreateChunk", chunkHandleID++);
-	
-	auto handle = errMd.second.fileData.handles[chunkIndex];
-	return std::make_tuple(err, handle);
-}
-
-std::tuple<AFS::GFSError, std::vector<std::string>> AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
-	GFSError err;
-	auto flagData = cdm.getData(handle);
-	if (!flagData.first) {
-		err.errCode = GFSErrorCode::NoSuchChunk;
-		return std::make_tuple(err, std::vector<std::string>());
-	}
-	err.errCode = GFSErrorCode::OK;
-	return std::make_tuple(err, std::move(flagData.second.location));
-}
-
-AFS::GFSError AFS::Master::RPCCreateFile(std::string path_str) {
-	/* 此操作仅仅是在元数据中创建对应的文件，而不会和
-	 * chunk server交互，只有当真正往文件中写数据的
-	 * 时候，才会通知某个chunk server来创建对应chunk
-	 */
-	GFSError result;
-	auto path = PathParser::instance().parse(path_str);
-	MetadataContainer::Error err = mdc.createFile(*path);
-	result.errCode = metadataErrToGFSErr(err);
-	return result;
-}
 
 AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
 		: Server(srv, rootDir)  {
@@ -115,4 +50,44 @@ AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
 			(std::string, std::uint64_t)>
 			("GetChunkHandle", std::bind(&Master::RPCGetChunkHandle, this,
 			                             std::placeholders::_1, std::placeholders::_2));
+}
+
+size_t AFS::Master::leaseExtend(const std::string &addr, const std::vector<AFS::ChunkHandle> &handles) {
+	size_t result = 0;
+	for (auto &&handle : handles)
+		result += (hcdm.extendLease(handle, addr) == MasterError::OK);
+	return result;
+}
+
+std::unique_ptr<std::vector<AFS::ChunkHandle>>
+AFS::Master::checkGarbage(const std::vector<std::tuple<AFS::ChunkHandle, AFS::ChunkVersion>> &chunks) {
+	auto result = std::make_unique<std::vector<ChunkHandle>>();
+	for (auto &&chunk : chunks) {
+		if (!hcdm.checkChunkVersion(std::get<0>(chunk), std::get<1>(chunk)))
+			result->push_back(std::get<0>(chunk));
+	}
+	return result;
+}
+
+void AFS::Master::deleteFailedChunks(const AFS::Address &addr, const std::vector<AFS::ChunkHandle> &chunks) {
+	asdm.deleteFailedChunks(addr, chunks);
+	hcdm.deleteFailedChunks(addr, chunks);
+}
+
+AFS::MasterError AFS::Master::updateChunkServer(const AFS::Address &addr,
+                                                const std::vector<std::tuple<AFS::ChunkHandle, AFS::ChunkVersion>> &chunks) {
+	asdm.updateChunkServer(addr, chunks);
+	hcdm.updateChunkServer(addr, chunks);
+	return MasterError::OK;
+}
+
+std::tuple<AFS::GFSError, std::vector<AFS::ChunkHandle>>
+AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
+                          std::vector<std::tuple<AFS::ChunkHandle, AFS::ChunkVersion>> chunks,
+                          std::vector<AFS::ChunkHandle> failedChunks) {
+	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
+	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
+	auto result2 = std::move(*checkGarbage(chunks).release());
+	deleteFailedChunks(srv.getRPCCaller(), failedChunks);
+	return std::make_tuple(GFSError(result1), result2);
 }

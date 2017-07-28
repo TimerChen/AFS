@@ -24,15 +24,14 @@ if(Boost_FOUND)
             components/extrie.hpp
             components/sugar.hpp
             filesystem/master/master.cpp filesystem/master/master.h
-            filesystem/message_and_setting/setting.h
-            filesystem/message_and_setting/data.cpp filesystem/message_and_setting/data.h
-            filesystem/message_and_setting/rpc_structs.h
-            filesystem/message_and_setting/log.cpp filesystem/message_and_setting/log.h
-            tests/log_test.hpp
             filesystem/common.h
             tests/extrie_test.hpp
             components/parser.hpp
-
+            filesystem/master/setting.hpp
+            filesystem/master/path_filedata.cpp      filesystem/master/path_filedata.h
+            filesystem/master/address_serverdata.cpp filesystem/master/address_serverdata.h
+            filesystem/master/handle_chunkdata.cpp   filesystem/master/handle_chunkdata.h
+            filesystem/master/log_contaner.cpp       filesystem/master/log_contaner.h
 
             ## ryw end 31
             ## cjx begin 32
@@ -75,7 +74,7 @@ if(Boost_FOUND)
             ${CMAKE_SOURCE_DIR}
             ${Boost_INCLUDE_DIRS}
             ${CMAKE_SOURCE_DIR}/components
-            ${CMAKE_SOURCE_DIR}/filesystem/message_and_setting
+
             ${CMAKE_SOURCE_DIR}/filesystem/servers
             ${CMAKE_SOURCE_DIR}/tests
             ${CMAKE_SOURCE_DIR}/filesystem/master

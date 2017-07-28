@@ -10,24 +10,24 @@ typedef std::uint64_t ChunkHandle;
 typedef std::uint64_t ChunkVersion;
 
 enum class GFSErrorCode : std::uint32_t {
-	OK = 0, UnknownErr,
+	OK = 0, Unknown,
 
 	// err returned by master
 	NoSuchFileDir, FileDirAlreadyExists,
 	WrongOperation, // 对于文件夹进行文件操作等
-	NoSuchChunk
+	NoSuchChunk, PermissionDenied
 };
 
 
 struct GFSError
 {
-	GFSErrorCode errCode{GFSErrorCode::UnknownErr};
+	GFSErrorCode errCode{GFSErrorCode::Unknown};
 	std::string description;
 
 	MSGPACK_DEFINE(errCode, description);
 
 	GFSError() = default;
-	GFSError(GFSErrorCode _errCode, std::string _des)
+	GFSError(GFSErrorCode _errCode, std::string _des = "")
 			: errCode(_errCode), description(std::move(_des)) {}
 };
 
