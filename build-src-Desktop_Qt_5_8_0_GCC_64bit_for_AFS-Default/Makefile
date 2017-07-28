@@ -150,6 +150,33 @@ JsonCPP/jsoncpp.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.s
 .PHONY : JsonCPP/jsoncpp.cpp.s
 
+components/chunkpool.o: components/chunkpool.cpp.o
+
+.PHONY : components/chunkpool.o
+
+# target to build an object file
+components/chunkpool.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/components/chunkpool.cpp.o
+.PHONY : components/chunkpool.cpp.o
+
+components/chunkpool.i: components/chunkpool.cpp.i
+
+.PHONY : components/chunkpool.i
+
+# target to preprocess a source file
+components/chunkpool.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/components/chunkpool.cpp.i
+.PHONY : components/chunkpool.cpp.i
+
+components/chunkpool.s: components/chunkpool.cpp.s
+
+.PHONY : components/chunkpool.s
+
+# target to generate assembly for a file
+components/chunkpool.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/components/chunkpool.cpp.s
+.PHONY : components/chunkpool.cpp.s
+
 filesystem/chunk.o: filesystem/chunk.cpp.o
 
 .PHONY : filesystem/chunk.o
@@ -405,6 +432,9 @@ help:
 	@echo "... JsonCPP/jsoncpp.o"
 	@echo "... JsonCPP/jsoncpp.i"
 	@echo "... JsonCPP/jsoncpp.s"
+	@echo "... components/chunkpool.o"
+	@echo "... components/chunkpool.i"
+	@echo "... components/chunkpool.s"
 	@echo "... filesystem/chunk.o"
 	@echo "... filesystem/chunk.i"
 	@echo "... filesystem/chunk.s"

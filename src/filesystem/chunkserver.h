@@ -3,10 +3,13 @@
 
 #include <string>
 #include <service.hpp>
+#include <sstream>
+#include <queue>
 
 #include "common.h"
 #include "server.hpp"
 #include "chunk.h"
+#include <chunkpool.h>
 
 namespace AFS {
 
@@ -48,14 +51,37 @@ public:
 		MutationPad
 	};
 public:
+
+
+public:
 	ChunkServer(LightDS::Service &Srv, const std::string &RootDir);
+
 	~ChunkServer();
-	virtual void Start();
-	virtual void Shutdown();
+
+	void Start();
+
+	void Shutdown();
 
 protected:
+
+
+	void load();
+
+	void loadFiles( const boost::filesystem::path &Path );
+
+	void loadSettings();
+
+	Chunk loadChunks( const char *FileName, ChunkHandle Handle, bool needDetail );
+
+	void save();
+
+	void saveChunks( const Chunk &c );
+
+	void bindFunctions();
+
 	void Heartbeat();
 
+protected:
 	// RPCCreateChunk is called by master to create a new chunk given the chunk handle.
 	GFSError
 		RPCCreateChunk(ChunkHandle handle);
@@ -105,6 +131,17 @@ protected:
 	GFSError
 		RPCPushData(std::uint64_t dataID, std::string data);
 
+protected:
+	std::stringstream ss;
+	std::uint32_t MaxCacheSize;
+	std::map< ChunkHandle, Chunk > chunks;
+	std::map< std::uint64_t, char* > dataCache;
+	std::queue<std::uint64_t> cacheQueue;
+	ChunkPool chunkPool;
+
+protected:
+	std::string masterIP;
+	std::uint64_t masterPort;
 };
 
 

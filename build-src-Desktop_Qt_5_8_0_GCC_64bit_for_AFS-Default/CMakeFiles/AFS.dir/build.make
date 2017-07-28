@@ -201,9 +201,33 @@ CMakeFiles/AFS.dir/filesystem/chunk.cpp.o.provides: CMakeFiles/AFS.dir/filesyste
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/chunk.cpp.o
 
 
+CMakeFiles/AFS.dir/components/chunkpool.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/components/chunkpool.cpp.o: /home/timemachine/Desktop/AFS/src/components/chunkpool.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/AFS.dir/components/chunkpool.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/components/chunkpool.cpp.o -c /home/timemachine/Desktop/AFS/src/components/chunkpool.cpp
+
+CMakeFiles/AFS.dir/components/chunkpool.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/components/chunkpool.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/components/chunkpool.cpp > CMakeFiles/AFS.dir/components/chunkpool.cpp.i
+
+CMakeFiles/AFS.dir/components/chunkpool.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/components/chunkpool.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/components/chunkpool.cpp -o CMakeFiles/AFS.dir/components/chunkpool.cpp.s
+
+CMakeFiles/AFS.dir/components/chunkpool.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/components/chunkpool.cpp.o.requires
+
+CMakeFiles/AFS.dir/components/chunkpool.cpp.o.provides: CMakeFiles/AFS.dir/components/chunkpool.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/components/chunkpool.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/components/chunkpool.cpp.o.provides
+
+CMakeFiles/AFS.dir/components/chunkpool.cpp.o.provides.build: CMakeFiles/AFS.dir/components/chunkpool.cpp.o
+
+
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/AFS.dir/filesystem/client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/AFS.dir/filesystem/client.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/client.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
 
 CMakeFiles/AFS.dir/filesystem/client.cpp.i: cmake_force
@@ -227,7 +251,7 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o.provides.build: CMakeFiles/AFS.dir/fi
 
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/jsoncpp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o -c /home/timemachine/Desktop/AFS/src/JsonCPP/jsoncpp.cpp
 
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.i: cmake_force
@@ -251,7 +275,7 @@ CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o.provides.build: CMakeFiles/AFS.dir/Json
 
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp
 
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.i: cmake_force
@@ -275,7 +299,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o.provides.build: CMakeFiles/AF
 
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp
 
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.i: cmake_force
@@ -305,6 +329,7 @@ AFS_OBJECTS = \
 "CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/chunk.cpp.o" \
+"CMakeFiles/AFS.dir/components/chunkpool.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/client.cpp.o" \
 "CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o" \
 "CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o" \
@@ -319,6 +344,7 @@ AFS: CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/chunk.cpp.o
+AFS: CMakeFiles/AFS.dir/components/chunkpool.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/client.cpp.o
 AFS: CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o
 AFS: CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o
@@ -326,11 +352,12 @@ AFS: CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o
 AFS: CMakeFiles/AFS.dir/build.make
 AFS: /usr/local/lib/libboost_system.so
 AFS: /usr/local/lib/libboost_thread.so
+AFS: /usr/local/lib/libboost_filesystem.so
 AFS: /usr/local/lib/libboost_chrono.so
 AFS: /usr/local/lib/libboost_date_time.so
 AFS: /usr/local/lib/libboost_atomic.so
 AFS: CMakeFiles/AFS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable AFS"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable AFS"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AFS.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -344,6 +371,7 @@ CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/message_and_setting/d
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/chunk.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/components/chunkpool.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/client.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o.requires

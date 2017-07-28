@@ -2,22 +2,26 @@
 #define AFS_CHUNK_H
 
 #include <vector>
+#include <common.h>
 
 
 namespace AFS {
 
-class Chunk
+class ChunkPool;
+
+struct Chunk
 {
+	Chunk( ChunkPool *CP = NULL );
+	Chunk( const Chunk &c );
+	~Chunk();
+	Chunk& operator = ( const Chunk &c );
+	void setCP( ChunkPool *CP = NULL );
 
-public:
-
-    static const int CHUNKSIZE = 64*1024;
-    long long name, version;
-	short end;
-	std::vector<long long> ServerAdd;
-
-    Chunk();
-
+	ChunkHandle handle;
+	ChunkVersion version;
+	std::uint32_t length;
+	char *data;
+	ChunkPool *cp;
 };
 
 }

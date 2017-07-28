@@ -6,6 +6,9 @@
 
 namespace AFS {
 
+const std::uint32_t CHUNK_SIZE = 64*1024*1024;
+const std::uint32_t CHUNKSERVER_CACHE_SIZE = 20;
+
 typedef std::uint64_t ChunkHandle;
 typedef std::uint64_t ChunkVersion;
 

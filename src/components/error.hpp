@@ -16,11 +16,20 @@ class ServerIllegalOperation : public AFSError
 {
 
 };
+class DirNotFound : public AFSError
+{
+
+};
 
 class ChunckserverError : public AFSError
 {
 public:
 	ChunckserverError(){}
+};
+
+class ChunkPoolEmpty : public AFSError
+{
+
 };
 
 

@@ -5,6 +5,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/chunk.cpp.o"
+  "CMakeFiles/AFS.dir/components/chunkpool.cpp.o"
   "CMakeFiles/AFS.dir/filesystem/client.cpp.o"
   "CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o"
   "CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o"

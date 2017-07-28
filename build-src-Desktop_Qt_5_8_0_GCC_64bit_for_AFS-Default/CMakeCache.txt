@@ -41,6 +41,12 @@ Boost_DATE_TIME_LIBRARY_RELEASE:FILEPATH=/usr/local/lib/libboost_date_time.so
 //The directory containing a CMake configuration file for Boost.
 Boost_DIR:PATH=Boost_DIR-NOTFOUND
 
+//Boost filesystem library (debug)
+Boost_FILESYSTEM_LIBRARY_DEBUG:FILEPATH=/usr/local/lib/libboost_filesystem.so
+
+//Boost filesystem library (release)
+Boost_FILESYSTEM_LIBRARY_RELEASE:FILEPATH=/usr/local/lib/libboost_filesystem.so
+
 //Path to a file.
 Boost_INCLUDE_DIR:PATH=/usr/local/include
 
@@ -267,6 +273,10 @@ Boost_DATE_TIME_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 Boost_DATE_TIME_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_DIR
 Boost_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_DEBUG
+Boost_FILESYSTEM_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_RELEASE
+Boost_FILESYSTEM_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_INCLUDE_DIR
 Boost_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_LIBRARY_DIR_DEBUG
@@ -443,7 +453,7 @@ THREADS_HAVE_PTHREAD_ARG:INTERNAL=TRUE
 //Result of TRY_RUN
 THREADS_PTHREAD_ARG:INTERNAL=2
 //Components requested for this build tree.
-_Boost_COMPONENTS_SEARCHED:INTERNAL=atomic;chrono;date_time;system;thread
+_Boost_COMPONENTS_SEARCHED:INTERNAL=atomic;chrono;date_time;filesystem;system;thread
 //Last used Boost_INCLUDE_DIR value.
 _Boost_INCLUDE_DIR_LAST:INTERNAL=/usr/local/include
 //Last used Boost_LIBRARY_DIR_DEBUG value.

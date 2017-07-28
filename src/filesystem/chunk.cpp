@@ -1,10 +1,50 @@
 #include "chunk.h"
+
+#include <chunkpool.h>
+
 namespace AFS
 {
-Chunk::Chunk()
+Chunk::Chunk( ChunkPool *CP )
+	:handle(0), version(0), length(0), cp(CP)
 {
+	if(cp!=NULL)
+		data = cp->newData();
+	else
+		data = NULL;
+}
+Chunk::Chunk( const Chunk &c )
+	:handle(c.handle), version(c.version),
+	 length(c.length), data(c.data)
+{
+	if(cp && data)
+		cp->copy(c.data);
+}
+Chunk& Chunk::operator = ( const Chunk &c )
+{
+	if(cp && data)
+		cp->Delete( data );
+	handle = c.handle;
+	version = c.version;
+	length = c.length;
+	data = c.data;
+	cp = c.cp;
+	if(cp && data)
+		cp->copy(c.data);
+	return *this;
+}
 
-    end = 0;
+Chunk::~Chunk()
+{
+	if(cp && data)
+		cp->Delete( data );
+}
+
+void Chunk::setCP( ChunkPool *CP )
+{
+	if(cp && data)
+		cp->Delete( data );
+	cp = CP;
+	data = cp->newData();
 }
 
 }

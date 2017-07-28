@@ -124,6 +124,12 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp">
 			<Option target="AFS"/>
 		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/components/chunkpool.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/components/chunkpool.h">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/error.hpp">
 			<Option target="AFS"/>
 		</Unit>
