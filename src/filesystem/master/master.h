@@ -78,14 +78,14 @@ protected:
 
 	// RPCGetReplicas is called by client to find all chunkservers that hold the chunk.
 	std::tuple<GFSError, std::vector<std::string> /*Locations*/>
-	RPCGetReplicas(ChunkHandle handle) {throw;}
+	RPCGetReplicas(ChunkHandle handle);
 
 	// RPCGetFileInfo is called by client to get file information
 	std::tuple<GFSError,
 			bool /*IsDir*/,
 			std::uint64_t /*Length*/,
 			std::uint64_t /*Chunks*/>
-	RPCGetFileInfo(std::string path_str) {throw;}
+	RPCGetFileInfo(std::string path_str);;
 
 	// RPCCreateFile is called by client to create a new file
 	GFSError
@@ -93,15 +93,15 @@ protected:
 
 	// RPCCreateFile is called by client to delete a file
 	GFSError
-	RPCDeleteFile(std::string path_str) {throw;}
+	RPCDeleteFile(std::string path_str);
 
 	// RPCMkdir is called by client to make a new directory
 	GFSError
-	RPCMkdir(std::string path_str) {throw;}
+	RPCMkdir(std::string path_str);
 
 	// RPCListFile is called by client to get the file list
 	std::tuple<GFSError, std::vector<std::string> /*FileNames*/>
-	RPCListFile(std::string path_str) {throw;}
+	RPCListFile(std::string path_str);
 
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.

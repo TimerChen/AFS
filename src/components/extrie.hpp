@@ -272,7 +272,6 @@ public:
 		rlks->pop_back();
 		_iterate(p, fcs);
 	}
-	void conditoinal_iteraote(std::vector<>)
 
 	template <class D>
 	std::unique_ptr<std::vector<D>>

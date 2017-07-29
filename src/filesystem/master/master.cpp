@@ -96,3 +96,52 @@ void AFS::Master::checkDeadChunkServer() {
 	asdm.checkDeadChunkServer(std::bind(&HandleChunkdata::eraseDeadServersChunk, &hcdm,
 	                                    std::placeholders::_1, std::placeholders::_2));
 }
+
+AFS::GFSError AFS::Master::RPCMkdir(std::string path_str) {
+	GFSError result;
+	auto path = PathParser::instance().parse(path_str);
+	MasterError err = pfdm.createFolder(*path);
+	result.errCode = ErrTranslator::masterErrTOGFSError(err);
+	return result;
+}
+
+std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
+AFS::Master::RPCGetFileInfo(std::string path_str) {
+	GFSError err;
+	auto path = PathParser::instance().parse(path_str);
+	auto errMd = pfdm.getData(*path);
+	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
+	if (errMd.first == MasterError::NotExists)
+		return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
+	if (errMd.second.type == Filedata::Type::Folder)
+		return std::make_tuple(err, true, std::uint64_t(), std::uint64_t());
+	// todo length
+	return std::make_tuple(err, false, -1, errMd.second.handles.size());
+}
+
+std::tuple<AFS::GFSError, std::vector<std::string>>
+AFS::Master::RPCListFile(std::string path_str) {
+	std::tuple<GFSError, std::vector<std::string>> result;
+	auto path = PathParser::instance().parse(path_str);
+	auto errPtr = pfdm.listName(*path);
+	std::get<0>(result).errCode = ErrTranslator::masterErrTOGFSError(errPtr.first);
+	std::get<1>(result) = *errPtr.second;
+	return result;
+}
+
+std::tuple<AFS::GFSError, std::vector<std::string>>
+AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
+	GFSError err;
+	auto errData = hcdm.getData(handle);
+	if (errData.first == MasterError::NotExists) {
+		err.errCode = GFSErrorCode::NoSuchChunk;
+		return std::make_tuple(err, std::vector<std::string>());
+	}
+	err.errCode = GFSErrorCode::OK;
+	return std::make_tuple(err, std::move(errData.second.location));
+}
+
+AFS::GFSError AFS::Master::RPCDeleteFile(std::string path_str) {
+	auto path = PathParser::instance().parse(path_str);
+	return ErrTranslator::masterErrTOGFSError(pfdm.deleteFile(*path));
+}

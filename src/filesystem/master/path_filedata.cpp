@@ -29,3 +29,10 @@ AFS::PathFiledata::listName(const AFS::PathFiledata::Path &path) const {
 	result2 = mp.nonsub_collect<std::string>(path, collect_name);
 	return std::make_pair(MasterError::OK, std::move(result2));
 }
+
+AFS::MasterError AFS::PathFiledata::createFolder(const AFS::PathFiledata::Path &path) {
+	Filedata md;
+	md.type = Filedata::Type::Folder;
+	return ErrTranslator::extrieErrToMasterErr(
+			mp.insert(path, std::move(md)));
+}

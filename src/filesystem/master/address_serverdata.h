@@ -22,7 +22,7 @@ class AddressServerdata {
 private:
 	static constexpr time_t ExpiredTime = 60; // 若服务器...s不心跳，则认为思死亡
 	std::map<Address, Serverdata> mp;
-	readWriteMutex m;
+	mutable readWriteMutex m;
 
 private:
 	bool isDead(const Serverdata & data) const;

@@ -57,6 +57,19 @@ public:
 		mp.remove_if(Expired, Delete);
 	}
 
+	MasterError createFolder(const Path & path);
+
+	MasterError deleteFile(const Path & path) {
+		auto errData = getData(path);
+		if (errData.first == MasterError::NotExists)
+			return MasterError::NotExists;
+		if (errData.second.type != Filedata::Type::File)
+			return MasterError::NotExists;
+		auto del = [](Filedata & data) {
+			data.deleteTime = time(nullptr);
+		};
+		mp.iterate(path, {del});
+	}
 };
 }
 
