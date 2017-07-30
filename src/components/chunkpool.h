@@ -3,6 +3,7 @@
 
 #include <common.h>
 #include <queue>
+//#include <mutex>
 
 namespace AFS {
 
@@ -17,11 +18,14 @@ public:
 	void	copy( char* data );
 	bool	empty();
 private:
-	static const std::uint32_t		subPoolSize = 3;
+	static const std::uint32_t		subPoolSize = 16+3;
 	std::uint32_t					dataSize;
 	std::uint32_t					poolSize;
 	std::map<char*, std::uint32_t>	freshed;
 	std::queue<char*>				garbage;
+
+public:
+	ReadWriteMutex lock;
 
 };
 

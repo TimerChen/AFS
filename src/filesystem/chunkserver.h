@@ -5,6 +5,7 @@
 #include <service.hpp>
 #include <sstream>
 #include <queue>
+#include <mutex>
 
 #include "common.h"
 #include "server.hpp"
@@ -71,11 +72,11 @@ protected:
 
 	void loadSettings();
 
-	Chunk loadChunks( const char *FileName, ChunkHandle Handle, bool needDetail );
+	Chunk loadChunk( const ChunkHandle &handle );
 
 	void save();
 
-	void saveChunks( const Chunk &c );
+	void saveChunk( const ChunkHandle &handle, const Chunk &c );
 
 	void bindFunctions();
 
@@ -138,6 +139,7 @@ protected:
 	std::map< std::uint64_t, char* > dataCache;
 	std::queue<std::uint64_t> cacheQueue;
 	ChunkPool chunkPool;
+	std::mutex lock_ss, lock_chunks, lock_dataCache, lock_cacheQueue;
 
 protected:
 	std::string masterIP;

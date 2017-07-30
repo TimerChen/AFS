@@ -15,16 +15,19 @@ ChunkPool::ChunkPool( std::uint32_t PoolSize, std::uint32_t DataSize )
 
 ChunkPool::~ChunkPool()
 {
+	lock.lock();
 	for( auto itr : freshed )
 	{
 		garbage.push(itr.first);
 	}
+
 	while( !garbage.empty() )
 	{
 		char* p = garbage.front();
 		garbage.pop();
 		delete [] p;
 	}
+	lock.unlock();
 }
 void ChunkPool::Delete(char* &data)
 {
@@ -51,6 +54,7 @@ void ChunkPool::copy(char* data)
 
 bool ChunkPool::empty()
 {
+	//bool re = garbage.size() <= subPoolSize;
 	return garbage.size() <= subPoolSize;
 }
 

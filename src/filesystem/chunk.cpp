@@ -5,7 +5,7 @@
 namespace AFS
 {
 Chunk::Chunk( ChunkPool *CP )
-	:handle(0), version(0), length(0), cp(CP)
+	:version(0), length(0), cp(CP)
 {
 	if(cp!=NULL)
 		data = cp->newData();
@@ -13,7 +13,7 @@ Chunk::Chunk( ChunkPool *CP )
 		data = NULL;
 }
 Chunk::Chunk( const Chunk &c )
-	:handle(c.handle), version(c.version),
+	:version(c.version),
 	 length(c.length), data(c.data)
 {
 	if(cp && data)
@@ -23,7 +23,6 @@ Chunk& Chunk::operator = ( const Chunk &c )
 {
 	if(cp && data)
 		cp->Delete( data );
-	handle = c.handle;
 	version = c.version;
 	length = c.length;
 	data = c.data;

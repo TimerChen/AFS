@@ -319,6 +319,8 @@ fstream
 -
 boost/filesystem.hpp
 /home/timemachine/Desktop/AFS/src/filesystem/boost/filesystem.hpp
+ctime
+-
 
 /home/timemachine/Desktop/AFS/src/filesystem/chunkserver.h
 string
@@ -328,6 +330,8 @@ service.hpp
 sstream
 -
 queue
+-
+mutex
 -
 common.h
 /home/timemachine/Desktop/AFS/src/filesystem/common.h
@@ -356,6 +360,12 @@ string
 msgpack.hpp
 -
 error.hpp
+-
+boost/thread.hpp
+-
+boost/thread/recursive_mutex.hpp
+-
+boost/thread/mutex.hpp
 -
 
 /home/timemachine/Desktop/AFS/src/filesystem/master.cpp

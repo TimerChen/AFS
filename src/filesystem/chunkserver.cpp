@@ -131,10 +131,18 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 			{
 				fname = fname.substr(0, fname.size()-4);
 				std::cerr << "Find file: " << fname << ".chk" << std::endl;
-				ChunkHandle handle;
+				ChunkHandle handle = std::stoull(fname,0,10);
+				/*
+				lock_ss.lock();
 				ss.clear();ss.str("");
 				ss << fname;ss >> handle;
-				chunks[handle] = loadChunks( itr->path().c_str(), handle, 0 );
+				lock_ss.unlock();*/
+
+				Chunk c = loadChunk( handle );
+
+				lock_chunks.lock();
+				chunks[handle] = c;
+				lock_chunks.unlock();
 			}else{
 				//TODO
 
@@ -144,21 +152,24 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 
 	}
 }
-Chunk ChunkServer::loadChunks( const char *FileName, ChunkHandle Handle, bool needDetail )
+Chunk ChunkServer::loadChunk( const ChunkHandle &handle )
 {
 	Chunk c;
 	char buffer[64];
-	c.handle = Handle;
-	std::ifstream fin( FileName );
+	//c.handle = Handle;
+	std::fstream fin;
+	fin.open( (rootDir / std::to_string(handle)).native(), std::ios::in | std::ios::binary );
 	fin.read( buffer, sizeof(c.version) );
-	c.version = *(ChunkHandle*)(buffer);
+	c.version = *(ChunkVersion*)(buffer);
 	fin.read( buffer, sizeof(c.length) );
-	c.length = *(ChunkHandle*)(buffer);
+	c.length = *(Chunk::ChunkLength*)(buffer);
+	/*
 	if(needDetail)
 	{
 		c.setCP( &chunkPool );
 		fin.read( c.data, CHUNK_SIZE );
 	}
+	*/
 	fin.close();
 	/*
 	std::cerr << c.handle << " "
@@ -174,18 +185,15 @@ void ChunkServer::save()
 
 }
 
-void ChunkServer::saveChunks( const Chunk &c )
+void ChunkServer::saveChunk( const ChunkHandle &handle, const Chunk &c )
 {
-	std::string fname;
-	ss.clear();ss.str("");
-	ss << c.handle << ".chk";
-	ss >> fname;
-
-	std::ofstream fout( fname.c_str() );
+	std::string fname = std::to_string(handle) + ".chk";
+	std::fstream fout;
+	fout.open( fname.c_str(), std::ios::out | std::ios::binary );
 	char buffer[64];
-	*(ChunkHandle*)(buffer) = c.version;
+	*(ChunkVersion*)(buffer) = c.version;
 	fout.write( buffer, sizeof(c.version) );
-	*(ChunkHandle*)(buffer) = c.length;
+	*(Chunk::ChunkLength*)(buffer) = c.length;
 	fout.write( buffer, sizeof(c.length) );
 	//strncpy( buffer, c.data.c_str(), CHUNK_SIZE );
 	fout.write( c.data, CHUNK_SIZE );
@@ -195,6 +203,8 @@ void ChunkServer::saveChunks( const Chunk &c )
 void ChunkServer::Shutdown()
 {
 
+
+	//At End
 	Server::Shutdown();
 }
 
@@ -208,10 +218,13 @@ GFSError
 	ChunkServer::RPCCreateChunk(ChunkHandle handle)
 {
 	Chunk c;
-	c.handle = handle;
+	//c.handle = handle;
 	c.version = 0;
 	c.length = 0;
+
+	lock_chunks.lock();
 	chunks[handle] = c;
+	lock_chunks.unlock();
 	//TODO Create a file?
 }
 
@@ -219,7 +232,30 @@ GFSError
 std::tuple<GFSError, std::string /*Data*/>
 	ChunkServer::RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length)
 {
+	std::tuple<GFSError, std::string /*Data*/> reData;
+	std::fstream fin;
+	Chunk::ChunkLength maxLength;
+	chunkPool.lock.lock();
+	char *buffer = chunkPool.newData();
+	chunkPool.lock.unlock();
 
+	fin.open( (rootDir / std::to_string(handle)).native(), std::ios::in | std::ios::binary );
+	fin.seekg( sizeof(ChunkVersion) );
+	fin.read( buffer, sizeof(Chunk::ChunkLength) );
+	maxLength = *((Chunk::ChunkLength*)buffer);
+	if(offset + length > maxLength)
+	{
+		reData = std::make_tuple( GFSError({GFSErrorCode::InvalidOperation, "ReadOverflow"}), "" );
+	}else{
+		fin.seekg( sizeof(ChunkVersion)+sizeof(Chunk::ChunkLength)+offset );
+		fin.read( buffer, length );
+		reData = std::make_tuple( GFSError({GFSErrorCode::OK, ""}), std::string(buffer,length) );
+	}
+	fin.close();
+	chunkPool.lock.lock();
+	chunkPool.Delete( buffer );
+	chunkPool.lock.unlock();
+	return reData;
 }
 
 // RPCWriteChunk is called by client
@@ -227,6 +263,7 @@ std::tuple<GFSError, std::string /*Data*/>
 GFSError
 	ChunkServer::RPCWriteChunk(ChunkHandle handle, std::uint64_t dataID, std::uint64_t offset, std::vector<std::string> secondaries)
 {
+
 
 }
 
@@ -285,12 +322,23 @@ GFSError
 	ChunkServer::RPCPushData(std::uint64_t dataID, std::string data)
 {
 	//Chunk c( &chunkPool );
+	chunkPool.lock.lock();
 	char *cdata = chunkPool.newData();
+	chunkPool.lock.unlock();
+
 	strncpy( cdata, data.c_str(), data.size() );
+	lock_dataCache.lock();
 	dataCache[dataID] = cdata;
+	lock_dataCache.unlock();
+
+	lock_cacheQueue.lock();
 	cacheQueue.push( dataID );
+	lock_cacheQueue.unlock();
 
 	//when chunkPool.empty() == true it is using the sub-pool of it.
+	chunkPool.lock.lock();
+	lock_dataCache.lock();
+	lock_cacheQueue.lock();
 	while( cacheQueue.size() > MaxCacheSize || chunkPool.empty() )
 	{
 		dataID = cacheQueue.front();
@@ -299,6 +347,9 @@ GFSError
 		dataCache.erase( idc );
 		cacheQueue.pop();
 	}
+	lock_cacheQueue.unlock();
+	lock_dataCache.unlock();
+	chunkPool.lock.unlock();
 }
 
 

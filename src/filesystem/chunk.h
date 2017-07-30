@@ -11,17 +11,24 @@ class ChunkPool;
 
 struct Chunk
 {
+	typedef std::uint32_t ChunkLength;
+
 	Chunk( ChunkPool *CP = NULL );
 	Chunk( const Chunk &c );
 	~Chunk();
 	Chunk& operator = ( const Chunk &c );
 	void setCP( ChunkPool *CP = NULL );
 
-	ChunkHandle handle;
+	//ChunkHandle handle;
+
+	bool isPrimary;
+	std::uint64_t expireTime;
 	ChunkVersion version;
-	std::uint32_t length;
+	ChunkLength length;
 	char *data;
 	ChunkPool *cp;
+private:
+	ReadWriteMutex lock;
 };
 
 }
