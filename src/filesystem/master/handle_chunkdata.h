@@ -14,7 +14,6 @@
 
 namespace AFS {
 struct ChunkData {
-	static constexpr time_t ExpiredTime = 60;
 	std::vector<Address> location; // the locations of the replicas
 	Address              primary;
 	time_t               leaseGrantTime{0};   // the time the primary chunk granted the lease
@@ -148,6 +147,14 @@ public:
 		readLock lk(m);
 		size_t pos = handle & 0xffffffff;
 		return check(container[pos].data);
+	}
+
+	bool exists(ChunkHandle handle) {
+		readLock lk(m);
+		size_t pos = handle & 0xffffffff;
+		if (pos > container.size())
+			return false;
+		return container[pos].fileCnt != 0;
 	}
 };
 

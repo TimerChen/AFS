@@ -32,6 +32,7 @@ struct GFSError
 };
 
 constexpr size_t ChunkNumPerServer = 20;
+constexpr time_t LeaseExpiredTime = 60; // a lease will become expired after 60s
 
 }
 

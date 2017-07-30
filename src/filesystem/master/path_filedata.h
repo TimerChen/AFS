@@ -65,12 +65,7 @@ public:
 	std::pair<MasterError, FileDataCopy>
 	getData(const Path & path) const;
 
-	void deleteDeletedFiles() {
-		auto Expired = [](const FileData & data) {
-			return data.deleteTime + TimeToDelete < time(nullptr);
-		};
-		mp.remove_if(Expired);
-	}
+	void deleteDeletedFiles();
 
 	std::pair<MasterError, ChunkHandle>
 	getHandle(const Path & path, std::uint64_t idx,
@@ -89,6 +84,23 @@ public:
 		// todo err
 		return std::make_pair(MasterError::OK, ans);
 	};
+
+	MasterError createFolder(const Path & path) {
+		FileData md;
+		md.type = FileData::Type::Folder;
+		return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
+	}
+
+	MasterError createFile(const Path & path) {
+		FileData md;
+		md.type = FileData::Type::File;
+		return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
+	}
+
+	std::pair<MasterError, std::unique_ptr<std::vector<std::string>>>
+	listName(const Path & path) const;
+
+	MasterError deleteFile(const Path & path);
 };
 }
 
