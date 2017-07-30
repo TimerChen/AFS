@@ -43,32 +43,11 @@ public:
 	std::pair<MasterError, Filedata>
 	getData(const Path & path) const;
 
-	std::pair<MasterError, std::unique_ptr<std::vector<std::string>>>
-	listName(const Path & path) const;
-
-	void deleteDeletedFiles(std::function<void(ChunkHandle)> f) {
+	void deleteDeletedFiles() {
 		auto Expired = [](const Filedata & data) {
 			return data.deleteTime + TimeToDelete < time(nullptr);
 		};
-		auto Delete = [&](const Filedata & data) {
-			for (auto &&item : data.handles)
-				f(item);
-		};
-		mp.remove_if(Expired, Delete);
-	}
-
-	MasterError createFolder(const Path & path);
-
-	MasterError deleteFile(const Path & path) {
-		auto errData = getData(path);
-		if (errData.first == MasterError::NotExists)
-			return MasterError::NotExists;
-		if (errData.second.type != Filedata::Type::File)
-			return MasterError::NotExists;
-		auto del = [](Filedata & data) {
-			data.deleteTime = time(nullptr);
-		};
-		mp.iterate(path, {del});
+		mp.remove_if(Expired);
 	}
 };
 }

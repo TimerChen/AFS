@@ -16,18 +16,14 @@ namespace AFS {
 struct ChunkData {
 	static constexpr time_t ExpiredTime = 60;
 	std::vector<Address> location; // the locations of the replicas
-	size_t               primary{0};  // the index of the primary chunk
+	Address              primary;
 	time_t               leaseGrantTime{0};   // the time the primary chunk granted the lease
 	ChunkVersion         version{0};  // the version of this chunk
-
-	// debug
-	int debugInt{0};
 };
 
 class MemoryPool {
 	friend class Ptr;
 
-public: // debug
 	struct ExtendedData {
 		ChunkData data;
 		int fileCnt{0};
@@ -146,6 +142,13 @@ public:
 	                   const std::function<void(ChunkData & data)> & f);
 	void updateData(ChunkHandle handle,
 	                const std::function<void(ChunkData & data)> & f);
+
+	bool checkData(ChunkHandle handle,
+	               const std::function<bool(const ChunkData & data)> & check) const {
+		readLock lk(m);
+		size_t pos = handle & 0xffffffff;
+		return check(container[pos].data);
+	}
 };
 
 

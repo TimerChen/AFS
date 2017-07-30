@@ -23,11 +23,11 @@ namespace AFS {
 class Master : public Server {
 private:
 	PathFiledata      pfdm;
-	AddressServerdata asdm;
+	AddressServerData asdm;
 
 private:
 	// return the number of the chunks whose lease has been extended successfully
-	size_t leaseExtend(const std::string & addr, const std::vector<ChunkHandle> & handles);
+	size_t leaseExtend(const Address & addr, const std::vector<ChunkHandle> & handles);
 
 	// return the garbage chunks' handles
 	std::unique_ptr<std::vector<ChunkHandle>>
@@ -41,15 +41,10 @@ private:
 
 	void checkDeadChunkServer();
 
-	void collectGarbage() {
-		// if this function does not work properly, I will not be surprised al all
-		pfdm.deleteDeletedFiles(std::bind(&HandleChunkdata::eraseDeletedFileCHunk,
-		                                  &hcdm, std::placeholders::_1));
-	}
+	void collectGarbage();
 
 	void reReplicate() {
-		std::unique_ptr<std::priority_queue<std::pair<int /*left space*/, Address>>> pq
-		= asdm.get_pq();
+		throw ;
 	}
 protected:
 	// BackgroundActivity does all the background activities:
@@ -57,6 +52,7 @@ protected:
 	void BackgroundActivity() {
 		checkDeadChunkServer();
 		collectGarbage();
+		// todo re-replicate
 		throw;
 	}
 
@@ -76,14 +72,14 @@ protected:
 
 	// RPCGetReplicas is called by client to find all chunkservers that hold the chunk.
 	std::tuple<GFSError, std::vector<std::string> /*Locations*/>
-	RPCGetReplicas(ChunkHandle handle);
+	RPCGetReplicas(ChunkHandle handle) {throw; };
 
 	// RPCGetFileInfo is called by client to get file information
 	std::tuple<GFSError,
 			bool /*IsDir*/,
 			std::uint64_t /*Length*/,
 			std::uint64_t /*Chunks*/>
-	RPCGetFileInfo(std::string path_str);;
+	RPCGetFileInfo(std::string path_str) {throw;};
 
 	// RPCCreateFile is called by client to create a new file
 	GFSError
@@ -91,20 +87,22 @@ protected:
 
 	// RPCCreateFile is called by client to delete a file
 	GFSError
-	RPCDeleteFile(std::string path_str);
+	RPCDeleteFile(std::string path_str) {throw;}
 
 	// RPCMkdir is called by client to make a new directory
 	GFSError
-	RPCMkdir(std::string path_str);
+	RPCMkdir(std::string path_str) {throw;}
 
 	// RPCListFile is called by client to get the file list
 	std::tuple<GFSError, std::vector<std::string> /*FileNames*/>
-	RPCListFile(std::string path_str);
+	RPCListFile(std::string path_str) {throw;};
 
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.
 	std::tuple<GFSError, ChunkHandle>
-	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {throw;}
+	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
+		throw;
+	}
 
 public:
 	Master(LightDS::Service &srv, const std::string &rootDir);

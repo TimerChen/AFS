@@ -6,6 +6,7 @@
 #define AFS_SUGAR_HPP
 
 #include <utility>
+#include <vector>
 
 namespace AFS {
 
@@ -40,7 +41,7 @@ void tie_move(U & a, V & b, std::pair<U, V> && p) {
 
 namespace AFS {
 template <class T>
-bool remove(vector<T> & vec, const T & val) {
+bool remove(std::vector<T> & vec, const T & val) {
 	auto iter = std::find(vec.begin(), vec.end(), val);
 	if (iter == vec.end())
 		return false;

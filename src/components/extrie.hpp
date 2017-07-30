@@ -106,15 +106,13 @@ private:
 	}
 
 	void _remove_if(node_ptr p, node_ptr pnt, const U & idx,
-	                const std::function<bool(const T&)> & condition,
-					const std::function<void(const T&)> & fuck) {
+	                const std::function<bool(const T&)> & condition) {
 		writeLock wlk(p->m);
 		for (auto &&item : p->child)
-			_remove_if(item.second, p, item.first, condition, fuck);
+			_remove_if(item.second, p, item.first, condition);
 		if (p == header)
 			return;
 		if (condition(*p->value)) {
-			fuck(*p->value);
 			pnt->child.erase(pnt->child.find(idx));
 			put_node(p);
 		}
@@ -301,10 +299,8 @@ public:
 		return result;
 	}
 
-	// fuck is used to delete the chunk handles in the handle-chunk-container
-	void remove_if(const std::function<bool(const T&)> & condition,
-	               const std::function<void(const T&)> & fuck) {
-		_remove_if(header, nullptr, U(), condition, fuck);
+	void remove_if(const std::function<bool(const T&)> & condition) {
+		_remove_if(header, nullptr, U(), condition);
 	}
 
 	// 用于对某一特定文件进行操作

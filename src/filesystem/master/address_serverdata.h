@@ -10,46 +10,52 @@
 #include <queue>
 #include <functional>
 #include "common.h"
+#include "handle_chunkdata.h"
 #include "setting.hpp"
 
 namespace AFS {
-struct Serverdata {
-	std::vector<std::tuple<ChunkHandle, ChunkVersion>> handles{ChunkHandle()};
+struct ServerData {
+	std::vector<MemoryPool::ServerPtr> handles;
 	time_t lastBeatTime{0};
 };
 
-class AddressServerdata {
+struct ServerDataCopy {
+	std::vector<ChunkHandle> handles;
+	time_t lastBeatTime{0};
+
+	ServerDataCopy() = default;
+	explicit ServerDataCopy(const ServerData & data) {
+		handles.resize(data.handles.size());
+		for (int i = 0; i < (int)handles.size(); ++i)
+			handles[i] = data.handles[i].getHandle();
+		lastBeatTime = data.lastBeatTime;
+	}
+	ServerDataCopy & operator=(const ServerDataCopy &) = default;
+	ServerDataCopy(const ServerDataCopy &) = default;
+	ServerDataCopy(ServerDataCopy &&) = default;
+	ServerDataCopy & operator=(ServerDataCopy &&) = default;
+	~ServerDataCopy() = default;
+};
+
+class AddressServerData {
 private:
 	static constexpr time_t ExpiredTime = 60; // 若服务器...s不心跳，则认为思死亡
-	std::map<Address, Serverdata> mp;
+	std::map<Address, ServerData> mp;
 	mutable readWriteMutex m;
 
 private:
-	bool isDead(const Serverdata & data) const;
+	bool isDead(const ServerData & data) const;
 
 public:
-	std::pair<MasterError, Serverdata>
+	std::pair<MasterError, ServerDataCopy>
 	getData(const Address &addr) const;
 
+	void checkDeadChunkServer();
+
+	void updateChunkServer(const Address &addr,
+	                       const std::vector<std::tuple<ChunkHandle, ChunkVersion>> & chunks);
+
 	void deleteFailedChunks(const Address & addr, const std::vector<ChunkHandle> & handles);
-
-	void updateChunkServer(const Address & addr,
-	                  std::vector<std::tuple<ChunkHandle, ChunkVersion>> chunks);
-
-
-	// f is used to delete the locations in the chunk datas
-	void checkDeadChunkServer(std::function<void(const Address &, ChunkHandle)> f);
-
-	// since the ChunkNumPerServer is not absolutely accurate, the left space may be negtive
-	std::unique_ptr<std::priority_queue<std::pair<int /*left space*/, Address>>>
-			get_pq() const {
-		readLock lk(m);
-		auto result = std::make_unique<std::priority_queue<std::pair<int, Address>>>();
-		for (auto &&item : mp) {
-			result->push(std::make_pair(ChunkNumPerServer - item.second.handles.size(), item.first));
-		}
-		return result;
-	};
 };
 }
 
