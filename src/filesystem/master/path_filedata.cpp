@@ -4,13 +4,13 @@
 
 #include "path_filedata.h"
 
-bool AFS::PathFiledata::checkData(const AFS::PathFiledata::Path &path) const {
+bool AFS::PathFileData::checkData(const AFS::PathFileData::Path &path) const {
 	return mp.check(path);
 }
 
-std::pair<AFS::MasterError, AFS::Filedata>
-AFS::PathFiledata::getData(const AFS::PathFiledata::Path &path) const {
+std::pair<AFS::MasterError, AFS::FileDataCopy>
+AFS::PathFileData::getData(const AFS::PathFileData::Path &path) const {
 	if (!checkData(path))
-		return std::make_pair(MasterError::NotExists, Filedata());
-	return std::make_pair(MasterError::OK, mp[path]);
+		return std::make_pair(MasterError::NotExists, FileDataCopy());
+	return std::make_pair(MasterError::OK, FileDataCopy(mp[path]));
 }

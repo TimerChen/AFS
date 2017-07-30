@@ -80,7 +80,7 @@ private:
 			q->pnt = p;
 		}
 	}
-	void _iterate(node_ptr p, std::vector<std::function<void(T&)>> & fcs) {
+	void _iterate(node_ptr p, const std::function<void(T&)> & fcs) {
 		writeLock wlk(p->m);
 		for (auto &&item : p->child) {
 			auto ptr = item.second;
@@ -88,9 +88,7 @@ private:
 		}
 		if (p == header)
 			return;
-		for (auto &&fc : fcs) {
-			fc(*p->value);
-		}
+		fcs(*p->value);
 	}
 	template <class D>
 	void _collect(node_ptr p, std::unique_ptr<std::vector<D>> vec,
@@ -251,19 +249,19 @@ public:
 	}
 
 	// 返回index对应值
-	T at(indexIter beg, const indexIter & end) const {
+	const T& at(indexIter beg, const indexIter & end) const {
 		auto ptr_vec = _find(beg, end);
 		if (!ptr_vec.first->value)
 			throw illegal_index();
 		return *ptr_vec.first->value;
 	}
-	T operator[](const std::vector<U> & index) const {
+	const T& operator[](const std::vector<U> & index) const {
 		return at(index.cbegin(), index.cend());
 	}
 
 	// 用于遍历一个文件夹，对每一个文件进行操作
 	void iterate(const std::vector<U> & index,
-	             std::vector<std::function<void(T&)>> fcs) {
+	             const std::function<void(T&)> & fcs) {
 		node_ptr p;
 		std::unique_ptr<std::vector<readLock>> rlks;
 		tie_move(p, rlks, _find(index.begin(), index.end()));

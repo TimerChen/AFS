@@ -14,21 +14,23 @@
 #include "setting.hpp"
 
 namespace AFS {
-struct ServerData {
-	std::vector<MemoryPool::ServerPtr> handles;
+
+struct ServerDataBase {
 	time_t lastBeatTime{0};
 };
 
-struct ServerDataCopy {
+struct ServerData : public ServerDataBase {
+	std::vector<MemoryPool::ServerPtr> handles;
+};
+
+struct ServerDataCopy : public ServerDataBase {
 	std::vector<ChunkHandle> handles;
-	time_t lastBeatTime{0};
 
 	ServerDataCopy() = default;
-	explicit ServerDataCopy(const ServerData & data) {
+	explicit ServerDataCopy(const ServerData & data) : ServerDataBase(data) {
 		handles.resize(data.handles.size());
 		for (int i = 0; i < (int)handles.size(); ++i)
 			handles[i] = data.handles[i].getHandle();
-		lastBeatTime = data.lastBeatTime;
 	}
 	ServerDataCopy & operator=(const ServerDataCopy &) = default;
 	ServerDataCopy(const ServerDataCopy &) = default;
@@ -56,6 +58,27 @@ public:
 	                       const std::vector<std::tuple<ChunkHandle, ChunkVersion>> & chunks);
 
 	void deleteFailedChunks(const Address & addr, const std::vector<ChunkHandle> & handles);
+
+	Address chooseServer() const {
+		readLock lk(m);
+		static auto lastChoice = mp.cbegin();
+		while (1) {
+			++lastChoice;
+			if (lastChoice == mp.cend()) {
+				// todo sleep
+				lastChoice = mp.cbegin();
+			}
+			if (lastChoice->second.handles.size() < ChunkNumPerServer) {
+				return lastChoice->first;
+			}
+		}
+	}
+
+	void addChunk(const Address & addr, ChunkHandle handle) {
+		writeLock lk(m);
+		auto & data = mp[addr];
+		data.handles.emplace_back(MemoryPool::instance().getServerPtr(handle, addr));
+	}
 };
 }
 

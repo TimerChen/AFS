@@ -22,7 +22,7 @@ namespace AFS {
 
 class Master : public Server {
 private:
-	PathFiledata      pfdm;
+	PathFileData      pfdm;
 	AddressServerData asdm;
 
 private:
@@ -100,9 +100,7 @@ protected:
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.
 	std::tuple<GFSError, ChunkHandle>
-	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
-		throw;
-	}
+	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex);
 
 public:
 	Master(LightDS::Service &srv, const std::string &rootDir);

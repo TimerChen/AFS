@@ -111,3 +111,23 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	deleteFailedChunks(srv.getRPCCaller(), failedChunks);
 	return std::make_tuple(GFSError(result1), result2);
 }
+
+std::tuple<AFS::GFSError, AFS::ChunkHandle>
+AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
+	auto path = PathParser::instance().parse(path_str);
+	auto createChunk = [&](ChunkHandle handle){
+		Address addr;
+		GFSError err;
+		do {
+			addr = asdm.chooseServer();
+			// todo wtf
+//				err = srv.RPCCall({addr, (uint16_t)0}, "CreateChunk", handle).get();
+		} while (err.errCode != GFSErrorCode::OK);
+		asdm.addChunk(addr, handle);
+	};
+	auto errMd = pfdm.getHandle(*path, chunkIndex, createChunk);
+	return std::make_tuple(
+			ErrTranslator::masterErrTOGFSError(errMd.first),
+			errMd.second
+	);
+}
