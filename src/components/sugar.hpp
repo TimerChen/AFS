@@ -38,4 +38,19 @@ void tie_move(U & a, V & b, std::pair<U, V> && p) {
 
 }
 
+namespace AFS {
+template <class T>
+bool remove(vector<T> & vec, const T & val) {
+	auto iter = std::find(vec.begin(), vec.end(), val);
+	if (iter == vec.end())
+		return false;
+	while (iter != vec.end()) {
+		*iter = std::move(*(iter + 1));
+		++iter;
+	}
+	vec.pop_back();
+	return true;
+}
+}
+
 #endif //AFS_SUGAR_HPP

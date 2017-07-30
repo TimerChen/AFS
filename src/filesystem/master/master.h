@@ -24,8 +24,6 @@ class Master : public Server {
 private:
 	PathFiledata      pfdm;
 	AddressServerdata asdm;
-	HandleChunkdata   hcdm;
-	ChunkHandle       handleID{0}; // the handle which is going to be distributed
 
 private:
 	// return the number of the chunks whose lease has been extended successfully
