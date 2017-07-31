@@ -63,24 +63,6 @@ public:
 
 	void Shutdown();
 
-protected:
-
-
-	void load();
-
-	void loadFiles( const boost::filesystem::path &Path );
-
-	void loadSettings();
-
-	Chunk loadChunk( const ChunkHandle &handle );
-
-	void save();
-
-	void saveChunk( const ChunkHandle &handle, const Chunk &c );
-
-	void bindFunctions();
-
-	void Heartbeat();
 
 protected:
 	// RPCCreateChunk is called by master to create a new chunk given the chunk handle.
@@ -131,15 +113,41 @@ protected:
 	// This should be replaced by a chain forwarding.
 	GFSError
 		RPCPushData(std::uint64_t dataID, std::string data);
+protected:
 
+
+	void load();
+
+	void loadFiles( const boost::filesystem::path &Path );
+
+	void loadSettings();
+
+	Chunk loadChunkInfo
+		( const ChunkHandle &handle );
+
+	std::string loadChunkData
+		( const ChunkHandle &handle, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	void save();
+
+	void saveChunkInfo
+		( const ChunkHandle &handle, const Chunk &c );
+
+	void saveChunkData
+		( const ChunkHandle &handle, char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	void bindFunctions();
+
+	void Heartbeat();
 protected:
 	std::stringstream ss;
 	std::uint32_t MaxCacheSize;
 	std::map< ChunkHandle, Chunk > chunks;
+	std::map< ChunkHandle, ReadWriteMutex > chunkMutex;
 	std::map< std::uint64_t, char* > dataCache;
 	std::queue<std::uint64_t> cacheQueue;
 	ChunkPool chunkPool;
-	std::mutex lock_ss, lock_chunks, lock_dataCache, lock_cacheQueue;
+	ReadWriteMutex lock_ss, lock_chunks, lock_chunkMutex, lock_dataCache, lock_cacheQueue;
 
 protected:
 	std::string masterIP;

@@ -21,10 +21,17 @@ class DirNotFound : public AFSError
 
 };
 
-class ChunckserverError : public AFSError
+
+class ChunkServerError : public AFSError
 {
 public:
-	ChunckserverError(){}
+	ChunkServerError(){}
+};
+
+
+class OperationOverflow : public ChunkServerError
+{
+
 };
 
 class ChunkPoolEmpty : public AFSError

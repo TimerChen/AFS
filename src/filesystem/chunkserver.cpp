@@ -138,7 +138,7 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 				ss << fname;ss >> handle;
 				lock_ss.unlock();*/
 
-				Chunk c = loadChunk( handle );
+				Chunk c = loadChunkInfo( handle );
 
 				lock_chunks.lock();
 				chunks[handle] = c;
@@ -152,32 +152,62 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 
 	}
 }
-Chunk ChunkServer::loadChunk( const ChunkHandle &handle )
+Chunk ChunkServer::loadChunkInfo( const ChunkHandle &handle )
 {
+
 	Chunk c;
 	char buffer[64];
-	//c.handle = Handle;
 	std::fstream fin;
+
+	//Open file
 	fin.open( (rootDir / std::to_string(handle)).native(), std::ios::in | std::ios::binary );
+	if( !fin.is_open() )
+	{
+		throw( DirNotFound() );
+	}
+	lock_chunkMutex.lock();
+	ReadLock cLock(chunkMutex[handle]);
+	lock_chunkMutex.unlock();
+
+	//Read
 	fin.read( buffer, sizeof(c.version) );
 	c.version = *(ChunkVersion*)(buffer);
 	fin.read( buffer, sizeof(c.length) );
 	c.length = *(Chunk::ChunkLength*)(buffer);
-	/*
-	if(needDetail)
-	{
-		c.setCP( &chunkPool );
-		fin.read( c.data, CHUNK_SIZE );
-	}
-	*/
+
+	//End
 	fin.close();
-	/*
-	std::cerr << c.handle << " "
-				<< c.version << " "
-				<< c.length << " "
-				<< c.data << std::endl;
-	*/
+	cLock.unlock();
+
 	return c;
+}
+
+std::string ChunkServer::loadChunkData( const ChunkHandle &handle, const std::uint64_t &offset, const std::uint64_t &length )
+{
+	std::fstream fin;
+
+	//Open file
+	fin.open( (rootDir / std::to_string(handle)).native(), std::ios::in | std::ios::binary );
+	if( !fin.is_open() )
+	{
+		throw( DirNotFound() );
+	}
+	lock_chunkMutex.lock();
+	ReadLock cLock(chunkMutex[handle]);
+	lock_chunkMutex.unlock();
+	char *buffer = chunkPool.newData();
+
+
+	//Read
+	fin.seekg( sizeof(ChunkVersion)+sizeof(Chunk::ChunkLength)+offset );
+	fin.read( buffer, length );
+
+	//End
+	fin.close();
+	cLock.unlock();
+	chunkPool.Delete( buffer );
+
+	return std::string(buffer,length);
 }
 
 void ChunkServer::save()
@@ -185,19 +215,47 @@ void ChunkServer::save()
 
 }
 
-void ChunkServer::saveChunk( const ChunkHandle &handle, const Chunk &c )
+void ChunkServer::saveChunkInfo( const ChunkHandle &handle, const Chunk &c )
 {
 	std::string fname = std::to_string(handle) + ".chk";
 	std::fstream fout;
-	fout.open( fname.c_str(), std::ios::out | std::ios::binary );
 	char buffer[64];
+
+	//Open file
+	fout.open( fname.c_str(), std::ios::out | std::ios::binary );
+		//if( !fout.is_open() )
+	lock_chunkMutex.lock();
+	WriteLock cLock(chunkMutex[handle]);
+	lock_chunkMutex.unlock();
+
+	//Write
 	*(ChunkVersion*)(buffer) = c.version;
 	fout.write( buffer, sizeof(c.version) );
 	*(Chunk::ChunkLength*)(buffer) = c.length;
 	fout.write( buffer, sizeof(c.length) );
-	//strncpy( buffer, c.data.c_str(), CHUNK_SIZE );
-	fout.write( c.data, CHUNK_SIZE );
+
+	//End
 	fout.close();
+	cLock.unlock();
+}
+void ChunkServer::saveChunkData( const ChunkHandle &handle, char *data, const std::uint64_t &offset, const std::uint64_t &length )
+{
+	std::string fname = std::to_string(handle) + ".chk";
+	std::fstream fout;
+
+	//Open file
+	fout.open( fname.c_str(), std::ios::out | std::ios::binary );
+	lock_chunkMutex.lock();
+	WriteLock cLock(chunkMutex[handle]);
+	lock_chunkMutex.unlock();
+
+	//Read
+	fout.seekp( sizeof(ChunkVersion) + sizeof(Chunk::ChunkLength) + offset );
+	fout.write( data, length );
+
+	//End
+	fout.close();
+	cLock.unlock();
 }
 
 void ChunkServer::Shutdown()
@@ -218,14 +276,20 @@ GFSError
 	ChunkServer::RPCCreateChunk(ChunkHandle handle)
 {
 	Chunk c;
-	//c.handle = handle;
+
+	//Save chunks info in chunks.
 	c.version = 0;
 	c.length = 0;
-
 	lock_chunks.lock();
 	chunks[handle] = c;
 	lock_chunks.unlock();
-	//TODO Create a file?
+
+	//Create a file
+	saveChunkInfo( handle, c );
+	char *buffer = chunkPool.newData();
+	saveChunkData( handle, buffer );
+	chunkPool.Delete( buffer );
+
 }
 
 // RPCReadChunk is called by client, read chunk data and return
@@ -233,28 +297,13 @@ std::tuple<GFSError, std::string /*Data*/>
 	ChunkServer::RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length)
 {
 	std::tuple<GFSError, std::string /*Data*/> reData;
-	std::fstream fin;
-	Chunk::ChunkLength maxLength;
-	chunkPool.lock.lock();
-	char *buffer = chunkPool.newData();
-	chunkPool.lock.unlock();
-
-	fin.open( (rootDir / std::to_string(handle)).native(), std::ios::in | std::ios::binary );
-	fin.seekg( sizeof(ChunkVersion) );
-	fin.read( buffer, sizeof(Chunk::ChunkLength) );
-	maxLength = *((Chunk::ChunkLength*)buffer);
-	if(offset + length > maxLength)
+	Chunk c = loadChunkInfo( handle );
+	if(offset + length > c.length)
 	{
 		reData = std::make_tuple( GFSError({GFSErrorCode::InvalidOperation, "ReadOverflow"}), "" );
 	}else{
-		fin.seekg( sizeof(ChunkVersion)+sizeof(Chunk::ChunkLength)+offset );
-		fin.read( buffer, length );
-		reData = std::make_tuple( GFSError({GFSErrorCode::OK, ""}), std::string(buffer,length) );
+		reData = std::make_tuple( GFSError({GFSErrorCode::OK, ""}), loadChunkData( handle, offset, length ) );
 	}
-	fin.close();
-	chunkPool.lock.lock();
-	chunkPool.Delete( buffer );
-	chunkPool.lock.unlock();
 	return reData;
 }
 
@@ -263,7 +312,27 @@ std::tuple<GFSError, std::string /*Data*/>
 GFSError
 	ChunkServer::RPCWriteChunk(ChunkHandle handle, std::uint64_t dataID, std::uint64_t offset, std::vector<std::string> secondaries)
 {
-
+	GFSError reData = {GFSErrorCode::OK, ""};
+	//Check if it holds the lease.
+	lock_chunks.lock();
+	if(chunks[handle].isPrimary)
+	{
+		reData = GFSError({GFSErrorCode::OK, ""});
+	}
+	else
+	{
+		reData = GFSError({GFSErrorCode::InvalidOperation, "Not primary"});
+	}
+	lock_chunks.unlock();
+	Chunk c = loadChunkInfo( handle );
+	if(offset + length > c.length)
+	{
+		reData = GFSError({GFSErrorCode::InvalidOperation, "ReadOverflow"});
+	}else{
+		//TODO...
+		reData = GFSError({GFSErrorCode::OK, ""});
+	}
+	return reData;
 
 }
 
@@ -302,9 +371,52 @@ GFSError
 // RPCGrantLease is called by master
 // mark the chunkserver as primary
 GFSError
-	ChunkServer::RPCGrantLease(std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>>)
+	ChunkServer::RPCGrantLease(std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>> arg )
 {
+	GFSError reData={GFSErrorCode::OK, ""};
+	ChunkHandle handle;
+	ChunkVersion newVersion;
+	std::uint64_t expireTime;
+	Chunk c;
 
+
+	for( auto ii : arg )
+	{
+		std::tie(handle, newVersion, expireTime) = ii;
+
+		lock_chunks.lock();
+		auto itr = chunks.find(handle);
+		if( itr == chunks.end() )
+		{
+			reData.errCode = GFSErrorCode::InvalidOperation;
+			reData.description = reData.description
+								 + to_string( handle ) + " "
+								 + to_string(GFSErrorCode::OperationOverflow) + "\n";
+		}
+		else if( itr->second.version == newVersion-1 )
+		{
+			//Write Infomation
+			itr->second.version = newVersion;
+			saveChunkInfo( handle, itr->second );
+		}
+		else if( itr->second.version < newVersion )
+		{
+			reData.errCode = GFSErrorCode::InvalidOperation;
+			reData.description = reData.description
+								 + to_string( handle ) + " "
+								 + to_string(GFSErrorCode::ChunkVersionExpired) + "\n";
+		}
+		else // itr->version > newVersion
+		{
+			reData.errCode = GFSErrorCode::InvalidOperation;
+			reData.description = reData.description
+								 + to_string( handle ) + " "
+								 + to_string(GFSErrorCode::InvalidOperation) + "\n";
+		}
+		lock_chunks.unlock();
+	}
+
+	return reData;
 }
 
 // RPCUpdateVersion is called by master
@@ -312,7 +424,32 @@ GFSError
 GFSError
 	ChunkServer::RPCUpdateVersion(ChunkHandle handle, ChunkVersion newVersion)
 {
+	GFSError reData;
+	Chunk c;
 
+	lock_chunks.lock();
+	auto itr = chunks.find(handle);
+	itr->second.version = newVersion;
+	c = itr->second;
+	if( c.version == newVersion-1 )
+	{
+		reData = {GFSErrorCode::OK, ""};
+	}
+	else if( c.version < newVersion )
+	{
+		reData = {GFSErrorCode::ChunkVersionExpired, ""};
+	}
+	else // itr->version > newVersion
+	{
+		reData = {GFSErrorCode::InvalidOperation, ""};
+	}
+
+	lock_chunks.unlock();
+
+	if( reData.errCode == GFSErrorCode::OK )
+		saveChunkInfo( handle, c );
+
+	return reData;
 }
 
 // RPCPushDataAndForward is called by client.
@@ -321,10 +458,7 @@ GFSError
 GFSError
 	ChunkServer::RPCPushData(std::uint64_t dataID, std::string data)
 {
-	//Chunk c( &chunkPool );
-	chunkPool.lock.lock();
 	char *cdata = chunkPool.newData();
-	chunkPool.lock.unlock();
 
 	strncpy( cdata, data.c_str(), data.size() );
 	lock_dataCache.lock();
@@ -336,7 +470,6 @@ GFSError
 	lock_cacheQueue.unlock();
 
 	//when chunkPool.empty() == true it is using the sub-pool of it.
-	chunkPool.lock.lock();
 	lock_dataCache.lock();
 	lock_cacheQueue.lock();
 	while( cacheQueue.size() > MaxCacheSize || chunkPool.empty() )
@@ -349,7 +482,8 @@ GFSError
 	}
 	lock_cacheQueue.unlock();
 	lock_dataCache.unlock();
-	chunkPool.lock.unlock();
+
+	return { GFSErrorCode::OK, "" };
 }
 
 

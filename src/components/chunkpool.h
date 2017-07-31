@@ -24,7 +24,7 @@ private:
 	std::map<char*, std::uint32_t>	freshed;
 	std::queue<char*>				garbage;
 
-public:
+private:
 	ReadWriteMutex lock;
 
 };

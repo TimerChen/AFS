@@ -17,12 +17,15 @@ typedef std::uint64_t ChunkHandle;
 typedef std::uint64_t ChunkVersion;
 typedef boost::shared_mutex ReadWriteMutex;
 typedef boost::shared_lock<boost::shared_mutex> ReadLock;
-typedef boost::unique_lock<boost::shared_mutex> WirteLock;
+typedef boost::unique_lock<boost::shared_mutex> WriteLock;
 
 enum class GFSErrorCode : std::uint32_t
 {
 	OK = 0,
 	InvalidOperation = 1,
+	ChunkVersionExpired = 2,
+	OperationOverflow = 3,
+
 };
 
 
