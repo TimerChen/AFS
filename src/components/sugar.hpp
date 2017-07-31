@@ -7,6 +7,7 @@
 
 #include <utility>
 #include <vector>
+#include <string>
 
 namespace AFS {
 
@@ -45,6 +46,10 @@ bool remove(std::vector<T> & vec, const T & val) {
 	auto iter = std::find(vec.begin(), vec.end(), val);
 	if (iter == vec.end())
 		return false;
+	if (vec.size() == 1) {
+		vec.clear();
+		return true;
+	}
 	while (iter != vec.end()) {
 		*iter = std::move(*(iter + 1));
 		++iter;

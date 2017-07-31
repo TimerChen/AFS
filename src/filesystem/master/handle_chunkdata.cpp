@@ -11,12 +11,12 @@ MemoryPool &MemoryPool::instance() {
 	return in;
 }
 
-MemoryPool::FilePtr MemoryPool::newChunk() {
+MemoryPool::ChunkPtr MemoryPool::newChunk() {
 	writeLock lk(m);
 	if (recycler.empty()) {
 		container.emplace_back(ExtendedData());
 		container.back().fileCnt++;
-		return FilePtr(container.size() - 1 /*| (0 << 32)*/);
+		return ChunkPtr(container.size() - 1 /*| (0 << 32)*/);
 	}
 	size_t pos = recycler.back();
 	auto tmp = container[pos].recycleCnt + 1;
@@ -24,7 +24,7 @@ MemoryPool::FilePtr MemoryPool::newChunk() {
 	container[pos].fileCnt = 1;
 	container[pos].recycleCnt = tmp;
 	recycler.pop_back();
-	return FilePtr(ChunkHandle(pos) | (tmp << 32));
+	return ChunkPtr(ChunkHandle(pos) | (tmp << 32));
 }
 
 MemoryPool::ServerPtr MemoryPool::getServerPtr(ChunkHandle handle, const Address &addr) {

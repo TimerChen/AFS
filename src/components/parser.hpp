@@ -32,6 +32,27 @@ public:
 
 };
 
+class Convertor {
+public:
+	static std::string uintToString(std::uint64_t x) {
+		std::string result;
+		do {
+			result.push_back(char(x % 10) + '0');
+			x /= 10;
+		} while (x);
+		std::reverse(result.begin(), result.end());
+		return result;
+	}
+
+	static std::uint64_t stringToUint(const std::string & str) {
+		std::uint64_t result = 0;
+		for (auto &&item : str) {
+			result *= 10;
+			result += item - '0';
+		}
+		return result;
+	}
+};
 
 }
 

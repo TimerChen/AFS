@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <ctime>
+#include <gtest/gtest.h>
 
 namespace AFS {
 struct ChunkData {
@@ -21,6 +22,11 @@ struct ChunkData {
 };
 
 class MemoryPool {
+// DEBUG
+	friend class hcdmTest;
+    FRIEND_TEST(hcdmTest, ChunkPtr);
+	FRIEND_TEST(hcdmTest, ServerPtr);
+
 	friend class Ptr;
 
 	struct ExtendedData {
@@ -75,9 +81,9 @@ public:
 		}
 	};
 
-	class FilePtr : public Ptr {
+	class ChunkPtr : public Ptr {
 		friend class MemoryPool;
-		explicit FilePtr(ChunkHandle handle) : Ptr(handle) {}
+		explicit ChunkPtr(ChunkHandle handle) : Ptr(handle) {}
 
 		void terminate() {
 			if (empty())
@@ -86,12 +92,12 @@ public:
 			handle = InitVal;
 		}
 	public:
-		FilePtr() = default;
-		FilePtr(const FilePtr & p) = delete;
-		FilePtr(FilePtr && ) = default;
-		FilePtr & operator=(const FilePtr &) = delete;
-		FilePtr & operator=(FilePtr &&) = default;
-		~FilePtr() override {
+		ChunkPtr() = default;
+		ChunkPtr(const ChunkPtr & p) = delete;
+		ChunkPtr(ChunkPtr && ) = default;
+		ChunkPtr & operator=(const ChunkPtr &) = delete;
+		ChunkPtr & operator=(ChunkPtr &&) = default;
+		~ChunkPtr() override {
 			if (empty())
 				return;
 			writeLock lk(MemoryPool::instance().m);
@@ -131,7 +137,7 @@ public:
 		}
 	};
 
-	FilePtr   newChunk();
+	ChunkPtr   newChunk();
 	ServerPtr getServerPtr(ChunkHandle handle, const Address & addr);
 
 	ChunkData getData(ChunkHandle h) const;

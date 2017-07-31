@@ -31,7 +31,7 @@ struct FileDataBase {
 struct FileData : public FileDataBase {
 	using Type = FileDataBase::Type;
 	
-	std::vector<MemoryPool::FilePtr> handles;
+	std::vector<MemoryPool::ChunkPtr> handles;
 };
 
 struct FileDataCopy : public FileDataBase {

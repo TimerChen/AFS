@@ -32,7 +32,7 @@ if(Boost_FOUND)
             filesystem/master/address_serverdata.cpp filesystem/master/address_serverdata.h
             filesystem/master/handle_chunkdata.cpp   filesystem/master/handle_chunkdata.h
             filesystem/master/log_contaner.cpp       filesystem/master/log_contaner.h
-
+            tests/MasterTest/hcdmTest.cpp            tests/MasterTest/hcdmTest.h
             ## ryw end 31
             ## cjx begin 32
             filesystem/server.hpp
@@ -100,4 +100,6 @@ if(Boost_FOUND)
     target_link_libraries(AFS ${CMAKE_THREAD_LIBS_INIT})
     set_property(TARGET AFS PROPERTY COMPILE_OPTIONS "-pthread")
 
+    # gtest
+    target_link_libraries(AFS gtest gtest_main)
 endif()
