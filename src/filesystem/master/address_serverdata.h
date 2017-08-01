@@ -66,7 +66,7 @@ struct ServerDataCopy : public ServerDataBase {
 
 class AddressServerData {
 private:
-	static constexpr time_t ExpiredTime = 60; // 若服务器...s不心跳，则认为思死亡
+	static constexpr time_t ExpiredTime = 60; // 若服务器...s不心跳，则认为死亡
 	std::map<Address, ServerData> mp;
 	mutable readWriteMutex m;
 
@@ -131,6 +131,17 @@ public:
 		}
 	}
 
+	// 第一维为服务器上当前chunk数，第二维维地址
+	// 这些数据是为了帮助负载平衡的，所以即使在实际使用时候，较真实情况相对落后也没关系
+	std::unique_ptr<std::priority_queue<std::pair<size_t, Address>>>
+	getPQ() const {
+		readLock lk(m);
+		auto result = std::make_unique<std::priority_queue<std::pair<size_t, Address>>>();
+		for (auto &&item : mp) {
+			result->push(std::make_pair(item.second.handles.size(), item.first));
+		}
+		return result;
+	};
 };
 }
 

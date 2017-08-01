@@ -10,6 +10,7 @@
 #include "extrie.hpp"
 #include "handle_chunkdata.h"
 #include <fstream>
+#include <queue>
 #include <vector>
 #include <memory>
 #include <utility>
@@ -120,6 +121,33 @@ public:
 	listName(const Path & path) const;
 
 	MasterError deleteFile(const Path & path);
+
+	void reReplicate(std::priority_queue<std::pair<size_t, Address>> & pq,
+	const std::function<GFSError(const Address & /*src*/, const Address &, ChunkHandle)> & send) {
+		auto foo = [&](FileData & data) {
+			for (auto &&chunk : data.handles) {
+				auto handle = chunk.getHandle();
+				MemoryPool::instance().updateData_if(handle,
+				[&](const ChunkData & cdata) {
+					return cdata.location.size() < data.replicationFactor;
+				},
+				[&](ChunkData & cdata) {
+					auto numAAddr = pq.top();
+					GFSError err;
+					for (auto &&location : cdata.location) {
+						err = send(location, numAAddr.second, handle);
+						if (err.errCode == GFSErrorCode::OK)
+							break;
+					}
+					if (err.errCode == GFSErrorCode::OK) {
+						pq.pop();
+						pq.push(std::make_pair(numAAddr.first - 1, std::move(numAAddr.second)));
+					}
+				});
+			}
+		};
+		mp.iterate({}, foo);
+	}
 
 	void read(std::ifstream & in) {
 		mp.read(in);

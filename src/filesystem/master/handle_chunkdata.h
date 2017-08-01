@@ -150,7 +150,6 @@ public:
 			if (--MemoryPool::instance().container[getPos()].fileCnt == 0)
 				terminate();
 		}
-
 	};
 
 	class ServerPtr : public Ptr {

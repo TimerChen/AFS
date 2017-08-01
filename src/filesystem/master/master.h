@@ -45,7 +45,11 @@ private:
 	void collectGarbage();
 
 	void reReplicate() {
-		throw ;
+		auto pq = std::move(*(asdm.getPQ().release()));
+		auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
+//			return srv.RPCCall({src, 0}, "SendCopy", tar, handle);
+		};
+		pfdm.reReplicate(pq, rpcCall);
 	}
 protected:
 	// BackgroundActivity does all the background activities:
