@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <fstream>
 
 namespace AFS {
 
@@ -57,6 +58,51 @@ bool remove(std::vector<T> & vec, const T & val) {
 	vec.pop_back();
 	return true;
 }
+}
+
+namespace AFS {
+template <class U>
+class IOTool {
+public:
+	void write(std::ofstream & out, const U & data) const {
+		data.write(out);
+	}
+
+	void read(std::ifstream & in, U & data) {
+		data.read(in);
+	}
+};
+
+template <>
+class IOTool<std::string> {
+public:
+	void write(std::ofstream & out, const std::string & data) const {
+		auto sz = (int)data.size();
+		out.write((char*)&sz, sizeof(sz));
+		for (auto &&ch : data)
+			out.write(&ch, sizeof(ch));
+	}
+
+	void read(std::ifstream & in, std::string & data) {
+		int len;
+		in.read((char*)&len, sizeof(int));
+		auto buffer = new char[len];
+		in.read(buffer, sizeof(char) * len);
+		data = std::string(buffer, buffer + len);
+	}
+};
+
+template <>
+class IOTool<int> {
+	void write(std::ofstream & out, const int & data) const {
+		out.write((char*)&data, sizeof(data));
+	}
+
+	void read(std::ifstream & in, int & data) {
+		in.read((char*)&data, sizeof(data));
+	}
+};
+
 }
 
 #endif //AFS_SUGAR_HPP

@@ -50,3 +50,33 @@ AFS::MasterError AFS::PathFileData::deleteFile(const AFS::PathFileData::Path &pa
 	// todo err
 	return MasterError::OK;
 }
+
+AFS::MasterError AFS::PathFileData::createFile(const AFS::PathFileData::Path &path) {
+	FileData md;
+	md.type = FileData::Type::File;
+	return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
+}
+
+AFS::MasterError AFS::PathFileData::createFolder(const AFS::PathFileData::Path &path) {
+	FileData md;
+	md.type = FileData::Type::Folder;
+	return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
+}
+
+std::pair<AFS::MasterError, AFS::ChunkHandle>
+AFS::PathFileData::getHandle(const AFS::PathFileData::Path &path, std::uint64_t idx,
+                             const std::function<void(AFS::ChunkHandle)> &createChunk) {
+	ChunkHandle ans;
+	auto f = [&](FileData & data) {
+		if (data.handles.size() < idx) // 添加一个也不够的情况
+			return;
+		if (data.handles.size() == idx) {
+			data.handles.emplace_back(MemoryPool::instance().newChunk());
+			createChunk(data.handles.back().getHandle());
+		}
+		ans = data.handles[idx].getHandle();
+	};
+	mp.iterate(path, f);
+	// todo err
+	return std::make_pair(MasterError::OK, ans);
+}

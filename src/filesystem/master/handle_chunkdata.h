@@ -9,6 +9,7 @@
 #include "common.h"
 #include "sugar.hpp"
 #include <vector>
+#include <fstream>
 #include <map>
 #include <ctime>
 #include <gtest/gtest.h>
@@ -19,6 +20,31 @@ struct ChunkData {
 	Address              primary;
 	time_t               leaseGrantTime{0};   // the time the primary chunk granted the lease
 	ChunkVersion         version{0};  // the version of this chunk
+
+	void write(std::ofstream & out) const {
+		auto sz = (int)location.size();
+		out.write((char*)&sz, sizeof(sz));
+		IOTool<Address> too;
+		for (auto &&item : location) {
+			too.write(out, item);
+		}
+		too.write(out, primary);
+		out.write((char*)&leaseGrantTime, sizeof(leaseGrantTime));
+		out.write((char*)&version, sizeof(version));
+	}
+
+	void read(std::ifstream & in) {
+		int sz;
+		in.read((char*)&sz, sizeof(sz));
+		IOTool<Address> too;
+		location.resize(sz);
+		for (auto &&item : location) {
+			too.read(in, item);
+		}
+		too.read(in, primary);
+		in.read((char*)&leaseGrantTime, sizeof(leaseGrantTime));
+		in.read((char*)&version, sizeof(version));
+	}
 };
 
 class MemoryPool {
@@ -34,6 +60,20 @@ class MemoryPool {
 		int fileCnt{0};
 		int serverCnt{0};
 		std::uint64_t recycleCnt{0};
+
+		void write(std::ofstream & out) const {
+			data.write(out);
+			out.write((char*)&fileCnt, sizeof(fileCnt));
+			out.write((char*)&serverCnt, sizeof(serverCnt));
+			out.write((char*)&recycleCnt, sizeof(recycleCnt));
+		}
+
+		void read(std::ifstream & in) {
+			data.read(in);
+			in.read((char*)&fileCnt, sizeof(fileCnt));
+			in.read((char*)&serverCnt, sizeof(serverCnt));
+			in.read((char*)&recycleCnt, sizeof(recycleCnt));
+		}
 	};
 
 	mutable readWriteMutex m;
@@ -48,7 +88,6 @@ public:
 		static constexpr std::uint64_t InitVal = UINT64_MAX;
 
 	protected:
-	public: // debug
 		ChunkHandle handle{InitVal};
 
 		bool empty() const {
@@ -79,6 +118,13 @@ public:
 		ChunkHandle getHandle() const {
 			return handle;
 		}
+
+		virtual void write(std::ofstream & out) const {
+			out.write((char*)&handle, sizeof(handle));
+		}
+		virtual void read(std::ifstream & in) {
+			in.read((char*)&handle, sizeof(handle));
+		}
 	};
 
 	class ChunkPtr : public Ptr {
@@ -104,6 +150,7 @@ public:
 			if (--MemoryPool::instance().container[getPos()].fileCnt == 0)
 				terminate();
 		}
+
 	};
 
 	class ServerPtr : public Ptr {
@@ -135,6 +182,15 @@ public:
 			--exData.serverCnt;
 			remove(exData.data.location, addr);
 		}
+
+		void write(std::ofstream & out) const final {
+			IOTool<Address> too;
+			too.write(out, addr);
+		}
+		void read(std::ifstream & in) final {
+			IOTool<Address> too;
+			too.read(in, addr);
+		}
 	};
 
 	ChunkPtr   newChunk();
@@ -161,6 +217,32 @@ public:
 		if (pos > container.size())
 			return false;
 		return container[pos].fileCnt != 0;
+	}
+
+	void write(std::ofstream & out) const {
+		auto sz = (int)container.size();
+		out.write((char*)&sz, sizeof(sz));
+		for (auto &&item : container) {
+			item.write(out);
+		}
+		sz = (int)recycler.size();
+		for (auto &&item : recycler) {
+			out.write((char*)&item, sizeof(item));
+		}
+	}
+
+	void read(std::ifstream & in) {
+		int sz;
+		in.read((char*)&sz, sizeof(sz));
+		container.resize(sz);
+		for (auto &&item : container) {
+			item.read(in);
+		}
+		in.read((char*)&sz, sizeof(sz));
+		recycler.resize(sz);
+		for (auto &&item : recycler) {
+			in.read((char*)&item, sizeof(item));
+		}
 	}
 };
 

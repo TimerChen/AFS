@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <fstream>
 #include <utility>
 #include <map>
 #include <boost/thread/shared_mutex.hpp>
@@ -39,13 +40,58 @@ private:
 		node_ptr pnt;
 		T *value;
 		mutable boost::shared_mutex m;
+
+		void write(std::ofstream & out) const {
+			IOTool<U> tool;
+			auto sz = (int)child.size();
+			out.write((char*)&sz, sizeof(sz));
+			for (auto &&item : child)
+				tool.write(out, item.first);
+			bool flag = (value != nullptr);
+			out.write((char*)(&flag), sizeof(flag));
+			if (flag) {
+				IOTool<T> tool;
+				tool.write(out, *value);
+			}
+		}
+		void read(std::ifstream & in) {
+			IOTool<U> tool;
+			int sz;
+			in.read((char*)&sz, sizeof(sz));
+			U key;
+			for (int i = 0; i < sz; ++i) {
+				tool.read(in, key);
+				child.insert(std::make_pair(key, nullptr));
+			}
+			bool flag;
+			in.read((char*)&sz, sizeof(flag));
+			if (flag) {
+				value = new T();
+				IOTool<T> tool;
+				tool.read(in, *value);
+			}
+		}
 	};
 
 	// 保存的数据结构
 	node_ptr header; // 根/空节点, end()节点
-	size_t sz = 0;
 
 private:
+	void _read(node_ptr p, std::ifstream & in) {
+		p->read(in);
+		for (auto &&child : p->child) {
+			child.second = get_node();
+			child.second->pnt = p;
+			_read(child.second, in);
+		}
+	}
+	void _write(node_ptr p, std::ofstream & out) const {
+		p->write(out);
+		for (auto &&child : p->child) {
+			_write(child.second, out);
+		}
+	}
+
 	node_ptr get_node();
 	void put_node(node_ptr p);
 
@@ -116,47 +162,18 @@ private:
 		}
 	}
 public:
-	// todo
 	extrie() {
 		init();
 	}
-	extrie(const extrie & other) {
-		init();
-		sz = other.sz;
-		copy(header, other.header);
-	}
-	extrie &operator=(const extrie & other) {
-		if (this == &other)
-			return *this;
-		destroy(header);
-		init();
-		sz = other.sz;
-		copy(header, other.header);
-	}
-	extrie(extrie && other) noexcept {
-		(*this) = std::move(other);
-	}
-	extrie &operator=(extrie && other) noexcept {
-		if (this == &other)
-			return *this;
-		header = other.header;
-		sz = other.sz;
-		other.header = nullptr;
-		return *this;
-	}
+	extrie(const extrie & other) = delete;
+	extrie &operator=(const extrie & other) = delete;
+	extrie(extrie && other) = delete;
+	extrie &operator=(extrie && other) = delete;
 	~extrie() {
 		if (header)
 			destroy(header);
 	}
 
-	size_t size() const {
-		readLock rlk(header->m);
-		return sz;
-	}
-	bool empty() const {
-		readLock rlk(header->m);
-		return !sz;
-	}
 
 	// 返回insert是否成功
 	template <class TT>
@@ -200,7 +217,6 @@ public:
 		p = iter->second;
 		wlks->emplace_back(writeLock(p->m));
 		p->value = new T(std::forward<TT>(value));
-		++sz;
 		return ExtrieError::OK;
 	}
 	template <class TT>
@@ -306,6 +322,16 @@ public:
 
 	// 选择fn结果最高者返回
 	T choose(const std::vector<U> & index, std::function<int(const T&)> fn) const;
+
+	void write(std::ofstream & out) const {
+		writeLock lk(header->m);
+		_write(header, out);
+	}
+
+	void read(std::ifstream & in) {
+		writeLock lk(header->m);
+		_read(header, in);
+	}
 };
 }
 
@@ -328,7 +354,6 @@ void extrie<U, V>::put_node(node_ptr p) {
 
 template <class U, class V>
 void extrie<U, V>::init() {
-	sz = 0;
 	header = get_node();
 }
 
@@ -339,7 +364,6 @@ void extrie<U, V>::destroy(node_ptr p) {
 		destroy(item.second);
 	lk.unlock();
 	put_node(p);
-	--sz;
 }
 
 }

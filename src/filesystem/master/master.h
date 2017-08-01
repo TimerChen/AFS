@@ -24,6 +24,7 @@ class Master : public Server {
 private:
 	PathFileData      pfdm;
 	AddressServerData asdm;
+	readWriteMutex    m;   // save & load
 
 private:
 	// return the number of the chunks whose lease has been extended successfully
@@ -108,6 +109,17 @@ public:
 	void Start() {throw;}
 	void Shutdown() {throw;}
 
+	void write(std::ofstream & out) const {
+		MemoryPool::instance().write(out);
+		pfdm.write(out);
+		asdm.write(out);
+	}
+
+	void read(std::ifstream & in) {
+		MemoryPool::instance().read(in);
+		pfdm.read(in);
+		asdm.read(in);
+	}
 };
 
 }

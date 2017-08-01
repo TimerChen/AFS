@@ -17,10 +17,35 @@ namespace AFS {
 
 struct ServerDataBase {
 	time_t lastBeatTime{0};
+
+	virtual void write(std::ofstream & out) const {
+		out.write((char*)&lastBeatTime, sizeof(lastBeatTime));
+	}
+	virtual void read(std::ifstream & in) {
+		in.read((char*)&lastBeatTime, sizeof(lastBeatTime));
+	}
 };
 
 struct ServerData : public ServerDataBase {
 	std::vector<MemoryPool::ServerPtr> handles;
+
+	void write(std::ofstream & out) const final {
+		IOTool<MemoryPool::ServerPtr> tool;
+		auto sz = (int)handles.size();
+		out.write((char*)&sz, sizeof(sz));
+		for (auto &&handle : handles) {
+			tool.write(out, handle);
+		}
+	}
+
+	void read(std::ifstream & in) final {
+		int sz;
+		in.read((char*)&sz, sizeof(sz));
+		handles.resize(sz);
+		IOTool<MemoryPool::ServerPtr> tool;
+		for (int i = 0; i < sz; ++i)
+			tool.read(in, handles[i]);
+	}
 };
 
 struct ServerDataCopy : public ServerDataBase {
@@ -79,6 +104,33 @@ public:
 		auto & data = mp[addr];
 		data.handles.emplace_back(MemoryPool::instance().getServerPtr(handle, addr));
 	}
+
+	void write(std::ofstream & out) const {
+		readLock lk(m);
+		IOTool<Address> tool1;
+		IOTool<ServerData> tool2;
+		auto sz = (int)mp.size();
+		out.write((char*)&sz, sizeof(sz));
+		for (auto &&item : mp) {
+			tool1.write(out, item.first);
+			tool2.write(out, item.second);
+		}
+	}
+
+	void read(std::ifstream & in) {
+		writeLock lk(m);
+		IOTool<Address> tool1;
+		IOTool<ServerData> tool2;
+		int sz;
+		in.read((char*)&sz, sizeof(int));
+		for (int i = 0; i < sz; ++i) {
+			std::pair<Address, ServerData> tmp;
+			tool1.read(in, tmp.first);
+			tool2.read(in, tmp.second);
+			mp.insert(std::move(tmp));
+		}
+	}
+
 };
 }
 
