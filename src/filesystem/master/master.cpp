@@ -5,7 +5,7 @@
 #include "master.h"
 
 AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
-		: Server(srv, rootDir)  {
+		: Server(srv, rootDir), logc(rootDir + "data.dat", std::bind(&Master::write, this, std::placeholders::_1))  {
 	srv.RPCBind<std::tuple<GFSError, std::vector<ChunkHandle>>
 			(std::vector<ChunkHandle>, std::vector<std::tuple<ChunkHandle, ChunkVersion>>, std::vector<ChunkHandle>)>
 			("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
@@ -114,6 +114,8 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 
 std::tuple<AFS::GFSError, AFS::ChunkHandle>
 AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
+	auto logptr = logc.getPtr(true, OpCode::GetChunkHandle,
+	                          {path_str, Convertor::uintToString(chunkIndex)});
 	auto path = PathParser::instance().parse(path_str);
 	auto createChunk = [&](ChunkHandle handle){
 		Address addr;
@@ -126,6 +128,7 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		asdm.addChunk(addr, handle);
 	};
 	auto errMd = pfdm.getHandle(*path, chunkIndex, createChunk);
+	logptr->result = errMd.first;
 	return std::make_tuple(
 			ErrTranslator::masterErrTOGFSError(errMd.first),
 			errMd.second
@@ -225,4 +228,19 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	return std::make_tuple(
 			err, data.primary, data.location, data.leaseGrantTime + LeaseExpiredTime
 	);
+}
+
+void AFS::Master::reReplicate() {
+	auto pq = std::move(*(asdm.getPQ().release()));
+	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
+//			return srv.RPCCall({src, 0}, "SendCopy", tar, handle);
+	};
+	pfdm.reReplicate(pq, rpcCall);
+}
+
+void AFS::Master::BackgroundActivity() {
+	checkDeadChunkServer();
+	collectGarbage();
+	reReplicate();
+	// todo err
 }

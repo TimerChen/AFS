@@ -50,8 +50,8 @@ struct ChunkData {
 class MemoryPool {
 // DEBUG
 	friend class hcdmTest;
-    FRIEND_TEST(hcdmTest, ChunkPtr);
-	FRIEND_TEST(hcdmTest, ServerPtr);
+    FRIEND_TEST(hcdmTest, DISABLED_ChunkPtr);
+	FRIEND_TEST(hcdmTest, DISABLED_ServerPtr);
 
 	friend class Ptr;
 
@@ -225,13 +225,14 @@ public:
 			item.write(out);
 		}
 		sz = (int)recycler.size();
+		out.write((char*)&sz, sizeof(sz));
 		for (auto &&item : recycler) {
 			out.write((char*)&item, sizeof(item));
 		}
 	}
 
 	void read(std::ifstream & in) {
-		int sz;
+		int sz = -1;
 		in.read((char*)&sz, sizeof(sz));
 		container.resize(sz);
 		for (auto &&item : container) {
@@ -242,6 +243,12 @@ public:
 		for (auto &&item : recycler) {
 			in.read((char*)&item, sizeof(item));
 		}
+	}
+
+	void clear() {
+		writeLock lk(m);
+		recycler.clear();
+		container.clear();
 	}
 };
 

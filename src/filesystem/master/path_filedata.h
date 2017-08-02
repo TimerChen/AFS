@@ -155,6 +155,11 @@ public:
 	void write(std::ofstream & out) const {
 		mp.write(out);
 	}
+
+	void clear() {
+		mp.clear();
+	}
+
 };
 }
 

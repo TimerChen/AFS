@@ -29,7 +29,7 @@ using writeLock = std::unique_lock<boost::shared_mutex>;
 namespace AFS {
 
 enum class MasterError {
-	OK, NotExists, PermissonDenied,
+	OK, NotExists, PermissonDenied, AlreadyExists,
 	Unknown
 };
 
@@ -41,6 +41,8 @@ public:
 				return MasterError::OK;
 			case (int)ExtrieError::NotExist:
 				return MasterError::NotExists;
+			case (int)ExtrieError::Exist:
+				return MasterError::AlreadyExists;
 			default:
 				break;
 		}
@@ -51,6 +53,10 @@ public:
 		switch((int)err) {
 			case (int)MasterError::OK:
 				return GFSErrorCode::OK;
+			case (int)MasterError::NotExists:
+				return GFSErrorCode::NoSuchFileDir;
+			case (int)MasterError::AlreadyExists:
+				return GFSErrorCode::FileDirAlreadyExists;
 			default:
 				break;
 		}

@@ -66,7 +66,7 @@ protected:
 	}
 };
 
-TEST_F(hcdmTest, ChunkPtr) {
+TEST_F(hcdmTest, DISABLED_ChunkPtr) {
 	files.clear();
 	constexpr size_t ChunkNum = 10;
 	// construct
@@ -95,7 +95,7 @@ TEST_F(hcdmTest, ChunkPtr) {
 //	ASSERT_EQ(ChunkNum, in.container.size());
 }
 
-TEST_F(hcdmTest, ServerPtr) {
+TEST_F(hcdmTest, DISABLED_ServerPtr) {
 	struct Log {
 		uint64_t serverId;
 		uint64_t handle;

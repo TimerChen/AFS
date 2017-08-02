@@ -29,10 +29,19 @@ struct GFSError
 	GFSError() = default;
 	GFSError(GFSErrorCode _errCode, std::string _des = "")
 			: errCode(_errCode), description(std::move(_des)) {}
+
+	friend std::ostream & operator<<(std::ostream & out, const GFSError & code) {
+		out << (std::uint32_t)code.errCode;
+		return out;
+	}
+	bool operator==(const GFSError & other) const {
+		return errCode == other.errCode && description == other.description;
+	}
 };
 
 constexpr size_t ChunkNumPerServer = 20;
 constexpr time_t LeaseExpiredTime = 60; // a lease will become expired after 60s
+
 
 }
 

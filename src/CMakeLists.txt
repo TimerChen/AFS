@@ -68,7 +68,7 @@ if(Boost_FOUND)
 
 
             ## cjx end 51
-            )
+            tests/MasterTest/masterTest.cpp tests/MasterTest/masterTest.h)
     include_directories(
             ## ryw begin 54
             ${CMAKE_SOURCE_DIR}

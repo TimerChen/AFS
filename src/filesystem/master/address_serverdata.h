@@ -121,7 +121,7 @@ public:
 		writeLock lk(m);
 		IOTool<Address> tool1;
 		IOTool<ServerData> tool2;
-		int sz;
+		int sz = -1;
 		in.read((char*)&sz, sizeof(int));
 		for (int i = 0; i < sz; ++i) {
 			std::pair<Address, ServerData> tmp;
@@ -142,6 +142,11 @@ public:
 		}
 		return result;
 	};
+
+	void clear() {
+		writeLock lk(m);
+		mp.clear();
+	}
 };
 }
 

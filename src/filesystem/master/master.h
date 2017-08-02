@@ -11,6 +11,7 @@
 #include "path_filedata.h"
 #include "address_serverdata.h"
 #include "handle_chunkdata.h"
+#include "log_contaner.h"
 #include <memory>
 #include <string>
 #include <service.hpp>
@@ -21,9 +22,13 @@
 namespace AFS {
 
 class Master : public Server {
+protected:
+	void save() {throw;}
+	void load() {throw;}
 private:
 	PathFileData      pfdm;
 	AddressServerData asdm;
+	LogContainer      logc;
 	readWriteMutex    m;   // save & load
 
 private:
@@ -44,22 +49,12 @@ private:
 
 	void collectGarbage();
 
-	void reReplicate() {
-		auto pq = std::move(*(asdm.getPQ().release()));
-		auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
-//			return srv.RPCCall({src, 0}, "SendCopy", tar, handle);
-		};
-		pfdm.reReplicate(pq, rpcCall);
-	}
+	void reReplicate();
 protected:
+public: // debug
 	// BackgroundActivity does all the background activities:
 	// dead chunkserver handling, garbage collection, stale replica detection, etc
-	void BackgroundActivity() {
-		checkDeadChunkServer();
-		collectGarbage();
-		// todo re-replicate
-		throw;
-	}
+	void BackgroundActivity();
 
 	// RPCHeartbeat is called by chunkserver to let the master know that a chunkserver is alive.
 	std::tuple<GFSError, std::vector<ChunkHandle> /*Garbage Chunks*/>
@@ -115,14 +110,17 @@ public:
 
 	void write(std::ofstream & out) const {
 		MemoryPool::instance().write(out);
-		pfdm.write(out);
 		asdm.write(out);
+		pfdm.write(out);
 	}
 
 	void read(std::ifstream & in) {
+		pfdm.clear();
+		asdm.clear();
+		MemoryPool::instance().clear();
 		MemoryPool::instance().read(in);
-		pfdm.read(in);
 		asdm.read(in);
+		pfdm.read(in);
 	}
 };
 

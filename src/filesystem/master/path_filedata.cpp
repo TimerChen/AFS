@@ -47,6 +47,10 @@ AFS::MasterError AFS::PathFileData::deleteFile(const AFS::PathFileData::Path &pa
 		data.deleteTime = time(nullptr);
 	};
 	mp.iterate(path, del);
+	auto Expired = [](const FileData & data) {
+		return data.deleteTime != 0;
+	};
+	mp.remove_if(Expired);
 	// todo err
 	return MasterError::OK;
 }
@@ -54,12 +58,14 @@ AFS::MasterError AFS::PathFileData::deleteFile(const AFS::PathFileData::Path &pa
 AFS::MasterError AFS::PathFileData::createFile(const AFS::PathFileData::Path &path) {
 	FileData md;
 	md.type = FileData::Type::File;
+	md.name = path.back();
 	return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
 }
 
 AFS::MasterError AFS::PathFileData::createFolder(const AFS::PathFileData::Path &path) {
 	FileData md;
 	md.type = FileData::Type::Folder;
+	md.name = path.back();
 	return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
 }
 

@@ -64,7 +64,7 @@ private:
 				child.insert(std::make_pair(key, nullptr));
 			}
 			bool flag;
-			in.read((char*)&sz, sizeof(flag));
+			in.read((char*)&flag, sizeof(flag));
 			if (flag) {
 				value = new T();
 				IOTool<T> tool;
@@ -152,12 +152,16 @@ private:
 	void _remove_if(node_ptr p, node_ptr pnt, const U & idx,
 	                const std::function<bool(const T&)> & condition) {
 		writeLock wlk(p->m);
-		for (auto &&item : p->child)
-			_remove_if(item.second, p, item.first, condition);
+		auto iter = p->child.begin();
+		while (iter != p->child.end()) {
+			auto tmp = iter++;
+			_remove_if(tmp->second, p, tmp->first, condition);
+		}
 		if (p == header)
 			return;
 		if (condition(*p->value)) {
 			pnt->child.erase(pnt->child.find(idx));
+			wlk.release();
 			put_node(p);
 		}
 	}
@@ -329,8 +333,15 @@ public:
 	}
 
 	void read(std::ifstream & in) {
+		clear();
 		writeLock lk(header->m);
 		_read(header, in);
+	}
+
+	void clear() {
+		if (header)
+			destroy(header);
+		init();
 	}
 };
 }
@@ -362,7 +373,7 @@ void extrie<U, V>::destroy(node_ptr p) {
 	writeLock lk(p->m);
 	for (auto &&item : p->child)
 		destroy(item.second);
-	lk.unlock();
+	lk.release();
 	put_node(p);
 }
 
