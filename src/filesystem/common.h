@@ -25,7 +25,7 @@ enum class GFSErrorCode : std::uint32_t
 	InvalidOperation = 1,
 	ChunkVersionExpired = 2,
 	OperationOverflow = 3,
-
+	OperateFailed = 4,
 };
 
 

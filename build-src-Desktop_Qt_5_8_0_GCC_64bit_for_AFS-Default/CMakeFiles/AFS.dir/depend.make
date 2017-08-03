@@ -4721,13 +4721,16 @@ CMakeFiles/AFS.dir/filesystem/chunk.cpp.o: /usr/local/include/msgpack/zone.h
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.o: /usr/local/include/msgpack/zone.hpp
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.o: /usr/local/include/msgpack/zone_decl.hpp
 
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/components/chunkpool.h
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/components/error.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/chunk.h
@@ -4736,6 +4739,10 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/s
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/common.h
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/server.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -5827,6 +5834,7 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/iterat
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/iterator/iterator_facade.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/iterator/iterator_traits.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/iterator/reverse_iterator.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/iterator/transform_iterator.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/limits.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/math/common_factor_ct.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/math/policies/policy.hpp
@@ -6503,6 +6511,7 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/regex/
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/smart_ptr/allocate_shared_array.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
@@ -7515,13 +7524,16 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/msgpack/zone
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/msgpack/zone.hpp
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /usr/local/include/msgpack/zone_decl.hpp
 
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/components/error.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/components/extrie.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/components/message.hpp
@@ -7535,6 +7547,10 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/fi
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/setting.h
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/server.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -8626,6 +8642,7 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/iterator/it
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/iterator/iterator_facade.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/iterator/iterator_traits.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/iterator/reverse_iterator.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/iterator/transform_iterator.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/limits.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/math/common_factor_ct.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/math/policies/policy.hpp
@@ -9302,6 +9319,7 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/regex/v4/w3
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/smart_ptr/allocate_shared_array.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
@@ -10314,13 +10332,16 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/msgpack/zone.h
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/msgpack/zone.hpp
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /usr/local/include/msgpack/zone_decl.hpp
 
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/components/error.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/components/extrie.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/components/sugar.hpp
@@ -10332,6 +10353,10 @@ CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/fi
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/setting.h
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/server.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -11423,6 +11448,7 @@ CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/iterator/it
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/iterator/iterator_facade.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/iterator/iterator_traits.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/iterator/reverse_iterator.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/iterator/transform_iterator.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/limits.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/math/common_factor_ct.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/math/policies/policy.hpp
@@ -12099,6 +12125,7 @@ CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/regex/v4/w3
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/smart_ptr/allocate_shared_array.hpp
 CMakeFiles/AFS.dir/filesystem/master.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
@@ -13997,13 +14024,16 @@ CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o: /usr/local/include
 CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp
 CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.h
 
+CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/components/error.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/common.h
 CMakeFiles/AFS.dir/main.cpp.o: /home/timemachine/Desktop/AFS/src/main.cpp
@@ -14048,6 +14078,10 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/algorithm/string/std_con
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/algorithm/string/trim.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/algorithm/string/yes_no_type.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -14633,6 +14667,7 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/date_time/year_month_day
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/atomic_count.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/atomic_redef_macros.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/atomic_undef_macros.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/bitmask.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/call_traits.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/container_fwd.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/endian.hpp
@@ -14642,6 +14677,7 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/interlocked.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/iterator.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/no_exceptions_support.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/reference_content.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/scoped_enum_emulation.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/sp_typeinfo.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/templated_streams.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/detail/winapi/basic_types.hpp
@@ -14671,6 +14707,14 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/exception/info.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/exception/to_string.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/exception/to_string_stub.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/exception_ptr.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/config.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/convenience.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/fstream.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/operations.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/path.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/path_traits.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/filesystem/string_file.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/function.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/function/detail/maybe_include.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/function/detail/prologue.hpp
@@ -15113,6 +15157,7 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/intrusive/detail/workaro
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/intrusive/pointer_rebind.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/intrusive/pointer_traits.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/intrusive_ptr.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/io/detail/quoted_manip.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/io/ios_state.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/io_fwd.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/is_placeholder.hpp
@@ -15812,6 +15857,7 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/regex/v4/w32_regex_trait
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/smart_ptr/allocate_shared_array.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
@@ -16824,18 +16870,25 @@ CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/msgpack/zone.h
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/msgpack/zone.hpp
 CMakeFiles/AFS.dir/main.cpp.o: /usr/local/include/msgpack/zone_decl.hpp
 
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/components/error.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/common.h
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.h
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -17916,6 +17969,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/ite
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/iterator/iterator_facade.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/iterator/iterator_traits.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/iterator/reverse_iterator.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/iterator/transform_iterator.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/limits.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/math/common_factor_ct.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/math/policies/policy.hpp
@@ -18592,6 +18646,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/reg
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/smart_ptr/allocate_shared_array.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
@@ -19604,16 +19659,23 @@ CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/msgpack/z
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/msgpack/zone.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /usr/local/include/msgpack/zone_decl.hpp
 
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/json/json.h
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/service.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.h
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/aligned_storage.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/archive/iterators/transform_width.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/array.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/asio.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/asio/async_result.hpp
@@ -20592,6 +20654,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/ite
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/iterator/iterator_facade.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/iterator/iterator_traits.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/iterator/reverse_iterator.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/iterator/transform_iterator.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/limits.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/math/common_factor_ct.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/math/policies/policy.hpp
@@ -21261,6 +21324,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/reg
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/regex_fwd.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/scoped_array.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/scoped_ptr.hpp
+CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/serialization/throw_exception.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/shared_ptr.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/smart_ptr/bad_weak_ptr.hpp
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /usr/local/include/boost/smart_ptr/detail/atomic_count.hpp

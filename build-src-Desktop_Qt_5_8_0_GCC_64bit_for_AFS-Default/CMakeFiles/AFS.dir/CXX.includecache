@@ -208,6 +208,28 @@ boost/asio.hpp
 netmsg.hpp
 /home/timemachine/Desktop/AFS/src/LightDS/include/netmsg.hpp
 
+/home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
+iostream
+-
+string
+-
+map
+-
+functional
+-
+mutex
+-
+atomic
+-
+json/json.h
+-
+boost/archive/iterators/binary_from_base64.hpp
+-
+boost/archive/iterators/base64_from_binary.hpp
+-
+boost/archive/iterators/transform_width.hpp
+-
+
 /home/timemachine/Desktop/AFS/src/LightDS/include/pool.hpp
 functional
 -
@@ -245,14 +267,24 @@ mutex
 -
 functional
 -
+boost/utility/base_from_member.hpp
+-
 netserver.hpp
 /home/timemachine/Desktop/AFS/src/LightDS/include/netserver.hpp
-netclient.hpp
-/home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
 rpc.hpp
 /home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
 log.hpp
 /home/timemachine/Desktop/AFS/src/LightDS/include/log.hpp
+user.hpp
+/home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
+
+/home/timemachine/Desktop/AFS/src/LightDS/include/user.hpp
+netclient.hpp
+/home/timemachine/Desktop/AFS/src/LightDS/include/netclient.hpp
+rpc.hpp
+/home/timemachine/Desktop/AFS/src/LightDS/include/rpc.hpp
+pipeservice.hpp
+/home/timemachine/Desktop/AFS/src/LightDS/include/pipeservice.hpp
 
 /home/timemachine/Desktop/AFS/src/components/chunkpool.cpp
 chunkpool.h
@@ -304,6 +336,8 @@ utility
 chunk.h
 /home/timemachine/Desktop/AFS/src/filesystem/chunk.h
 chunkpool.h
+-
+time.h
 -
 
 /home/timemachine/Desktop/AFS/src/filesystem/chunk.h
@@ -455,6 +489,8 @@ fstream
 -
 tests/LightDSTest/servera.h
 /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.h
+boost/filesystem.hpp
+/home/timemachine/Desktop/AFS/src/boost/filesystem.hpp
 service.hpp
 /home/timemachine/Desktop/AFS/src/service.hpp
 
@@ -988,6 +1024,44 @@ locale
 
 /usr/local/include/boost/aligned_storage.hpp
 boost/type_traits/aligned_storage.hpp
+-
+
+/usr/local/include/boost/archive/iterators/base64_from_binary.hpp
+boost/assert.hpp
+-
+cstddef
+-
+boost/iterator/transform_iterator.hpp
+-
+boost/archive/iterators/dataflow_exception.hpp
+-
+
+/usr/local/include/boost/archive/iterators/binary_from_base64.hpp
+boost/assert.hpp
+-
+boost/serialization/throw_exception.hpp
+-
+boost/static_assert.hpp
+-
+boost/iterator/transform_iterator.hpp
+-
+boost/archive/iterators/dataflow_exception.hpp
+-
+
+/usr/local/include/boost/archive/iterators/dataflow_exception.hpp
+boost/config.hpp
+-
+exception
+-
+boost/assert.hpp
+-
+
+/usr/local/include/boost/archive/iterators/transform_width.hpp
+boost/iterator/iterator_adaptor.hpp
+-
+boost/iterator/iterator_traits.hpp
+-
+algorithm
 -
 
 /usr/local/include/boost/array.hpp
@@ -22522,6 +22596,12 @@ boost/smart_ptr/scoped_array.hpp
 
 /usr/local/include/boost/scoped_ptr.hpp
 boost/smart_ptr/scoped_ptr.hpp
+-
+
+/usr/local/include/boost/serialization/throw_exception.hpp
+boost/config.hpp
+-
+exception
 -
 
 /usr/local/include/boost/shared_ptr.hpp

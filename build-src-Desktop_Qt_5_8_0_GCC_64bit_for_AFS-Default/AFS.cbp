@@ -52,7 +52,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>
@@ -83,7 +83,7 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>

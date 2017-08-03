@@ -28,7 +28,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/timemachine/Desktop/AFS/src/tests"
   "/home/timemachine/Desktop/AFS/src/filesystem"
   "/home/timemachine/Desktop/AFS/src/LightDS/include"
-  "/home/timemachine/Desktop/AFS/src/JsonCPP/json"
+  "/home/timemachine/Desktop/AFS/src/JsonCPP"
   )
 
 # Targets to which this target links.

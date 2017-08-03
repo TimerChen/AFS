@@ -16,14 +16,13 @@ struct Chunk
 	Chunk( );
 	//Chunk( const Chunk &c );
 	~Chunk();
-
-	void setPrimary();
-
+	void update( const ChunkVersion &newVersion);
+	bool primary();
 	ChunkVersion version;
 	ChunkLength length;
-private:
 	bool isPrimary;
 	std::uint64_t expireTime;
+	std::uint32_t finished;
 };
 
 }

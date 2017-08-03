@@ -87,7 +87,7 @@ protected:
 
 	// RPCApplyMutation is called by primary to apply mutations
 	GFSError
-		RPCApplyMutation(ChunkHandle handle, std::uint64_t serialNo, MutationType type, std::uint64_t dataID, std::uint64_t offset, std::uint64_t length);
+		RPCApplyMutation(ChunkHandle handle, ChunkVersion version, std::uint64_t serialNo, MutationType type, std::uint64_t dataID, std::uint64_t offset);
 
 	// RPCSendCopy is called by master, send the whole copy to given address
 	GFSError
@@ -134,24 +134,32 @@ protected:
 		( const ChunkHandle &handle, const Chunk &c );
 
 	void saveChunkData
-		( const ChunkHandle &handle, char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+		( const ChunkHandle &handle, const char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
 
 	void bindFunctions();
 
+	void addData(  );
+	void deleteData( const std::uint64_t &dataID );
+	void deleteChunks( const ChunkHandle &handle );
+
+	bool checkChunk( const std::int64_t &handle );
+	void garbageCollect( const std::vector<ChunkHandle> &gbg );
+	GFSError heartBeat();
 	void Heartbeat();
 protected:
 	std::stringstream ss;
 	std::uint32_t MaxCacheSize;
 	std::map< ChunkHandle, Chunk > chunks;
 	std::map< ChunkHandle, ReadWriteMutex > chunkMutex;
-	std::map< std::uint64_t, char* > dataCache;
-	std::queue<std::uint64_t> cacheQueue;
+	std::map< std::uint64_t, std::tuple<char*,std::uint64_t/*length*/> > dataCache;
+	std::deque<std::uint64_t> cacheQueue;
 	ChunkPool chunkPool;
 	ReadWriteMutex lock_ss, lock_chunks, lock_chunkMutex, lock_dataCache, lock_cacheQueue;
 
 protected:
 	std::string masterIP;
-	std::uint64_t masterPort;
+	std::uint16_t masterPort;
+	boost::filesystem::path chunkFolder;
 };
 
 

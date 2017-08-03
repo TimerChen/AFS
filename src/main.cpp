@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "tests/LightDSTest/servera.h"
+#include "boost/filesystem.hpp"
 #include "service.hpp"
 
 using namespace std;
@@ -19,6 +20,10 @@ void getMsg( LightDS::Service &srv )
 
 int main(int argc, char *argv[])
 {
+	//using namespace ;
+
+	return 0;
+
 	ofstream logfile("test_log.txt",ios::out);
 
 	int port, toPort;
