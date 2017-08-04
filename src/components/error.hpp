@@ -24,17 +24,35 @@ public:
 };
 
 
-class ClientError : public AFSError
-{
-public:
-	ClientError(){}
+//class ClientError : public AFSError
+//{
+//public:
+//	ClientError(){}
+//};
+//
+//class MasterNotFind : public ClientError
+//{
+//
+//};
+
+}
+
+namespace AFS {
+
+enum class ClientErrCode {
+	OK = 0, Unknown,
+	MasterNotFound, ServerNotFound,
+	NoSuchFileDir, FileDirAlreadyExists,
+	WrongOperation,
 };
 
-class MasterNotFind : public ClientError
-{
+struct ClientErr {
+	ClientErrCode code;
+	std::string   description;
 
+	ClientErr(ClientErrCode _code = ClientErrCode::Unknown, std::string _des = "")
+			: code(_code), description(std::move(_des)) {}
 };
-
 
 }
 
