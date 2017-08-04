@@ -2,8 +2,32 @@
 A simplified Google File System of the PPCA lesson of ACM class, which called ACM File System.
 
 ## How to use LightDS
+servera.h
+```c++
+#ifndef SERVERA_H
+#define SERVERA_H
 
-Servera.cpp
+#include "service.hpp"
+#include "log.hpp"
+
+#include "common.h"
+
+
+class ServerA
+{
+public:
+	ServerA( LightDS::Service &srv );
+	LightDS::Service &srv;
+	void sendMessage(  short port, std::string words );
+
+protected:
+	AFS::GFSError PRCHello( std::string words );
+};
+
+#endif // SERVERA_H
+
+```
+servera.cpp
 ```c++
 ServerA::ServerA( LightDS::Service &Srv )
 	:srv(Srv)
