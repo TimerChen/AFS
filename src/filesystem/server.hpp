@@ -2,6 +2,7 @@
 #define AFS_SERVER_HPP
 
 #include <service.hpp>
+#include "boost/filesystem.hpp"
 #include "common.h"
 
 namespace AFS {
@@ -10,7 +11,7 @@ class Server
 {
 
 public:
-	Server( LightDS::Service &Srv, std::string RootDir )
+	Server( LightDS::Service &Srv, std::string RootDir = "." )
 		: srv(Srv), rootDir(RootDir), running(0)
 	{ }
 	virtual ~Server()
@@ -49,7 +50,7 @@ public:
 
 protected:
 	LightDS::Service &srv;
-	std::string rootDir;
+	boost::filesystem::path rootDir;
 	bool running;
 };
 

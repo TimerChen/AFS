@@ -3,10 +3,14 @@
 
 #include <string>
 #include <service.hpp>
+#include <sstream>
+#include <queue>
+#include <mutex>
 
 #include "common.h"
 #include "server.hpp"
 #include "chunk.h"
+#include <chunkpool.h>
 
 namespace AFS {
 
@@ -48,14 +52,19 @@ public:
 		MutationPad
 	};
 public:
+
+
+public:
 	ChunkServer(LightDS::Service &Srv, const std::string &RootDir);
+
 	~ChunkServer();
-	virtual void Start();
-	virtual void Shutdown();
+
+	void Start();
+
+	void Shutdown();
+
 
 protected:
-	void Heartbeat();
-
 	// RPCCreateChunk is called by master to create a new chunk given the chunk handle.
 	GFSError
 		RPCCreateChunk(ChunkHandle handle);
@@ -78,7 +87,7 @@ protected:
 
 	// RPCApplyMutation is called by primary to apply mutations
 	GFSError
-		RPCApplyMutation(ChunkHandle handle, std::uint64_t serialNo, MutationType type, std::uint64_t dataID, std::uint64_t offset, std::uint64_t length);
+		RPCApplyMutation(ChunkHandle handle, ChunkVersion version, std::uint64_t serialNo, MutationType type, std::uint64_t dataID, std::uint64_t offset);
 
 	// RPCSendCopy is called by master, send the whole copy to given address
 	GFSError
@@ -104,7 +113,64 @@ protected:
 	// This should be replaced by a chain forwarding.
 	GFSError
 		RPCPushData(std::uint64_t dataID, std::string data);
+protected:
 
+
+	void load();
+
+	void loadFiles( const boost::filesystem::path &Path );
+
+	void loadSettings();
+
+	Chunk loadChunkInfo_noLock
+		( const ChunkHandle &handle );
+
+	std::string loadChunkData_noLock
+		( const ChunkHandle &handle, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	Chunk loadChunkInfo
+		( const ChunkHandle &handle );
+
+	std::string loadChunkData
+		( const ChunkHandle &handle, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	void save();
+
+	void saveChunkInfo_noLock
+		( const ChunkHandle &handle, const Chunk &c );
+
+	void saveChunkData_noLock
+		( const ChunkHandle &handle, const char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	void saveChunkInfo
+		( const ChunkHandle &handle, const Chunk &c );
+
+	void saveChunkData
+		( const ChunkHandle &handle, const char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
+	void bindFunctions();
+
+	void deleteData( const std::uint64_t &dataID );
+	void deleteChunks( const ChunkHandle &handle );
+
+	bool checkChunk( const std::int64_t &handle );
+	void garbageCollect( const std::vector<ChunkHandle> &gbg );
+	GFSError heartBeat();
+	void Heartbeat();
+protected:
+	std::stringstream ss;
+	std::uint32_t MaxCacheSize;
+	std::map< ChunkHandle, Chunk > chunks;
+	std::map< ChunkHandle, ReadWriteMutex > chunkMutex;
+	std::map< std::uint64_t, std::tuple<char*,std::uint64_t/*length*/> > dataCache;
+	std::deque<std::uint64_t> cacheQueue;
+	ChunkPool chunkPool;
+	ReadWriteMutex lock_ss, lock_chunks, lock_dataCache, lock_cacheQueue, lock_chunkMutex;
+
+protected:
+	std::string masterIP;
+	std::uint16_t masterPort;
+	boost::filesystem::path chunkFolder;
 };
 
 
