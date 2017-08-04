@@ -12,9 +12,9 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 
-#SET(CMAKE_BUILD_TYPE "Debug")
-#SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
-#SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 
 if(Boost_FOUND)
@@ -33,6 +33,7 @@ if(Boost_FOUND)
             filesystem/master/handle_chunkdata.cpp   filesystem/master/handle_chunkdata.h
             filesystem/master/log_contaner.cpp       filesystem/master/log_contaner.h
             tests/MasterTest/hcdmTest.cpp            tests/MasterTest/hcdmTest.h
+            tests/MasterTest/masterTest.cpp          tests/MasterTest/masterTest.h
             ## ryw end 31
             ## cjx begin 32
             filesystem/server.hpp
@@ -70,7 +71,7 @@ if(Boost_FOUND)
 
 
             ## cjx end 51
-            tests/MasterTest/masterTest.cpp tests/MasterTest/masterTest.h)
+            )
     include_directories(
             ## ryw begin 54
             ${CMAKE_SOURCE_DIR}
