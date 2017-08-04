@@ -85,7 +85,7 @@ if(Boost_FOUND)
             ## cjx begin 66
             ${CMAKE_SOURCE_DIR}/filesystem
             ${CMAKE_SOURCE_DIR}/LightDS/include
-            ${CMAKE_SOURCE_DIR}/JsonCPP/json
+            ${CMAKE_SOURCE_DIR}/JsonCPP
 
 
 

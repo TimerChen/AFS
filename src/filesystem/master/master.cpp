@@ -128,7 +128,7 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		asdm.addChunk(addr, handle);
 	};
 	auto errMd = pfdm.getHandle(*path, chunkIndex, createChunk);
-	logptr->result = errMd.first;
+	//logptr->result = errMd.first;
 	return std::make_tuple(
 			ErrTranslator::masterErrTOGFSError(errMd.first),
 			errMd.second

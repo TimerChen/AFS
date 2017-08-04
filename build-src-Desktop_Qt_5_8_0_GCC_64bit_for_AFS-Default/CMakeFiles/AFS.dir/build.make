@@ -81,81 +81,153 @@ CMakeFiles/AFS.dir/main.cpp.o.provides: CMakeFiles/AFS.dir/main.cpp.o.requires
 CMakeFiles/AFS.dir/main.cpp.o.provides.build: CMakeFiles/AFS.dir/main.cpp.o
 
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.o: CMakeFiles/AFS.dir/flags.make
-CMakeFiles/AFS.dir/filesystem/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/AFS.dir/filesystem/master.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master.cpp
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master/master.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/AFS.dir/filesystem/master/master.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master/master.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master/master.cpp
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master.cpp > CMakeFiles/AFS.dir/filesystem/master.cpp.i
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master/master.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master/master.cpp > CMakeFiles/AFS.dir/filesystem/master/master.cpp.i
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master.cpp -o CMakeFiles/AFS.dir/filesystem/master.cpp.s
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master/master.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master/master.cpp -o CMakeFiles/AFS.dir/filesystem/master/master.cpp.s
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.o.requires:
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.requires:
 
-.PHONY : CMakeFiles/AFS.dir/filesystem/master.cpp.o.requires
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.requires
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master.cpp.o.requires
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master.cpp.o.provides.build
-.PHONY : CMakeFiles/AFS.dir/filesystem/master.cpp.o.provides
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.provides
 
-CMakeFiles/AFS.dir/filesystem/master.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master.cpp.o
-
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o: CMakeFiles/AFS.dir/flags.make
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp > CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.i
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp -o CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.s
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.requires:
-
-.PHONY : CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.requires
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.requires
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.provides.build
-.PHONY : CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.provides
-
-CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o
+CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master/master.cpp.o
 
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o: CMakeFiles/AFS.dir/flags.make
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.cpp
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp > CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.i
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.cpp > CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.i
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp -o CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.s
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.cpp -o CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.s
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.requires:
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.requires:
 
-.PHONY : CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.requires
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.requires
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.requires
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.provides.build
-.PHONY : CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.provides
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.provides
 
-CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o
+CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o
+
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.cpp
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.cpp > CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.i
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.cpp -o CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.s
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.requires
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.provides
+
+CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o
+
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.cpp
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.cpp > CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.i
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.cpp -o CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.s
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.requires
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.provides
+
+CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o
+
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.cpp
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.cpp > CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.i
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.cpp -o CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.s
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.requires
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.provides: CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.provides
+
+CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.provides.build: CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o
+
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o: /home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.cpp
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.cpp > CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.i
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.cpp -o CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.s
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.requires
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.provides: CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.provides
+
+CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.provides.build: CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o
 
 
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/chunkserver.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/chunkserver.cpp
 
 CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.i: cmake_force
@@ -179,7 +251,7 @@ CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o.provides.build: CMakeFiles/AFS.d
 
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/chunk.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/AFS.dir/filesystem/chunk.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/AFS.dir/filesystem/chunk.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/chunk.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/chunk.cpp
 
 CMakeFiles/AFS.dir/filesystem/chunk.cpp.i: cmake_force
@@ -203,7 +275,7 @@ CMakeFiles/AFS.dir/filesystem/chunk.cpp.o.provides.build: CMakeFiles/AFS.dir/fil
 
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/filesystem/client.cpp.o: /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/AFS.dir/filesystem/client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/AFS.dir/filesystem/client.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/filesystem/client.cpp.o -c /home/timemachine/Desktop/AFS/src/filesystem/client.cpp
 
 CMakeFiles/AFS.dir/filesystem/client.cpp.i: cmake_force
@@ -227,7 +299,7 @@ CMakeFiles/AFS.dir/filesystem/client.cpp.o.provides.build: CMakeFiles/AFS.dir/fi
 
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o: /home/timemachine/Desktop/AFS/src/JsonCPP/jsoncpp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o -c /home/timemachine/Desktop/AFS/src/JsonCPP/jsoncpp.cpp
 
 CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.i: cmake_force
@@ -251,7 +323,7 @@ CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o.provides.build: CMakeFiles/AFS.dir/Json
 
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/LightDSTest/servera.cpp
 
 CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.i: cmake_force
@@ -275,7 +347,7 @@ CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o.provides.build: CMakeFiles/AF
 
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: CMakeFiles/AFS.dir/flags.make
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o: /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.cpp
 
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.i: cmake_force
@@ -297,32 +369,64 @@ CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o.provides: CMakeFiles/AFS.dir/
 CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o.provides.build: CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o
 
 
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o: CMakeFiles/AFS.dir/flags.make
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o: /home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o -c /home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.cpp
+
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.cpp > CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.i
+
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.cpp -o CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.s
+
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.requires:
+
+.PHONY : CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.requires
+
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.provides: CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.provides.build
+.PHONY : CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.provides
+
+CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.provides.build: CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o
+
+
 # Object files for target AFS
 AFS_OBJECTS = \
 "CMakeFiles/AFS.dir/main.cpp.o" \
-"CMakeFiles/AFS.dir/filesystem/master.cpp.o" \
-"CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o" \
-"CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o" \
+"CMakeFiles/AFS.dir/filesystem/master/master.cpp.o" \
+"CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o" \
+"CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o" \
+"CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o" \
+"CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o" \
+"CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/chunk.cpp.o" \
 "CMakeFiles/AFS.dir/filesystem/client.cpp.o" \
 "CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o" \
 "CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o" \
-"CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o"
+"CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o" \
+"CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o"
 
 # External object files for target AFS
 AFS_EXTERNAL_OBJECTS =
 
 AFS: CMakeFiles/AFS.dir/main.cpp.o
-AFS: CMakeFiles/AFS.dir/filesystem/master.cpp.o
-AFS: CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o
-AFS: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o
+AFS: CMakeFiles/AFS.dir/filesystem/master/master.cpp.o
+AFS: CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o
+AFS: CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o
+AFS: CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o
+AFS: CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o
+AFS: CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/chunk.cpp.o
 AFS: CMakeFiles/AFS.dir/filesystem/client.cpp.o
 AFS: CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o
 AFS: CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o
 AFS: CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o
+AFS: CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o
 AFS: CMakeFiles/AFS.dir/build.make
 AFS: /usr/local/lib/libboost_system.so
 AFS: /usr/local/lib/libboost_thread.so
@@ -330,7 +434,7 @@ AFS: /usr/local/lib/libboost_chrono.so
 AFS: /usr/local/lib/libboost_date_time.so
 AFS: /usr/local/lib/libboost_atomic.so
 AFS: CMakeFiles/AFS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable AFS"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/timemachine/Desktop/AFS/build-src-Desktop_Qt_5_8_0_GCC_64bit_for_AFS-Default/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable AFS"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AFS.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -339,15 +443,19 @@ CMakeFiles/AFS.dir/build: AFS
 .PHONY : CMakeFiles/AFS.dir/build
 
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/main.cpp.o.requires
-CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master.cpp.o.requires
-CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o.requires
-CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master/master.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/chunkserver.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/chunk.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/filesystem/client.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/JsonCPP/jsoncpp.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/tests/LightDSTest/servera.cpp.o.requires
 CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.o.requires
+CMakeFiles/AFS.dir/requires: CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o.requires
 
 .PHONY : CMakeFiles/AFS.dir/requires
 

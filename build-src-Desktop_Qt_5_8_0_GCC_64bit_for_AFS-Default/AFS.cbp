@@ -47,12 +47,12 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/components"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/master"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>
@@ -78,12 +78,12 @@
 					<Add directory="/home/timemachine/Desktop/AFS/src"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/components"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/servers"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/tests"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem/master"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/filesystem"/>
 					<Add directory="/home/timemachine/Desktop/AFS/src/LightDS/include"/>
-					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP/json"/>
+					<Add directory="/home/timemachine/Desktop/AFS/src/JsonCPP"/>
 					<Add directory="/usr/include/c++/5"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
 					<Add directory="/usr/include/c++/5/backward"/>
@@ -133,6 +133,9 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/message.hpp">
 			<Option target="AFS"/>
 		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/components/parser.hpp">
+			<Option target="AFS"/>
+		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/components/sugar.hpp">
 			<Option target="AFS"/>
 		</Unit>
@@ -157,28 +160,37 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/common.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master.cpp">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.cpp">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/address_serverdata.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.cpp">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.cpp">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/data.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/handle_chunkdata.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.cpp">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.cpp">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/log.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/log_contaner.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/rpc_structs.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/master.cpp">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/message_and_setting/setting.h">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/master.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/path_filedata.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/master/setting.hpp">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/filesystem/server.hpp">
@@ -199,10 +211,19 @@
 		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/LightDSTest/serverb.h">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/extrie_test.hpp">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.cpp">
 			<Option target="AFS"/>
 		</Unit>
-		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/log_test.hpp">
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/MasterTest/hcdmTest.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.cpp">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/MasterTest/masterTest.h">
+			<Option target="AFS"/>
+		</Unit>
+		<Unit filename="/home/timemachine/Desktop/AFS/src/tests/extrie_test.hpp">
 			<Option target="AFS"/>
 		</Unit>
 		<Unit filename="/home/timemachine/Desktop/AFS/src/CMakeLists.txt">

@@ -231,86 +231,140 @@ filesystem/client.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/client.cpp.s
 .PHONY : filesystem/client.cpp.s
 
-filesystem/master.o: filesystem/master.cpp.o
+filesystem/master/address_serverdata.o: filesystem/master/address_serverdata.cpp.o
 
-.PHONY : filesystem/master.o
-
-# target to build an object file
-filesystem/master.cpp.o:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master.cpp.o
-.PHONY : filesystem/master.cpp.o
-
-filesystem/master.i: filesystem/master.cpp.i
-
-.PHONY : filesystem/master.i
-
-# target to preprocess a source file
-filesystem/master.cpp.i:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master.cpp.i
-.PHONY : filesystem/master.cpp.i
-
-filesystem/master.s: filesystem/master.cpp.s
-
-.PHONY : filesystem/master.s
-
-# target to generate assembly for a file
-filesystem/master.cpp.s:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master.cpp.s
-.PHONY : filesystem/master.cpp.s
-
-filesystem/message_and_setting/data.o: filesystem/message_and_setting/data.cpp.o
-
-.PHONY : filesystem/message_and_setting/data.o
+.PHONY : filesystem/master/address_serverdata.o
 
 # target to build an object file
-filesystem/message_and_setting/data.cpp.o:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.o
-.PHONY : filesystem/message_and_setting/data.cpp.o
+filesystem/master/address_serverdata.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.o
+.PHONY : filesystem/master/address_serverdata.cpp.o
 
-filesystem/message_and_setting/data.i: filesystem/message_and_setting/data.cpp.i
+filesystem/master/address_serverdata.i: filesystem/master/address_serverdata.cpp.i
 
-.PHONY : filesystem/message_and_setting/data.i
+.PHONY : filesystem/master/address_serverdata.i
 
 # target to preprocess a source file
-filesystem/message_and_setting/data.cpp.i:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.i
-.PHONY : filesystem/message_and_setting/data.cpp.i
+filesystem/master/address_serverdata.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.i
+.PHONY : filesystem/master/address_serverdata.cpp.i
 
-filesystem/message_and_setting/data.s: filesystem/message_and_setting/data.cpp.s
+filesystem/master/address_serverdata.s: filesystem/master/address_serverdata.cpp.s
 
-.PHONY : filesystem/message_and_setting/data.s
+.PHONY : filesystem/master/address_serverdata.s
 
 # target to generate assembly for a file
-filesystem/message_and_setting/data.cpp.s:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/data.cpp.s
-.PHONY : filesystem/message_and_setting/data.cpp.s
+filesystem/master/address_serverdata.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/address_serverdata.cpp.s
+.PHONY : filesystem/master/address_serverdata.cpp.s
 
-filesystem/message_and_setting/log.o: filesystem/message_and_setting/log.cpp.o
+filesystem/master/handle_chunkdata.o: filesystem/master/handle_chunkdata.cpp.o
 
-.PHONY : filesystem/message_and_setting/log.o
+.PHONY : filesystem/master/handle_chunkdata.o
 
 # target to build an object file
-filesystem/message_and_setting/log.cpp.o:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.o
-.PHONY : filesystem/message_and_setting/log.cpp.o
+filesystem/master/handle_chunkdata.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.o
+.PHONY : filesystem/master/handle_chunkdata.cpp.o
 
-filesystem/message_and_setting/log.i: filesystem/message_and_setting/log.cpp.i
+filesystem/master/handle_chunkdata.i: filesystem/master/handle_chunkdata.cpp.i
 
-.PHONY : filesystem/message_and_setting/log.i
+.PHONY : filesystem/master/handle_chunkdata.i
 
 # target to preprocess a source file
-filesystem/message_and_setting/log.cpp.i:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.i
-.PHONY : filesystem/message_and_setting/log.cpp.i
+filesystem/master/handle_chunkdata.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.i
+.PHONY : filesystem/master/handle_chunkdata.cpp.i
 
-filesystem/message_and_setting/log.s: filesystem/message_and_setting/log.cpp.s
+filesystem/master/handle_chunkdata.s: filesystem/master/handle_chunkdata.cpp.s
 
-.PHONY : filesystem/message_and_setting/log.s
+.PHONY : filesystem/master/handle_chunkdata.s
 
 # target to generate assembly for a file
-filesystem/message_and_setting/log.cpp.s:
-	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/message_and_setting/log.cpp.s
-.PHONY : filesystem/message_and_setting/log.cpp.s
+filesystem/master/handle_chunkdata.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/handle_chunkdata.cpp.s
+.PHONY : filesystem/master/handle_chunkdata.cpp.s
+
+filesystem/master/log_contaner.o: filesystem/master/log_contaner.cpp.o
+
+.PHONY : filesystem/master/log_contaner.o
+
+# target to build an object file
+filesystem/master/log_contaner.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.o
+.PHONY : filesystem/master/log_contaner.cpp.o
+
+filesystem/master/log_contaner.i: filesystem/master/log_contaner.cpp.i
+
+.PHONY : filesystem/master/log_contaner.i
+
+# target to preprocess a source file
+filesystem/master/log_contaner.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.i
+.PHONY : filesystem/master/log_contaner.cpp.i
+
+filesystem/master/log_contaner.s: filesystem/master/log_contaner.cpp.s
+
+.PHONY : filesystem/master/log_contaner.s
+
+# target to generate assembly for a file
+filesystem/master/log_contaner.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/log_contaner.cpp.s
+.PHONY : filesystem/master/log_contaner.cpp.s
+
+filesystem/master/master.o: filesystem/master/master.cpp.o
+
+.PHONY : filesystem/master/master.o
+
+# target to build an object file
+filesystem/master/master.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/master.cpp.o
+.PHONY : filesystem/master/master.cpp.o
+
+filesystem/master/master.i: filesystem/master/master.cpp.i
+
+.PHONY : filesystem/master/master.i
+
+# target to preprocess a source file
+filesystem/master/master.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/master.cpp.i
+.PHONY : filesystem/master/master.cpp.i
+
+filesystem/master/master.s: filesystem/master/master.cpp.s
+
+.PHONY : filesystem/master/master.s
+
+# target to generate assembly for a file
+filesystem/master/master.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/master.cpp.s
+.PHONY : filesystem/master/master.cpp.s
+
+filesystem/master/path_filedata.o: filesystem/master/path_filedata.cpp.o
+
+.PHONY : filesystem/master/path_filedata.o
+
+# target to build an object file
+filesystem/master/path_filedata.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.o
+.PHONY : filesystem/master/path_filedata.cpp.o
+
+filesystem/master/path_filedata.i: filesystem/master/path_filedata.cpp.i
+
+.PHONY : filesystem/master/path_filedata.i
+
+# target to preprocess a source file
+filesystem/master/path_filedata.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.i
+.PHONY : filesystem/master/path_filedata.cpp.i
+
+filesystem/master/path_filedata.s: filesystem/master/path_filedata.cpp.s
+
+.PHONY : filesystem/master/path_filedata.s
+
+# target to generate assembly for a file
+filesystem/master/path_filedata.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/filesystem/master/path_filedata.cpp.s
+.PHONY : filesystem/master/path_filedata.cpp.s
 
 main.o: main.cpp.o
 
@@ -393,6 +447,60 @@ tests/LightDSTest/serverb.cpp.s:
 	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/LightDSTest/serverb.cpp.s
 .PHONY : tests/LightDSTest/serverb.cpp.s
 
+tests/MasterTest/hcdmTest.o: tests/MasterTest/hcdmTest.cpp.o
+
+.PHONY : tests/MasterTest/hcdmTest.o
+
+# target to build an object file
+tests/MasterTest/hcdmTest.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.o
+.PHONY : tests/MasterTest/hcdmTest.cpp.o
+
+tests/MasterTest/hcdmTest.i: tests/MasterTest/hcdmTest.cpp.i
+
+.PHONY : tests/MasterTest/hcdmTest.i
+
+# target to preprocess a source file
+tests/MasterTest/hcdmTest.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.i
+.PHONY : tests/MasterTest/hcdmTest.cpp.i
+
+tests/MasterTest/hcdmTest.s: tests/MasterTest/hcdmTest.cpp.s
+
+.PHONY : tests/MasterTest/hcdmTest.s
+
+# target to generate assembly for a file
+tests/MasterTest/hcdmTest.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/hcdmTest.cpp.s
+.PHONY : tests/MasterTest/hcdmTest.cpp.s
+
+tests/MasterTest/masterTest.o: tests/MasterTest/masterTest.cpp.o
+
+.PHONY : tests/MasterTest/masterTest.o
+
+# target to build an object file
+tests/MasterTest/masterTest.cpp.o:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.o
+.PHONY : tests/MasterTest/masterTest.cpp.o
+
+tests/MasterTest/masterTest.i: tests/MasterTest/masterTest.cpp.i
+
+.PHONY : tests/MasterTest/masterTest.i
+
+# target to preprocess a source file
+tests/MasterTest/masterTest.cpp.i:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.i
+.PHONY : tests/MasterTest/masterTest.cpp.i
+
+tests/MasterTest/masterTest.s: tests/MasterTest/masterTest.cpp.s
+
+.PHONY : tests/MasterTest/masterTest.s
+
+# target to generate assembly for a file
+tests/MasterTest/masterTest.cpp.s:
+	$(MAKE) -f CMakeFiles/AFS.dir/build.make CMakeFiles/AFS.dir/tests/MasterTest/masterTest.cpp.s
+.PHONY : tests/MasterTest/masterTest.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -414,15 +522,21 @@ help:
 	@echo "... filesystem/client.o"
 	@echo "... filesystem/client.i"
 	@echo "... filesystem/client.s"
-	@echo "... filesystem/master.o"
-	@echo "... filesystem/master.i"
-	@echo "... filesystem/master.s"
-	@echo "... filesystem/message_and_setting/data.o"
-	@echo "... filesystem/message_and_setting/data.i"
-	@echo "... filesystem/message_and_setting/data.s"
-	@echo "... filesystem/message_and_setting/log.o"
-	@echo "... filesystem/message_and_setting/log.i"
-	@echo "... filesystem/message_and_setting/log.s"
+	@echo "... filesystem/master/address_serverdata.o"
+	@echo "... filesystem/master/address_serverdata.i"
+	@echo "... filesystem/master/address_serverdata.s"
+	@echo "... filesystem/master/handle_chunkdata.o"
+	@echo "... filesystem/master/handle_chunkdata.i"
+	@echo "... filesystem/master/handle_chunkdata.s"
+	@echo "... filesystem/master/log_contaner.o"
+	@echo "... filesystem/master/log_contaner.i"
+	@echo "... filesystem/master/log_contaner.s"
+	@echo "... filesystem/master/master.o"
+	@echo "... filesystem/master/master.i"
+	@echo "... filesystem/master/master.s"
+	@echo "... filesystem/master/path_filedata.o"
+	@echo "... filesystem/master/path_filedata.i"
+	@echo "... filesystem/master/path_filedata.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
@@ -432,6 +546,12 @@ help:
 	@echo "... tests/LightDSTest/serverb.o"
 	@echo "... tests/LightDSTest/serverb.i"
 	@echo "... tests/LightDSTest/serverb.s"
+	@echo "... tests/MasterTest/hcdmTest.o"
+	@echo "... tests/MasterTest/hcdmTest.i"
+	@echo "... tests/MasterTest/hcdmTest.s"
+	@echo "... tests/MasterTest/masterTest.o"
+	@echo "... tests/MasterTest/masterTest.i"
+	@echo "... tests/MasterTest/masterTest.s"
 .PHONY : help
 
 
