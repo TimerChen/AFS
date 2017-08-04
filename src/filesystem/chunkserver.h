@@ -122,6 +122,12 @@ protected:
 
 	void loadSettings();
 
+	Chunk loadChunkInfo_noLock
+		( const ChunkHandle &handle );
+
+	std::string loadChunkData_noLock
+		( const ChunkHandle &handle, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
+
 	Chunk loadChunkInfo
 		( const ChunkHandle &handle );
 
@@ -129,6 +135,12 @@ protected:
 		( const ChunkHandle &handle, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
 
 	void save();
+
+	void saveChunkInfo_noLock
+		( const ChunkHandle &handle, const Chunk &c );
+
+	void saveChunkData_noLock
+		( const ChunkHandle &handle, const char *data, const std::uint64_t &offset=0, const std::uint64_t &length=CHUNK_SIZE );
 
 	void saveChunkInfo
 		( const ChunkHandle &handle, const Chunk &c );
@@ -138,7 +150,6 @@ protected:
 
 	void bindFunctions();
 
-	void addData(  );
 	void deleteData( const std::uint64_t &dataID );
 	void deleteChunks( const ChunkHandle &handle );
 
@@ -154,7 +165,7 @@ protected:
 	std::map< std::uint64_t, std::tuple<char*,std::uint64_t/*length*/> > dataCache;
 	std::deque<std::uint64_t> cacheQueue;
 	ChunkPool chunkPool;
-	ReadWriteMutex lock_ss, lock_chunks, lock_chunkMutex, lock_dataCache, lock_cacheQueue;
+	ReadWriteMutex lock_ss, lock_chunks, lock_dataCache, lock_cacheQueue, lock_chunkMutex;
 
 protected:
 	std::string masterIP;

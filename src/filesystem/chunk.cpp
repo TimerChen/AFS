@@ -7,8 +7,8 @@ namespace AFS
 {
 Chunk::Chunk()
 	:version(0), length(0),
-	 isPrimary(0), expireTime(0),
-	 finished(0)
+	 isPrimary(0), needExtensions(0),
+	 expireTime(0), finished(0)
 {
 
 }
@@ -17,6 +17,7 @@ void Chunk::update( const ChunkVersion &newVersion)
 	if( version != newVersion)
 		finished = 0;
 	version = newVersion;
+	needExtensions = 0;
 }
 bool Chunk::primary()
 {

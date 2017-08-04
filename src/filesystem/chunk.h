@@ -20,7 +20,7 @@ struct Chunk
 	bool primary();
 	ChunkVersion version;
 	ChunkLength length;
-	bool isPrimary;
+	bool isPrimary, needExtensions;
 	std::uint64_t expireTime;
 	std::uint32_t finished;
 };
