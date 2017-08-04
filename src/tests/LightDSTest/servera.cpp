@@ -21,6 +21,6 @@ void ServerA::sendMessage( short port, std::string words )
 	msgpack::object_handle er =
 		srv.RPCCall( {0,static_cast<uint16_t>(port)}, "Msg", words );
 	std::cerr << er.get() << std::endl;
-	//er.get().as<Type>()
+	//er.get().as<Type>();
 
 }
