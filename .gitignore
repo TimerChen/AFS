@@ -36,5 +36,6 @@
 .idea/
 cmake-build-debug/
 
-#qt-build files
+#QT Creator files in Ubuntu
 build*/
+*.txt.user
