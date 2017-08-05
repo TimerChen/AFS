@@ -12,7 +12,7 @@ class ServerA
 public:
 	ServerA( LightDS::Service &srv );
 	LightDS::Service &srv;
-	void sendMessage(  short port, std::string words );
+	void sendMessage( std::string ip, std::uint16_t port, std::string words );
 
 protected:
 	AFS::GFSError PRCHello( std::string words );

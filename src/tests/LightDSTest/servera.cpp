@@ -12,20 +12,20 @@ ServerA::ServerA( LightDS::Service &Srv )
 
 AFS::GFSError ServerA::PRCHello( std::string words )
 {
-	std::cerr << "Be called!" << std::endl;
-	std::cout << srv.getRPCCaller() << ":\n\t" << words << std::endl;
-	return {AFS::GFSErrorCode::OK, "OK! The same hello to you!"};
+	//std::cerr << "Be called!" << std::endl;
+	std::cout << srv.getRPCCaller() << ":" << words << std::endl;
+	return {AFS::GFSErrorCode::OK, "OK!"};
 }
-void ServerA::sendMessage( short port, std::string words )
+void ServerA::sendMessage( std::string ip, std::uint16_t port, std::string words )
 {
 	//AFS::GFSError er =
 	msgpack::object_handle er =
-		srv.RPCCall( {"192.168.1.105",static_cast<uint16_t>(port)}, "Msg", words );
+		srv.RPCCall( {ip,port}, "Msg", words );
 
 	//std::cerr << er.get() << " " << er.get() << std::endl;
 	AFS::GFSError reData;
 	er.get().convert( reData );
-	std::cerr << reData.description << std::endl;
+	//std::cerr << reData.description << std::endl;
 	//er.get().as<Type>();
 
 }
