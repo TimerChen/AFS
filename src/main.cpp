@@ -32,8 +32,6 @@ int main(int argc, char**argv)
 	//srv.LightDS::User::Run();
 	std::thread srvThd(&LightDS::Service::Run, &srv);
 
-	srv.Run();
-
 	std::string ip;
 	cout << "Set your friend's IP and Port.\n";
 	cin >> ip >> toPort;
