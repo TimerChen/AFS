@@ -64,6 +64,11 @@ public: // debug
 
 	// RPCGetPrimaryAndSecondaries returns lease holder and secondaries of a chunk.
 	// If no one holds the lease currently, grant one.
+	/* 返回GFSErrorCode类型：
+	 * OK: 成功
+	 * NoSuchChunk: 找不到handle对于的chunk
+	 * Unknown: 其他
+	 */
 	std::tuple<GFSError,
 			std::string /*Primary Address*/,
 			std::vector<std::string> /*Secondary Addresses*/,
@@ -75,6 +80,12 @@ public: // debug
 	RPCGetReplicas(ChunkHandle handle);
 
 	// RPCGetFileInfo is called by client to get file information
+	/* 返回GFSErrorCode类型：
+	 * OK: 成功
+	 * NoSuchFileDir: 路径中有部分不存在
+	 * WrongOperation: 路径对应为文件夹
+	 * Unknown：其他
+	 */
 	std::tuple<GFSError,
 			bool /*IsDir*/,
 			std::uint64_t /*Length*/,
@@ -99,6 +110,11 @@ public: // debug
 
 	// RPCGetChunkHandle returns the chunk handle of (path, index).
 	// If the requested index is larger than the number of chunks of this path by exactly one, create one.
+	/* 返回GFSErrorCode类型
+	 * OK: 成功
+	 * ServerNotFound: 当前所有副本所在服务器都不在线
+	 * Unknown: 其他
+	 */
 	std::tuple<GFSError, ChunkHandle>
 	RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex);
 

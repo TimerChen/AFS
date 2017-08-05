@@ -4,6 +4,7 @@
  *
  *
  */
+#ifdef ABC
 //ACM File System!
 namespace AFS
 {
@@ -99,3 +100,4 @@ namespace AFS
 		sdt::pair< ? ,AFSError > fileCutter( const std::string &localDir );
 	}
 }
+#endif

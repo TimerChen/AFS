@@ -128,7 +128,7 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		asdm.addChunk(addr, handle);
 	};
 	auto errMd = pfdm.getHandle(*path, chunkIndex, createChunk);
-	//logptr->result = errMd.first;
+	logptr->result = ErrTranslator::masterErrTOGFSError(errMd.first);
 	return std::make_tuple(
 			ErrTranslator::masterErrTOGFSError(errMd.first),
 			errMd.second
@@ -156,8 +156,10 @@ AFS::Master::RPCGetFileInfo(std::string path_str) {
 	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
 	if (errMd.first == MasterError::NotExists)
 		return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
-	if (errMd.second.type == FileData::Type::Folder)
+	if (errMd.second.type == FileData::Type::Folder) {
+		err.errCode = GFSErrorCode::WrongOperation;
 		return std::make_tuple(err, true, std::uint64_t(), std::uint64_t());
+	}
 	// todo length
 	return std::make_tuple(err, false, -1, errMd.second.handles.size());
 }
