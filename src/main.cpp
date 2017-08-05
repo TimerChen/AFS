@@ -39,6 +39,7 @@ int main(int argc, char**argv)
 		std::thread srvThd(&LightDS::Service::Run, &srv);
 		srvThd.detach();
 		sa.sendMessage( 12345, "Hello" );
+		sa.sendMessage( 12345, "Hello" );
 		while( 1 ){
 			std::this_thread::yield();
 			/*

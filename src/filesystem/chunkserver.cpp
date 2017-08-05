@@ -108,8 +108,9 @@ void ChunkServer::bindFunctions()
 void ChunkServer::Start()
 {
 	Server::Start();
-	srv.Run();
 	load();
+	std::thread service(&LightDS::Service::Run, &srv);
+	service.detach();
 }
 void ChunkServer::load()
 {
