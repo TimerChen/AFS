@@ -1,6 +1,12 @@
 # AFS
 A simplified Google File System of the PPCA lesson of ACM class, which called ACM File System.
+## Remain to do
+* master.h shouldn't have function implementations, ans some functions' name are very ambiguous, we need to make them more clearly, so we can easily know what will them do.
 
+* The LightDS::Service's Run() and Stop() is very strange, we may need to rewrite something?
+
+* Test all the code.
+* Review the code.(?)
 ## How to use LightDS
 servera.h
 ```c++
@@ -18,7 +24,7 @@ class ServerA
 public:
 	ServerA( LightDS::Service &srv );
 	LightDS::Service &srv;
-	void sendMessage(  short port, std::string words );
+	void sendMessage( std::string ip, std::uint16_t port, std::string words );
 
 protected:
 	AFS::GFSError PRCHello( std::string words );
@@ -32,39 +38,89 @@ servera.cpp
 ServerA::ServerA( LightDS::Service &Srv )
 	:srv(Srv)
 {
-	srv.RPCBind<AFS::GFSError(std::string)>
-	("Msg", std::bind(&ServerA::PRCHello, this, std::placeholders::_1));
+	srv.RPCBind<AFS::GFSError(std::string)>("Msg", std::bind(&ServerA::PRCHello, this, std::placeholders::_1));
 }
 
 
 AFS::GFSError ServerA::PRCHello( std::string words )
 {
-	std::cout << srv.getRPCCaller() << ":\n\t" << words << std::endl;
+	//std::cerr << "Be called!" << std::endl;
+	std::cout << srv.getRPCCaller() << ":" << words << std::endl;
 	return {AFS::GFSErrorCode::OK, "OK!"};
 }
-void ServerA::sendMessage( short port, std::string words )
+void ServerA::sendMessage( std::string ip, std::uint16_t port, std::string words )
 {
 	//AFS::GFSError er =
 	msgpack::object_handle er =
-		srv.RPCCall( {0,static_cast<uint16_t>(port)}, "Msg", words );
-	std::cerr << er.get() << std::endl;
-	//er.get().as<Type>();
+		srv.RPCCall( {ip,port}, "Msg", words );
+
+	//std::cerr << er.get() << " " << er.get() << std::endl;
+	AFS::GFSError reData;
+	//er.get().convert( reData );
+	reData = er.get().as<AFS::GFSError>();
+	//std::cerr << reData.description << std::endl;
 
 }
 
 ```
 main.hpp
 ```c++
-ofstream logfile("test_log.txt",ios::out);
-LightDS::Service srv("TimerServer", logfile, cin, cout, port);
-srv.Run();
-ServerA sa(srv);
-std::string msg;
-while( 1 ){
-	cout << "Input...:\n\t";
-	cin >> toPort >> msg;
-	cout << "Sending....\n";
-	sa.sendMessage( toPort, msg );
+int main(int argc, char**argv)
+{
+	int i,j;
+	std::uint16_t port, toPort;
+	//cout << "Input your port:" ;
+	//cin >> port;
+	//cout << argc << endl;
+	if(argc==1)
+	{
+		port = 12308;
+	}else{
+		//port = 12346;
+		port = atoi(argv[1]);
+	}
+
+	ofstream logfile("test_log.txt",ios::out);
+	stringstream ss;
+	LightDS::Service srv("TimerServer", logfile, ss, ss, port);
+
+	ServerA sa(srv);
+	std::string msg;
+
+	std::thread srvThd(&LightDS::Service::Run, &srv);
+
+	srv.Run();
+
+	std::string ip;
+	cout << "Set your friend's IP and Port.\n";
+	cin >> ip >> toPort;
+	cout << "OK..\n";
+	//getline(cin,msg);
+	//cout << msg << " " << msg.size();
+
+	while( 1 )
+	{
+		//cout << ">";
+		while(1)
+		{
+			getline(cin,msg);
+			if(msg.size() > 0)
+				break;
+		}
+		sa.sendMessage( ip, toPort, msg );
+
+		if(...)
+			break;
+
+	}
+
+
+	srv.Stop();
+	ss << "{\"type\":\"bye\"}\n";
+
+	srvThd.join();
+	logfile.close();
+
+	return 0;
 }
-logfile.close();
 ```

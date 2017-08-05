@@ -7,67 +7,6 @@
 using namespace std;
 int main(int argc, char**argv)
 {
-	/*
-	using namespace LightDS;
-	std::stringstream ss, ss2;
-	std::uint16_t port;
-	if(argc == 1)
-	{
-		port = 10086;
-	}else{
-		port = 10087;
-	}
-	Service srv("test", ss, std::cin, std::cout, port);
-
-	std::thread worker([&srv]()
-	{
-		srv.Run();
-	});
-	srv.RPCBind<int(int,int)>("Plus", [](int a, int b)
-	{
-		std::cerr << "Plus " << a << " + " << b << std::endl;
-		return a + b;
-	});
-	srv.RPCBind<void(int)>("Print", [](int a)
-	{
-		std::cerr << "Print " << a << std::endl;
-	});
-	srv.RPCBind<int()>("Get", []()
-	{
-		std::cerr << "Get" << std::endl;
-		return 10010;
-	});
-	srv.RPCBind<void(std::vector<int>)>("Vector", [](std::vector<int> vec)
-	{
-		std::cerr << "Vector of ";
-		for (int x : vec)
-			std::cerr << x << " ";
-		std::cerr << std::endl;
-	});
-	if(port != 10086)
-	{
-		int ret = srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Plus", 233, 666).get().as<int>();
-		std::cerr << "Result is " << ret << std::endl;
-		ret = srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Plus", 100, -101).get().as<int>();
-		std::cerr << "Result is " << ret << std::endl;
-		srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Print", 10086);
-		srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Print", 10010);
-		ret = srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Get").get().as<int>();
-		std::cerr << "Result is " << ret << std::endl;
-
-		srv.RPCCall(Service::RPCAddress{ "127.0.0.1", 10086 }, "Vector", std::vector<int>{3, 1, 4, 1, 5, 9});
-	}
-	//srv.Stop();
-	//srv.Stop();
-	cerr << "End" << endl;
-	worker.join();
-
-
-
-
-	return 0;*/
-
-
 
 	int i,j;
 	std::uint16_t port, toPort;
@@ -101,6 +40,7 @@ int main(int argc, char**argv)
 	cout << "OK..\n";
 	//getline(cin,msg);
 	//cout << msg << " " << msg.size();
+
 	while( 1 )
 	{
 		//cout << ">";
@@ -111,6 +51,9 @@ int main(int argc, char**argv)
 				break;
 		}
 		sa.sendMessage( ip, toPort, msg );
+
+		//if(...)
+		//	break;
 
 	}
 

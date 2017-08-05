@@ -69,6 +69,12 @@ protected:
 	GFSError
 		RPCCreateChunk(ChunkHandle handle);
 
+	// RPCPushDataAndForward is called by client.
+	// It saves client pushed data to memory buffer.
+	// This should be replaced by a chain forwarding.
+	GFSError
+		RPCPushData(std::uint64_t dataID, std::string data);
+
 	// RPCReadChunk is called by client, read chunk data and return
 	std::tuple<GFSError, std::string /*Data*/>
 		RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length);
@@ -108,11 +114,7 @@ protected:
 	GFSError
 		RPCUpdateVersion(ChunkHandle handle, ChunkVersion newVersion);
 
-	// RPCPushDataAndForward is called by client.
-	// It saves client pushed data to memory buffer.
-	// This should be replaced by a chain forwarding.
-	GFSError
-		RPCPushData(std::uint64_t dataID, std::string data);
+
 protected:
 
 
