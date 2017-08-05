@@ -109,8 +109,10 @@ void ChunkServer::Start()
 {
 	Server::Start();
 	load();
-	std::thread service(&LightDS::Service::Run, &srv);
-	service.detach();
+
+	//TODO???
+	//std::thread service(&LightDS::Service::Run, &srv);
+	//service.detach();
 }
 void ChunkServer::load()
 {
@@ -317,7 +319,8 @@ void ChunkServer::saveChunkData_noLock( const ChunkHandle &handle, const char *d
 
 void ChunkServer::Shutdown()
 {
-	srv.Stop();
+	//TODO???
+	//srv.Stop();
 
 	//At End
 	Server::Shutdown();

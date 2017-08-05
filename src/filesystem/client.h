@@ -12,21 +12,21 @@ namespace AFS {
 
 class Client {
 public:
-	explicit Client(LightDS::Service &_srv);
+	explicit Client(LightDS::Service &_srv, const Address &MasterAdd, const uint16_t &MasterPort=13208);
 
-	void setMaster(Address add) {
-		masterAdd = std::move(add);
-		throw ;
-		// todo
-	}
+	void setMaster(Address add, uint16_t port);
 
 protected:
 
 	bool checkMasterAddress() const;
 
 public:
-	ClientErr fileMkdir(const std::string &dir);
+	//You can use this to interactive with you by console.
+	void Run( std::istream &in=std::cin, std::ostream &out=std::cout );
+
 	ClientErr fileCreate(const std::string &dir);
+	ClientErr fileMkdir(const std::string &dir);
+
 
 	ClientErr fileRead(const std::string &dir, const std::string &localDir, const std::uint64_t &offset, const std::uint64_t &fileLength);
 	ClientErr fileRead_str(const std::string &dir, std::string &data, const std::uint64_t &offset, const std::uint64_t &length);
@@ -38,6 +38,7 @@ public:
 	ClientErr fileAppend_str(const std::string &dir, const std::string &data);
 protected:
 	Address masterAdd;
+	uint16_t masterPort;
 	LightDS::Service &srv;
 	char buffer[CHUNK_SIZE];
 };
