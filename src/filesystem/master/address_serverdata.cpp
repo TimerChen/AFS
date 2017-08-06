@@ -16,23 +16,28 @@ bool AFS::AddressServerData::isDead(const AFS::ServerData &data) const {
 	return data.lastBeatTime + ExpiredTime < time(nullptr);
 }
 
-void AFS::AddressServerData::checkDeadChunkServer() {
+std::unique_ptr<std::vector<AFS::Address>>
+AFS::AddressServerData::checkDeadChunkServer() {
 	readLock lk(m);
 	std::vector<std::map<Address, ServerData>::iterator> iterErased;
 	for (auto iter = mp.begin(); iter != mp.end(); ++iter) {
-		ServerData & data = iter->second;
+		const ServerData & data = iter->second;
 		if (isDead(data))
 			iterErased.push_back(iter);
 	}
 
 	lk.unlock();
 	writeLock wlk(m);
+	auto result = std::make_unique<std::vector<AFS::Address>>();
 	for (auto &&eiter : iterErased) {
+		result->emplace_back(eiter->first);
 		mp.erase(eiter);
 	}
+	return result;
 }
 
-void AFS::AddressServerData::updateChunkServer(const AFS::Address &addr,
+void
+AFS::AddressServerData::updateChunkServer(const AFS::Address &addr,
                                                const std::vector<std::tuple<AFS::ChunkHandle, AFS::ChunkVersion>> &chunks) {
 	writeLock lk(m);
 	auto & data = mp[addr];
@@ -40,7 +45,10 @@ void AFS::AddressServerData::updateChunkServer(const AFS::Address &addr,
 	data.handles.clear();
 	data.handles.reserve(chunks.size());
 	for (auto &&chunk : chunks) {
-		data.handles.emplace_back(MemoryPool::instance().getServerPtr(std::get<0>(chunk), addr));
+		if (MemoryPool::instance().exists(std::get<0>(chunk))) {
+			data.handles.emplace_back(MemoryPool::instance().getServerPtr(std::get<0>(chunk), addr));
+			continue;
+		}
 	}
 }
 

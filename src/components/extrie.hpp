@@ -109,7 +109,7 @@ private:
 			auto & idx = *beg;
 			tmp = p->child.find(idx);
 			if (tmp == p->child.end())
-				return std::make_pair(p, std::move(rlks));
+				return std::make_pair(nullptr, std::move(rlks));
 			p = tmp->second;
 			rlks->emplace_back(readLock(p->m));
 		}
@@ -280,13 +280,16 @@ public:
 	}
 
 	// 用于遍历一个文件夹，对每一个文件进行操作
-	void iterate(const std::vector<U> & index,
+	bool iterate(const std::vector<U> & index,
 	             const std::function<void(T&)> & fcs) {
 		node_ptr p;
 		std::unique_ptr<std::vector<readLock>> rlks;
 		tie_move(p, rlks, _find(index.begin(), index.end()));
+		if (!p)
+			return false;
 		rlks->pop_back();
 		_iterate(p, fcs);
+		return true;
 	}
 
 	template <class D>
@@ -320,12 +323,6 @@ public:
 	void remove_if(const std::function<bool(const T&)> & condition) {
 		_remove_if(header, nullptr, U(), condition);
 	}
-
-	// 用于对某一特定文件进行操作
-	void operate(const std::vector<U> & index, std::function<void(T&)> f);
-
-	// 选择fn结果最高者返回
-	T choose(const std::vector<U> & index, std::function<int(const T&)> fn) const;
 
 	void write(std::ofstream & out) const {
 		writeLock lk(header->m);

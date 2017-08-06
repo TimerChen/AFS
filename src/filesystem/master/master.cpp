@@ -5,7 +5,7 @@
 #include "master.h"
 
 AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
-		: Server(srv, rootDir), logc(rootDir + "data.dat", std::bind(&Master::write, this, std::placeholders::_1))  {
+		: Server(srv, rootDir), logc(rootDir, std::bind(&Master::write, this, std::placeholders::_1))  {
 	srv.RPCBind<std::tuple<GFSError, std::vector<ChunkHandle>>
 			(std::vector<ChunkHandle>, std::vector<std::tuple<ChunkHandle, ChunkVersion>>, std::vector<ChunkHandle>)>
 			("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
@@ -53,7 +53,7 @@ AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
 }
 
 void AFS::Master::checkDeadChunkServer() {
-	asdm.checkDeadChunkServer();
+	auto deleted = std::move(*asdm.checkDeadChunkServer().release());
 }
 
 void AFS::Master::collectGarbage() {
@@ -114,21 +114,29 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 
 std::tuple<AFS::GFSError, AFS::ChunkHandle>
 AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
-	auto logptr = logc.getPtr(true, OpCode::GetChunkHandle,
-	                          {path_str, Convertor::uintToString(chunkIndex)});
+	auto logptr = logc.getPtr(OpCode::AddChunk);
 	auto path = PathParser::instance().parse(path_str);
-	auto createChunk = [&](ChunkHandle handle){
+
+	auto createChunk = [&](ChunkHandle handle)->bool {
 		Address addr;
 		GFSError err;
-		do {
-			addr = asdm.chooseServer();
-			// todo wtf
-//				err = srv.RPCCall({addr, (uint16_t)0}, "CreateChunk", handle).get();
-		} while (err.errCode != GFSErrorCode::OK);
-		asdm.addChunk(addr, handle);
+		bool result = false;
+		for (int k = 0; k < 3; ++k) { // 创建3个副本
+			for (int i = 0; i < 5; ++i) {
+				addr = asdm.chooseServer();
+				err = srv.RPCCall({addr, 0}, "CreateChunk", handle).get().as<GFSError>();
+				if (err.errCode == GFSErrorCode::OK)
+					break;
+			}
+			if (err.errCode == GFSErrorCode::OK) {
+				asdm.addChunk(addr, handle);
+				result = true;
+			}
+		}
+		return result;
 	};
+
 	auto errMd = pfdm.getHandle(*path, chunkIndex, createChunk);
-	logptr->result = ErrTranslator::masterErrTOGFSError(errMd.first);
 	return std::make_tuple(
 			ErrTranslator::masterErrTOGFSError(errMd.first),
 			errMd.second
@@ -201,32 +209,37 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	auto leaseExpired = [](const ChunkData & data) {
 		return data.leaseGrantTime + LeaseExpiredTime < time(nullptr);
 	};
-	auto grantLease = [](ChunkData & data) {
-		Address addr;
-		GFSError err;
+	auto grantLease = [&](ChunkData & data) {
+		// 尝试和某台服务器签订租约，如果尝试过后全都失败，则失败
+		GFSError terr;
 		int idx = 0;
-		while (1) {
-			addr = data.location[idx];
-//				err = srv.RPCCall({addr, 0},
-//				                  "GrantLease",
-//				                  std::make_tuple(handle, data.version + 1, time(nullptr) + LeaseExpiredTime)).get();
-			if (err.errCode == GFSErrorCode::OK) {
-				data.leaseGrantTime = time(nullptr);
+		data.primary = "";
+		for (auto &&addr : data.location) {
+			auto tmpTime = time(nullptr);
+			terr = srv.RPCCall({addr, 0},
+			                  "GrantLease",
+			                  std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime))
+					.get().as<GFSError>();
+			if (terr.errCode == GFSErrorCode::OK) {
+				data.leaseGrantTime = tmpTime;
 				data.version++;
 				data.primary = addr;
 				break;
 			}
-			++idx;
-			if (idx == data.location.size()) {
-				idx = 0;
-				// todo sleep
-			}
 		}
 	};
 	MemoryPool::instance().updateData_if(handle, leaseExpired, grantLease);
+
 	auto data = MemoryPool::instance().getData(handle);
-	// todo err
+	if (data.primary == "") { // 签订租约失败
+		err.errCode = GFSErrorCode::Failed;
+		return std::make_tuple(
+				err, Address(), std::vector<Address>(), time_t()
+		);
+	}
+	// 签订租约成功
 	remove(data.location, data.primary);
+	err.errCode = GFSErrorCode::OK;
 	return std::make_tuple(
 			err, data.primary, data.location, data.leaseGrantTime + LeaseExpiredTime
 	);
@@ -235,14 +248,13 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 void AFS::Master::reReplicate() {
 	auto pq = std::move(*(asdm.getPQ().release()));
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
-//			return srv.RPCCall({src, 0}, "SendCopy", tar, handle);
+			return srv.RPCCall({src, 0}, "SendCopy", tar, handle).get().as<GFSError>();
 	};
 	pfdm.reReplicate(pq, rpcCall);
 }
 
 void AFS::Master::BackgroundActivity() {
 	checkDeadChunkServer();
-	collectGarbage();
+//	collectGarbage();
 	reReplicate();
-	// todo err
 }

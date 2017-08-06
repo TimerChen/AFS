@@ -29,8 +29,10 @@ enum class GFSErrorCode : std::uint32_t {
 	//Error returned by Master
 	NoSuchFileDir, FileDirAlreadyExists,
 	WrongOperation, // 对于文件夹进行文件操作等
-	NoSuchChunk, PermissionDenied,
-	ChunkFull
+	NoSuchChunk,
+	PermissionDenied,
+	ChunkFull,
+	Failed
 };
 
 

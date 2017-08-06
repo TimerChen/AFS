@@ -46,12 +46,13 @@ AFS::MasterError AFS::PathFileData::deleteFile(const AFS::PathFileData::Path &pa
 	auto del = [](FileData &data) {
 		data.deleteTime = time(nullptr);
 	};
-	mp.iterate(path, del);
+	if (!mp.iterate(path, del))
+		return MasterError::NotExists;
+
 	auto Expired = [](const FileData & data) {
 		return data.deleteTime != 0;
 	};
 	mp.remove_if(Expired);
-	// todo err
 	return MasterError::OK;
 }
 
@@ -65,24 +66,68 @@ AFS::MasterError AFS::PathFileData::createFile(const AFS::PathFileData::Path &pa
 AFS::MasterError AFS::PathFileData::createFolder(const AFS::PathFileData::Path &path) {
 	FileData md;
 	md.type = FileData::Type::Folder;
+	md.replicationFactor = 0;
 	md.name = path.back();
 	return ErrTranslator::extrieErrToMasterErr(mp.insert(path, std::move(md)));
 }
 
 std::pair<AFS::MasterError, AFS::ChunkHandle>
 AFS::PathFileData::getHandle(const AFS::PathFileData::Path &path, std::uint64_t idx,
-                             const std::function<void(AFS::ChunkHandle)> &createChunk) {
+                             const std::function<bool(AFS::ChunkHandle)> &createChunk) {
+	bool success = false;
 	ChunkHandle ans;
 	auto f = [&](FileData & data) {
 		if (data.handles.size() < idx) // 添加一个也不够的情况
 			return;
 		if (data.handles.size() == idx) {
 			data.handles.emplace_back(MemoryPool::instance().newChunk());
-			createChunk(data.handles.back().getHandle());
+			if (!createChunk(data.handles.back().getHandle())) // 创建失败
+				return;
 		}
+		success = true;
 		ans = data.handles[idx].getHandle();
 	};
-	mp.iterate(path, f);
-	// todo err
+	if (!mp.iterate(path, f) || !success)
+		return std::make_pair(MasterError::Failed, ans);
 	return std::make_pair(MasterError::OK, ans);
+}
+
+void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::Address>> &pq,
+                                    const std::function<AFS::GFSError(const AFS::Address &, const AFS::Address &,
+                                                                      AFS::ChunkHandle)> &send) {
+	auto re = [&](FileData & data) { // 对于某一份文件，检查其各个chunk，对于不够的复制
+		if (data.type != FileData::Type::File)
+			return ;
+
+		for (auto &&chunk : data.handles) {
+			auto handle = chunk.getHandle();
+			MemoryPool::instance().updateData_if(handle,
+			                                     [&](const ChunkData & cdata) { // 如果副本服务器个数小于复制因子
+				                                     return cdata.location.size() < data.replicationFactor;
+			                                     },
+			                                     [&](ChunkData & cdata) {
+				                                     auto numAAddr = pq.top();
+				                                     while (std::find(cdata.location.begin(), cdata.location.end(),
+				                                                      numAAddr.second)
+				                                            != cdata.location.end()) {
+					                                     pq.pop();
+					                                     numAAddr = pq.top();
+					                                     pq.push(std::make_pair(2 * (numAAddr.first - 1), std::move(numAAddr.second)));
+				                                     } // 取一个当前location中没有的服务器
+
+				                                     GFSError err;
+				                                     // 让某一个服务器给目标服务器发送消息
+				                                     for (auto &&location : cdata.location) {
+					                                     err = send(location, numAAddr.second, handle);
+					                                     if (err.errCode == GFSErrorCode::OK)
+						                                     break;
+				                                     }
+				                                     if (err.errCode == GFSErrorCode::OK) {
+					                                     pq.pop();
+					                                     pq.push(std::make_pair(2 * (numAAddr.first - 1), std::move(numAAddr.second)));
+				                                     }
+			                                     });
+		}
+	};
+	mp.iterate({}, re);
 }

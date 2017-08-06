@@ -23,8 +23,14 @@ namespace AFS {
 
 class Master : public Server {
 protected:
-	void save() {throw;}
-	void load() {throw;}
+	void save() {
+		std::ofstream fout(rootDir.string() + "archive.dat");
+		write(fout);
+	}
+	void load() {
+		std::ifstream fin(rootDir.string() + "archive.dat");
+		read(fin);
+	}
 private:
 	PathFileData      pfdm;
 	AddressServerData asdm;

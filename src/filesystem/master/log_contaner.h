@@ -17,28 +17,25 @@
 namespace AFS {
 
 enum class OpCode {
-	GetChunkHandle = 0, ListFile, Mkdir, DeleteFile,
-	CreateFile, GetFileInfo, GetPrimaryAndSecondaries,
-	HeartBeat
+	Unknown,
+	createFile, Mkdir, // args: path
+	AddChunk           // args: path, handle
 };
 
 const std::string opName[] = {
-		"GetChunkHandle", "ListFile", "Mkdir", "DeleteFile",
-		"CreateFile", "GetFileInfo", "GetPrimaryAndSecondaries",
-		"HeartBeat"
+		"Unknown", "createFile", "Mkdir", "addChunk"
 };
 
 struct MasterLog {
-	bool        opLog;
-	OpCode      op;
+	OpCode      op{OpCode::Unknown};
 	std::vector<std::string> args;
-	GFSError    result;
+	bool        success{false};
 };
 
 class LogContainer {
 private:
 	std::function<void(std::ofstream &)> checkPoint;
-	std::string logPath;
+	std::string rootPath;
 	size_t      sz;
 	std::mutex  m;
 
@@ -54,38 +51,38 @@ private:
 		}
 
 		~LogPtr() {
-			addLog(log);
+			if (log.success)
+				addLog(log);
 		}
 	};
 
 	void addLog(const MasterLog & log) {
 		std::lock_guard<std::mutex> lk(m);
-		std::ofstream fout(logPath);
-		fout << log.opLog << ' ';
-		if (!log.opLog) {
-			fout << log.args.front() << std::endl;
-			return;
-		}
+		std::ofstream fout(rootPath + "log.dat", std::ios::app);
 		fout << (int)log.op << ' ' << opName[(int)log.op] << ' ';
 		for (auto &&arg : log.args) {
 			fout << arg << ' ';
 		}
-//		fout << result
 		fout << std::endl;
+		++sz;
+		if (sz < CheckPointSize)
+			return;
+		fout.close();
+		fout.open(rootPath + "checkpoint.dat");
+		checkPoint(fout);
+		fout.open(rootPath + "log.dat"); // 清空log
+		sz = 0;
 	}
 
 public:
 	LogContainer(std::string path, std::function<void(std::ofstream &)> cp)
-			: logPath(std::move(path)), checkPoint(std::move(cp)), sz(0) {}
+			: rootPath(std::move(path)), checkPoint(std::move(cp)), sz(0) {}
 
-
-	LogPtr getPtr(bool opLog, OpCode op, std::vector<std::string> args) {
+	LogPtr getPtr(OpCode op) {
 		LogPtr ptr;
 		ptr.addLog = std::bind(&LogContainer::addLog, this, std::placeholders::_1);
-		ptr->opLog = opLog;
 		ptr->op = op;
-		ptr->args = std::move(args);
-//		ptr->result =
+		ptr->success = false;
 		return ptr;
 	}
 };

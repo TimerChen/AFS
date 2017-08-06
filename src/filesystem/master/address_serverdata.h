@@ -66,7 +66,6 @@ struct ServerDataCopy : public ServerDataBase {
 
 class AddressServerData {
 private:
-	static constexpr time_t ExpiredTime = 60; // 若服务器...s不心跳，则认为死亡
 	std::map<Address, ServerData> mp;
 	mutable readWriteMutex m;
 
@@ -77,9 +76,10 @@ public:
 	std::pair<MasterError, ServerDataCopy>
 	getData(const Address &addr) const;
 
-	void checkDeadChunkServer();
+	std::unique_ptr<std::vector<Address>> checkDeadChunkServer();
 
-	void updateChunkServer(const Address &addr,
+	void
+	updateChunkServer(const Address &addr,
 	                       const std::vector<std::tuple<ChunkHandle, ChunkVersion>> & chunks);
 
 	void deleteFailedChunks(const Address & addr, const std::vector<ChunkHandle> & handles);
@@ -87,12 +87,13 @@ public:
 	Address chooseServer() const {
 		readLock lk(m);
 		static auto lastChoice = mp.cbegin();
+		auto start = lastChoice;
 		while (1) {
 			++lastChoice;
-			if (lastChoice == mp.cend()) {
-				// todo sleep
+			if (lastChoice == start) // 找了一圈还找不到就算失败
+				return "";
+			if (lastChoice == mp.cend())
 				lastChoice = mp.cbegin();
-			}
 			if (lastChoice->second.handles.size() < ChunkNumPerServer) {
 				return lastChoice->first;
 			}
