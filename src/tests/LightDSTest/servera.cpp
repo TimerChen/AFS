@@ -24,8 +24,8 @@ void ServerA::sendMessage( std::string ip, std::uint16_t port, std::string words
 
 	//std::cerr << er.get() << " " << er.get() << std::endl;
 	AFS::GFSError reData;
-	er.get().convert( reData );
+	//er.get().convert( reData );
+	reData = er.get().as<AFS::GFSError>();
 	//std::cerr << reData.description << std::endl;
-	//er.get().as<Type>();
 
 }
