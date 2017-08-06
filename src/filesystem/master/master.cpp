@@ -105,6 +105,10 @@ std::tuple<AFS::GFSError, std::vector<AFS::ChunkHandle>>
 AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
                           std::vector<std::tuple<AFS::ChunkHandle, AFS::ChunkVersion>> chunks,
                           std::vector<AFS::ChunkHandle> failedChunks) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<AFS::ChunkHandle>());
+
 	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
 	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
 	auto result2 = std::move(*checkGarbage(chunks).release());
@@ -114,6 +118,10 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 
 std::tuple<AFS::GFSError, AFS::ChunkHandle>
 AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), ChunkHandle());
+
 	auto logptr = logc.getPtr(OpCode::AddChunk);
 	auto path = PathParser::instance().parse(path_str);
 
@@ -145,6 +153,10 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 
 std::tuple<AFS::GFSError, std::vector<std::string>>
 AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<std::string>());
+
 	GFSError err;
 	bool exists = MemoryPool::instance().exists(handle);
 	if (!exists) {
@@ -158,6 +170,10 @@ AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
 
 std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
 AFS::Master::RPCGetFileInfo(std::string path_str) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), 0, 0, 0);
+
 	GFSError err;
 	auto path = PathParser::instance().parse(path_str);
 	auto errMd = pfdm.getData(*path);
@@ -173,6 +189,10 @@ AFS::Master::RPCGetFileInfo(std::string path_str) {
 }
 
 AFS::GFSError AFS::Master::RPCCreateFile(std::string path_str) {
+	readLock glk(globalMutex);
+	if (!running)
+		return GFSError(GFSErrorCode::MasterDown);
+
 	GFSError result;
 	auto path = PathParser::instance().parse(path_str);
 	MasterError err = pfdm.createFile(*path);
@@ -181,6 +201,10 @@ AFS::GFSError AFS::Master::RPCCreateFile(std::string path_str) {
 }
 
 AFS::GFSError AFS::Master::RPCMkdir(std::string path_str) {
+	readLock glk(globalMutex);
+	if (!running)
+		return GFSError(GFSErrorCode::MasterDown);
+
 	GFSError result;
 	auto path = PathParser::instance().parse(path_str);
 	MasterError err = pfdm.createFolder(*path);
@@ -190,6 +214,10 @@ AFS::GFSError AFS::Master::RPCMkdir(std::string path_str) {
 
 std::tuple<AFS::GFSError, std::vector<std::string>>
 AFS::Master::RPCListFile(std::string path_str) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<std::string>());
+
 	std::tuple<GFSError, std::vector<std::string>> result;
 	auto path = PathParser::instance().parse(path_str);
 	auto errPtr = pfdm.listName(*path);
@@ -199,12 +227,20 @@ AFS::Master::RPCListFile(std::string path_str) {
 }
 
 AFS::GFSError AFS::Master::RPCDeleteFile(std::string path_str) {
+	readLock glk(globalMutex);
+	if (!running)
+		return GFSError(GFSErrorCode::MasterDown);
+
 	auto path = PathParser::instance().parse(path_str);
 	return ErrTranslator::masterErrTOGFSError(pfdm.deleteFile(*path));
 }
 
 std::tuple<AFS::GFSError, std::string, std::vector<std::string>, uint64_t>
 AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
+	readLock glk(globalMutex);
+	if (!running)
+		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), "", std::vector<std::string>(), 0);
+
 	GFSError err;
 	auto leaseExpired = [](const ChunkData & data) {
 		return data.leaseGrantTime + LeaseExpiredTime < time(nullptr);

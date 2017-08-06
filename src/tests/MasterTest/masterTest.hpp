@@ -38,7 +38,9 @@ protected:
 	LightDS::Service srv;
 	Master m;
 
-	masterTest() : srv("", std::cout), m(srv, "") {}
+	masterTest() : srv("", std::cout), m(srv, "") {
+		m.Start();
+	}
 
 	void someMkdir() {
 		/* NULL - a - b - c
@@ -98,7 +100,7 @@ TEST_F(masterTest, listFile) {
 	someCreateFile();
 	vector<string> ans = {"d", "e", "f"};
 	EXPECT_EQ(ans, std::get<1>(m.RPCListFile("a/b/c")));
-	ans = {"c"};
+	ans = {"c/"};
 	EXPECT_EQ(ans, std::get<1>(m.RPCListFile("b")));
 	ans = {"d"};
 	EXPECT_EQ(ans, std::get<1>(m.RPCListFile("b/c")));
@@ -118,12 +120,8 @@ TEST_F(masterTest, saveAndLoad) {
 	someCreateFile();
 	someDelete();
 
-	std::ofstream fout("/Users/aaronren/Desktop/1/1.dat");
-	std::ifstream fin("/Users/aaronren/Desktop/1/1.dat");
-
-	m.write(fout);
-	fout.close();
-	m.read(fin);
+	m.Shutdown();
+	m.Start();
 	vector<string> ans = {"e", "f"};
 	EXPECT_EQ(ans, std::get<1>(m.RPCListFile("a/b/c")));
 

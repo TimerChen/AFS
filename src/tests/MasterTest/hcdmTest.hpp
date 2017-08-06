@@ -1,7 +1,7 @@
 //
 // Created by Aaron Ren on 31/07/2017.
 //
-
+/*
 #ifndef AFS_HCDMTEST_H
 #define AFS_HCDMTEST_H
 
@@ -146,3 +146,4 @@ TEST_F(hcdmTest, DISABLED_ServerPtr) {
 }
 
 #endif //AFS_HCDMTEST_H
+*/

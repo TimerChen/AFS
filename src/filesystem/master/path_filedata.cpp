@@ -31,7 +31,7 @@ AFS::PathFileData::listName(const AFS::PathFileData::Path &path) const {
 	if (errMd.second.type != FileData::Type::Folder)
 		return std::make_pair(MasterError::NotExists, std::move(result2));
 	auto collect_name = [](const FileData & md)->std::string {
-		return md.name;
+		return md.name + (md.type == FileData::Type::Folder ? "/" : "");
 	};
 	result2 = mp.nonsub_collect<std::string>(path, collect_name);
 	return std::make_pair(MasterError::OK, std::move(result2));

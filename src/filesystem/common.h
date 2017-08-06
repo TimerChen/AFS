@@ -32,7 +32,8 @@ enum class GFSErrorCode : std::uint32_t {
 	NoSuchChunk,
 	PermissionDenied,
 	ChunkFull,
-	Failed
+	Failed,
+	MasterDown
 };
 
 

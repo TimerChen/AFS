@@ -32,8 +32,8 @@ if(Boost_FOUND)
             filesystem/master/address_serverdata.cpp filesystem/master/address_serverdata.h
             filesystem/master/handle_chunkdata.cpp   filesystem/master/handle_chunkdata.h
             filesystem/master/log_contaner.cpp       filesystem/master/log_contaner.h
-            tests/MasterTest/hcdmTest.cpp            tests/MasterTest/hcdmTest.h
-            tests/MasterTest/masterTest.cpp          tests/MasterTest/masterTest.h
+            tests/MasterTest/hcdmTest.hpp
+            tests/MasterTest/masterTest.hpp
             ## ryw end 31
             ## cjx begin 32
             filesystem/server.hpp

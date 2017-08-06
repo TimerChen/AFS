@@ -23,19 +23,28 @@ namespace AFS {
 
 class Master : public Server {
 protected:
-	void save() {
+	void save() final {
 		std::ofstream fout(rootDir.string() + "archive.dat");
 		write(fout);
 	}
-	void load() {
+	void load() final {
 		std::ifstream fin(rootDir.string() + "archive.dat");
+		if (!fin.good()) {
+//			std::cerr << "No archive" << std::endl;
+			return;
+		}
 		read(fin);
+		asdm.clear();
 	}
 private:
 	PathFileData      pfdm;
 	AddressServerData asdm;
 	LogContainer      logc;
-	readWriteMutex    m;   // save & load
+	bool              running{false};
+
+	// 用于在开关机和存读档时候，除了上述情况以外的函数，都只应尝试获得读锁
+	readWriteMutex    globalMutex;
+
 
 private:
 	// return the number of the chunks whose lease has been extended successfully
@@ -127,9 +136,18 @@ public: // debug
 public:
 	Master(LightDS::Service &srv, const std::string &rootDir);
 
-	void Start() {throw;}
-	void Shutdown() {throw;}
+	void Start() final {
+		writeLock lk(globalMutex);
+		load();
+		running = true;
+	}
+	void Shutdown() final {
+		writeLock lk(globalMutex);
+		save();
+		running = false;
+	}
 
+private:
 	void write(std::ofstream & out) const {
 		MemoryPool::instance().write(out);
 		asdm.write(out);
