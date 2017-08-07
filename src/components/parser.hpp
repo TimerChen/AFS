@@ -27,6 +27,8 @@ public:
 	parse(const std::string & str) {
 		auto result = std::make_unique<std::vector<std::string>>();
 		boost::split(*result, str,boost::is_any_of("/"));
+		if (result->begin()->empty())
+			result->erase(result->begin());
 		return result;
 	}
 

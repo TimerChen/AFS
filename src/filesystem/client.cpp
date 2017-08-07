@@ -39,6 +39,7 @@ ClientErr Client::fileCreate(const std::string &dir) {
 		default:
 			throw ;
 	}
+	return ClientErr(ClientErrCode::Unknown);
 }
 
 ClientErr Client::fileMkdir(const std::string &dir) {
@@ -364,8 +365,6 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	std::vector<std::function<void()>> states
 			= {getFileInfo, getHandle, getAddresses, pushData, applyChunk, endFlow};
 
-
-
 	while (cur != EndFlow) {
 		states[cur]();
 	}
@@ -608,6 +607,76 @@ void Client::Run( std::istream &in, std::ostream &out )
 		//Hint to tell you can input a new instruction.
 		out << "> ";
 	}
+}
+
+GFSErrorCode Client::toGFSErrorCode(ClientErrCode err) {
+	switch (int(err)) { // todo more err code
+		case (int)ClientErrCode::OK:
+			return GFSErrorCode::OK;
+		default:
+			break;
+	}
+	return GFSErrorCode::Unknown;
+}
+
+GFSError Client::toGFSError(ClientErr err) {
+	return GFSError(toGFSErrorCode(err.code), err.description);
+}
+
+std::tuple<ClientErr, std::vector<std::string>> Client::listFile(const std::string &dir) {
+	if(!checkMasterAddress())
+		return std::make_tuple(ClientErr(ClientErrCode::MasterNotFound), std::vector<std::string>());
+	auto errVecstring = srv.RPCCall({masterAdd, masterPort}, "ListFile", dir)
+			.get().as<std::tuple<GFSError, std::vector<std::string>>>();
+	GFSError gErr = std::get<0>(errVecstring);
+	ClientErrCode err;
+	switch ((int)gErr.errCode) { // todo write a function to do the conversion
+		case (int)GFSErrorCode::OK:
+			err = ClientErrCode::OK;
+			break;
+		case (int)GFSErrorCode::FileDirAlreadyExists:
+			err = ClientErrCode::FileDirAlreadyExists;
+			break;
+		case (int)GFSErrorCode::NoSuchFileDir:
+			err = ClientErrCode::NoSuchFileDir;
+			break;
+		default:
+			err = ClientErrCode::Unknown;
+			break;
+	}
+	return std::make_tuple(err, std::get<1>(errVecstring));
+}
+
+GFSError Client::Create(const std::string &dir) {
+	return toGFSError(fileCreate(dir));
+}
+
+GFSError Client::Mkdir(const std::string &dir) {
+	return toGFSError(fileMkdir(dir));
+}
+
+std::tuple<GFSError, std::vector<std::string>> Client::List(const std::string &dir) {
+	auto errAns = listFile(dir);
+	return std::make_tuple(toGFSError(std::get<0>(errAns)), std::get<1>(errAns));
+}
+
+std::tuple<ClientErr, ChunkHandle> Client::getChunkHandle(const std::string &dir, size_t idx) {
+	if(!checkMasterAddress())
+		return std::make_tuple(ClientErr(ClientErrCode::MasterNotFound), ChunkHandle());
+	auto errHandle = srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, idx)
+			.get().as<std::tuple<GFSError, ChunkHandle>>();
+	if (std::get<0>(errHandle).errCode == GFSErrorCode::OK) // todo err
+		return std::make_tuple(ClientErr(ClientErrCode::OK), std::get<1>(errHandle));
+	return std::make_tuple(ClientErr(ClientErrCode::Unknown), ChunkHandle());
+}
+
+std::tuple<GFSError, ChunkHandle> Client::GetChunkHandle(const std::string &dir, std::size_t idx) {
+	auto errAns = getChunkHandle(dir, idx);
+	return std::make_tuple(toGFSError(std::get<0>(errAns)), std::get<1>(errAns));
+}
+
+GFSError Client::WriteChunk(const ChunkHandle &handle, const std::uint64_t &offset, const std::vector<char> &data) {
+	return toGFSError(fileWrite(handle, offset, data));
 }
 
 }
