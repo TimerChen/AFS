@@ -294,3 +294,45 @@ void AFS::Master::BackgroundActivity() {
 //	collectGarbage();
 	reReplicate();
 }
+
+void AFS::Master::write(std::ofstream &out) const {
+	MemoryPool::instance().write(out);
+	asdm.write(out);
+	pfdm.write(out);
+}
+
+void AFS::Master::read(std::ifstream &in) {
+	pfdm.clear();
+	asdm.clear();
+	MemoryPool::instance().clear();
+	MemoryPool::instance().read(in);
+	asdm.read(in);
+	pfdm.read(in);
+}
+
+void AFS::Master::Start() {
+	writeLock lk(globalMutex);
+	load();
+	running = true;
+}
+
+void AFS::Master::Shutdown() {
+	writeLock lk(globalMutex);
+	save();
+	running = false;
+}
+
+void AFS::Master::save() {
+	std::ofstream fout(rootDir.string() + "archive.dat");
+	write(fout);
+}
+
+void AFS::Master::load() {
+	std::ifstream fin(rootDir.string() + "archive.dat");
+	if (!fin.good()) {
+//			std::cerr << "No archive" << std::endl;
+		return;
+	}
+	read(fin);
+	asdm.clear();
+}

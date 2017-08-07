@@ -1,4 +1,4 @@
-/*#include <cstdio>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 
@@ -32,11 +32,11 @@ int main(int argc, char**argv)
 	//master
 	AFS::Master master(srv,".");
 #endif
-#ifdef IS_MASTER
+#ifdef IS_CHUNKSERVER
 	//chunkserver
 	AFS::ChunkServer chunkServer(srv,".");
 #endif
-#ifdef IS_CHUNKSERVER
+#ifdef IS_CLIENT
 	//client
 	std::string masterIP = "0.0.0.0";
 	std::uint16_t masterPort = 12308;
@@ -52,10 +52,10 @@ int main(int argc, char**argv)
 	return 0;
 }
 
-*/
+/*
 #include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
-}
+}*/
