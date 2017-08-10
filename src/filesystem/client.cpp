@@ -13,7 +13,7 @@ bool Client::checkMasterAddress() const {
 	return !masterAdd.empty();
 }
 
-Client::Client(LightDS::Service &_srv, const Address &MasterAdd, const uint16_t &MasterPort, const uint16_t &ClientPort)
+Client::Client(LightDS::User &_srv, const Address &MasterAdd, const uint16_t &MasterPort, const uint16_t &ClientPort)
 	: srv(_srv), masterAdd(MasterAdd), masterPort(MasterPort),clientPort(ClientPort)
 {
 	if( masterAdd == "" )
@@ -684,7 +684,48 @@ std::tuple<GFSError, ChunkHandle> Client::GetChunkHandle(const std::string &dir,
 }
 
 GFSError Client::WriteChunk(const ChunkHandle &handle, const std::uint64_t &offset, const std::vector<char> &data) {
-	return toGFSError(fileWrite(handle, offset, data));
+
+}
+
+ClientErr fileRead(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data)
+{
+
+}
+
+ClientErr fileWrite(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data)
+{
+
+}
+ClientErr fileAppend(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data)
+{
+
+}
+
+std::tuple<GFSError, std::uint64_t /*size*/>
+Client::ReadChunk(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data) {
+
+}
+
+std::tuple<GFSError, std::uint64_t /*offset*/>
+Client::AppendChunk(const ChunkHandle & handle, const std::vector<char> & data) {
+
+}
+
+GFSError Client::Write(const std::string &path, std::uint64_t offset, const std::vector<char> &data)
+{
+
+}
+
+std::tuple<GFSError, std::uint64_t /*size*/>
+Client::Read(const std::string &path, std::uint64_t offset, std::vector<char> &data)
+{
+
+}
+
+std::tuple<GFSError, std::uint64_t /*offset*/>
+Client::Append(const std::string &path, const std::vector<char> &data)
+{
+
 }
 
 }

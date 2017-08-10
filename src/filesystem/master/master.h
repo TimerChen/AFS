@@ -22,6 +22,9 @@
 namespace AFS {
 
 class Master : public Server {
+
+	//friend class BasicTest;
+
 protected:
 	void save() final;
 	void load() final;

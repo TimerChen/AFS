@@ -16,6 +16,9 @@ namespace AFS {
 
 class ChunkServer : public Server
 {
+
+	//friend class BasicTest;
+
 public:
 	enum MutationType : std::uint32_t
 	{
@@ -36,7 +39,7 @@ public:
 	void Shutdown();
 
 
-protected:
+public:
 	// RPCCreateChunk is called by master to create a new chunk given the chunk handle.
 	GFSError
 		RPCCreateChunk(ChunkHandle handle);
@@ -131,6 +134,7 @@ protected:
 	void garbageCollect( const std::vector<ChunkHandle> &gbg );
 	GFSError heartBeat();
 	void Heartbeat();
+	void clearData();
 protected:
 	std::uint32_t MaxCacheSize;
 	std::map< ChunkHandle, Chunk > chunks;

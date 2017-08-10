@@ -324,6 +324,16 @@ void ChunkServer::saveChunkData_noLock( const ChunkHandle &handle, const char *d
 	fout.close();
 }
 
+void ChunkServer::clearData()
+{
+	chunks.clear();
+	chunkMutex.clear();
+	dataCache.clear();
+	while( cacheQueue.empty() )
+		cacheQueue.pop_back();
+	chunkPool.clear();
+}
+
 void ChunkServer::Shutdown()
 {
 
@@ -331,6 +341,7 @@ void ChunkServer::Shutdown()
 
 	//At End
 	//TODO???
+	clearData();
 	Server::Shutdown();
 }
 

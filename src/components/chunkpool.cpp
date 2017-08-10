@@ -63,6 +63,16 @@ bool ChunkPool::empty()
 	ReadLock cLock(lock);
 	return garbage.size() <= subPoolSize;
 }
+void ChunkPool::clear()
+{
+	WriteLock cLock(lock);
+	for( auto itr : freshed )
+	{
+		garbage.push(itr.first);
+	}
+	freshed.clear();
+	cLock.unlock();
+}
 
 }
 
