@@ -51,8 +51,8 @@ bool remove(std::vector<T> & vec, const T & val) {
 		vec.clear();
 		return true;
 	}
-	while (iter != vec.end()) {
-		*iter = std::move(*(iter + 1));
+	while (iter != vec.end() - 1) {
+		*iter = *(iter + 1);
 		++iter;
 	}
 	vec.pop_back();

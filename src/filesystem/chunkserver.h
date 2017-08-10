@@ -146,7 +146,7 @@ protected:
 
 protected:
 	std::string masterIP;
-	std::uint16_t masterPort;
+	std::uint16_t masterPort, chunkPort;
 	boost::filesystem::path chunkFolder;
 };
 

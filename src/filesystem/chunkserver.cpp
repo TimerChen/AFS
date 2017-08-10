@@ -449,6 +449,7 @@ GFSError ChunkServer::heartBeat()
 void ChunkServer::Heartbeat()
 {
 	GFSError err;
+	chunkPort = 7778;
 	while(running)
 	{
 		auto masterList = srv.ListService("master");
@@ -581,8 +582,8 @@ GFSError
 				//Remote apply
 				for( std::uint32_t ii = 0; ii < secondaries.size(); ++ii )
 				{
-					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],masterPort/*???*/}, "ApplyMutation",
-												 handle, cItr->second.finished, MutationWrite, dataID, offset );
+					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],chunkPort/*???*/}, "ApplyMutation",
+												 handle, cItr->second.version, cItr->second.finished, MutationWrite, dataID, offset );
 				}
 
 				//Local disk
@@ -671,11 +672,11 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 			for( std::uint32_t ii = 0; ii < secondaries.size(); ++ii )
 			{
 				if( reData.errCode == GFSErrorCode::OK )
-					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],masterPort/*???*/}, "ApplyMutation",
-												 handle, cItr->second.finished, MutationAppend, dataID, offset );
+					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],chunkPort/*???*/}, "ApplyMutation",
+												 handle, cItr->second.version, cItr->second.finished, MutationAppend, dataID, offset );
 				else
-					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],masterPort/*???*/}, "ApplyMutation",
-												 handle, cItr->second.finished, MutationPad, dataID, offset );
+					msgs[ii] = srv.RPCAsyncCall( {secondaries[ii],chunkPort/*???*/}, "ApplyMutation",
+												 handle, cItr->second.version, cItr->second.finished, MutationPad, dataID, offset );
 			}
 
 			//Local disk
@@ -809,7 +810,7 @@ GFSError
 		cLock0.unlock();
 
 		msgpack::object_handle msg =
-				srv.RPCCall( {addr,masterPort/*???*/}, "ApplyCopy",
+				srv.RPCCall( {addr,chunkPort/*???*/}, "ApplyCopy",
 								handle, c.version, str, c.finished );
 		reData = msg.get().as<GFSError>();
 	}else
