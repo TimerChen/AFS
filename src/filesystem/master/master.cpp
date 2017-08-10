@@ -299,7 +299,14 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		);
 	}
 	// 签订租约成功
+	MemoryPool::instance().updateData_if(handle, [](const ChunkData & data){return true;},
+	                                     [&](ChunkData & data){
+		                                     data.version++;
+	                                     });
 	remove(data.location, data.primary);
+	for (auto &&server : data.location) {
+		srv.RPCCall({server, chunkPort}, "UpdateVersion", handle, data.version + 1);
+	}
 	err.errCode = GFSErrorCode::OK;
 
 	std::cerr << "Chunk: " << handle << "\nPrimary is " << data.primary << std::endl;
