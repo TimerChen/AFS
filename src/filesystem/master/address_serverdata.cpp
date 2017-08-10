@@ -30,6 +30,7 @@ AFS::AddressServerData::checkDeadChunkServer() {
 	writeLock wlk(m);
 	auto result = std::make_unique<std::vector<AFS::Address>>();
 	for (auto &&eiter : iterErased) {
+		std::cerr << eiter->first << ", last beat time = " << eiter->second.lastBeatTime << std::endl;
 		result->emplace_back(eiter->first);
 		mp.erase(eiter);
 	}
@@ -42,6 +43,7 @@ AFS::AddressServerData::updateChunkServer(const AFS::Address &addr,
 	writeLock lk(m);
 	auto & data = mp[addr];
 	data.lastBeatTime = time(nullptr);
+	//std::cerr << data.lastBeatTime << std::endl;
 	data.handles.clear();
 	data.handles.reserve(chunks.size());
 	for (auto &&chunk : chunks) {

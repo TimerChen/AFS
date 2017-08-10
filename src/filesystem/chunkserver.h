@@ -142,7 +142,8 @@ protected:
 	std::map< std::uint64_t, std::tuple<char*,std::uint64_t/*length*/> > dataCache;
 	std::deque<std::uint64_t> cacheQueue;
 	ChunkPool chunkPool;
-	ReadWriteMutex lock_chunks, lock_dataCache, lock_cacheQueue, lock_chunkMutex;
+	ReadWriteMutex lock_running, lock_chunks, lock_dataCache, lock_cacheQueue, lock_chunkMutex;
+	std::atomic_int runningNumber;
 
 protected:
 	std::string masterIP;

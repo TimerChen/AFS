@@ -101,32 +101,33 @@ void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::A
 
 		for (auto &&chunk : data.handles) {
 			auto handle = chunk.getHandle();
-			MemoryPool::instance().updateData_if(handle,
-			                                     [&](const ChunkData & cdata) { // 如果副本服务器个数小于复制因子
-				                                     return cdata.location.size() < data.replicationFactor;
-			                                     },
-			                                     [&](ChunkData & cdata) {
-				                                     auto numAAddr = pq.top();
-				                                     while (std::find(cdata.location.begin(), cdata.location.end(),
-				                                                      numAAddr.second)
-				                                            != cdata.location.end()) {
-					                                     pq.pop();
-					                                     numAAddr = pq.top();
-					                                     pq.push(std::make_pair(2 * (numAAddr.first - 1), std::move(numAAddr.second)));
-				                                     } // 取一个当前location中没有的服务器
-
-				                                     GFSError err;
-				                                     // 让某一个服务器给目标服务器发送消息
-				                                     for (auto &&location : cdata.location) {
-					                                     err = send(location, numAAddr.second, handle);
-					                                     if (err.errCode == GFSErrorCode::OK)
-						                                     break;
-				                                     }
-				                                     if (err.errCode == GFSErrorCode::OK) {
-					                                     pq.pop();
-					                                     pq.push(std::make_pair(2 * (numAAddr.first - 1), std::move(numAAddr.second)));
-				                                     }
-			                                     });
+			ChunkData cdata;
+			bool flag = MemoryPool::instance().return_if(handle, cdata,[&](const ChunkData & tdata) { // 如果副本服务器个数小于复制因子
+				return tdata.location.size() < data.replicationFactor;
+			});
+			if (flag) {
+				auto numAAddr = pq.top();
+				while (std::find(cdata.location.begin(), cdata.location.end(),
+					   numAAddr.second) != cdata.location.end()) {
+					 pq.pop();
+					 numAAddr = pq.top();
+					 pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
+				} // 取一个当前location中没有的服务器
+				//std::cerr << "Chunk " << handle << " is in danger.\n";
+				GFSError err;
+				// 让某一个服务器给目标服务器发送消息
+				for (auto &&location : cdata.location) {
+					   //std::cerr << "trying send " << location << " to " << numAAddr.second << std::endl;
+					   err = send(location, numAAddr.second, handle);
+					 if (err.errCode == GFSErrorCode::OK) {
+						  break;
+					 }
+					 if (err.errCode == GFSErrorCode::OK) {
+						  pq.pop();
+						  pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
+					 }
+				}
+			}
 		}
 	};
 	mp.iterate({}, re);

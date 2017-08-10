@@ -60,7 +60,9 @@ void AFS::Master::bindFunctions()
 }
 
 void AFS::Master::checkDeadChunkServer() {
+	//std::cerr << "original num = " << asdm.mp.size() << std::endl;
 	auto deleted = std::move(*asdm.checkDeadChunkServer().release());
+	//std::cerr << "original num = " << asdm.mp.size() << std::endl;
 }
 
 void AFS::Master::collectGarbage() {
@@ -117,6 +119,12 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<AFS::ChunkHandle>());
 
+//	std::cerr << srv.getRPCCaller() << " beats\n";
+//	std::cerr << "left servers: ";
+//	for (auto && item : asdm.mp) {
+//		std::cerr << item.first << "  ";
+//	}
+//	std::cerr << std::endl;
 	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
 	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
 	auto result2 = std::move(*checkGarbage(chunks).release());
@@ -323,26 +331,38 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 
 void AFS::Master::reReplicate() {
 	auto pq = std::move(*(asdm.getPQ().release()));
+	if (pq.empty())
+		return;
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
+		//std::cerr << "RPCCALL\n";
 		GFSError err;
 		try {
-			err = srv.RPCCall({src, chunkPort}, "SendCopy", tar, handle).get().as<GFSError>();
+			err = srv.RPCCall({src, chunkPort}, "SendCopy", handle, tar).get().as<GFSError>();
 		} catch (...) {
 			err.errCode = GFSErrorCode::TransmissionErr;
 		}
 		return err;
 	};
+	if (pq.size() == 2) {
+		//std::cerr << 2 << std::endl;
+	}
 	pfdm.reReplicate(pq, rpcCall);
 }
 
 void AFS::Master::BackgroundActivity() {
-	std::unique_lock<std::mutex>(backgroundM);
-	readLock glk(globalMutex);
-	if (!running)
-		return;
-	checkDeadChunkServer();
-//	collectGarbage();
-	reReplicate();
+	while (1) {
+		//std::cerr << asdm.mp.size() << std::endl;
+		if (asdm.mp.size() == 0) {
+			//std::cerr << 1 ;
+		}
+		std::unique_lock<std::mutex>(backgroundM);
+		readLock glk(globalMutex);
+		if (!running)
+			return;
+		checkDeadChunkServer();
+//		collectGarbage();
+		reReplicate();
+	}
 }
 
 void AFS::Master::write(std::ofstream &out) const {
@@ -365,6 +385,8 @@ void AFS::Master::Start() {
 	writeLock lk(globalMutex);
 	load();
 	running = true;
+	std::thread t(&Master::BackgroundActivity, this);
+	t.detach();
 }
 
 void AFS::Master::Shutdown() {

@@ -28,10 +28,12 @@ MemoryPool::ChunkPtr MemoryPool::newChunk() {
 }
 
 MemoryPool::ServerPtr MemoryPool::getServerPtr(ChunkHandle handle, const Address &addr) {
+	//std::cerr << "get write\n";
 	writeLock lk(m);
 	auto & exData = container[handle & 0xffffffff];
 	exData.serverCnt++;
 	exData.data.location.push_back(addr);
+	//std::cerr << "free\n";
 	return ServerPtr(handle, addr);
 }
 

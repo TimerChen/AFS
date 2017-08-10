@@ -37,7 +37,7 @@ ChunkServer::ChunkServer(LightDS::Service &Srv, const std::string &RootDir)
 	:Server(Srv, RootDir)
 {
 	MaxCacheSize = 20;
-
+	runningNumber = 0;
 	bindFunctions();
 
 
@@ -45,7 +45,13 @@ ChunkServer::ChunkServer(LightDS::Service &Srv, const std::string &RootDir)
 
 ChunkServer::~ChunkServer()
 {
-	//Shutdown();
+	Shutdown();
+	while( runningNumber )
+	{
+		std::this_thread::yield();
+	}
+	WriteLock runLock( lock_running );
+	runLock.unlock();
 }
 
 void ChunkServer::bindFunctions()
@@ -107,10 +113,17 @@ void ChunkServer::bindFunctions()
 
 void ChunkServer::Start()
 {
+	runningNumber++;
+	WriteLock runLock( lock_running );
+
 	Server::Start();
 	load();
 
+
+	runLock.unlock();
+	runningNumber--;
 	std::thread( &ChunkServer::Heartbeat, this ).detach();
+	std::cerr << "Start\n" << std::endl;
 }
 void ChunkServer::load()
 {
@@ -333,20 +346,22 @@ void ChunkServer::clearData()
 	chunks.clear();
 	chunkMutex.clear();
 	dataCache.clear();
-	while( cacheQueue.empty() )
+	while( !cacheQueue.empty() )
 		cacheQueue.pop_back();
 	chunkPool.clear();
 }
 
 void ChunkServer::Shutdown()
 {
-
+	WriteLock runLock( lock_running );
 	//srv.Stop();
 
 	//At End
 	//TODO???
 	clearData();
 	Server::Shutdown();
+	std::cerr << "Shunkdown Over.\n";
+	runLock.unlock();
 }
 
 
@@ -399,7 +414,7 @@ bool ChunkServer::checkChunk( const std::int64_t &handle )
 {
 	//Check existence of this file
 	using namespace boost::filesystem;
-	if( directory_iterator( rootDir / chunkFolder / (std::to_string(handle)+".chk") ) == directory_iterator() )
+	if( !exists( rootDir / chunkFolder / (std::to_string(handle)+".chk") ) )
 		return false;
 
 	//Add CheckSum...
@@ -419,6 +434,8 @@ GFSError ChunkServer::heartBeat()
 	for( auto chk : chunks )
 	{
 		ReadLock cmLock( lock_chunkMutex );
+		//if( chunkMutex.find(chk.first) == chunkMutex.end() )
+
 		ReadLock cLock0( chunkMutex[chk.first] );
 		cmLock.unlock();
 		if( checkChunk( chk.first ) )
@@ -450,36 +467,51 @@ void ChunkServer::Heartbeat()
 {
 	GFSError err;
 	chunkPort = 7778;
-	while(running)
+	runningNumber++;
+	while( true )
 	{
-		std::vector<LightDS::User::RPCAddress> masterList;
-		try{
-			masterList = srv.ListService("master");
-		}catch(...)
-		{
-			std::cerr << "Service Died\n" ;
+		err.errCode = GFSErrorCode::Unknown;
+		ReadLock runLock( lock_running );
+		if( !running )
 			break;
-		}
 
-		for( auto addr : masterList )
+
+		std::vector<LightDS::User::RPCAddress> masterList;
+//		try{
+//			masterList = srv.ListService("master");
+//		}catch(...)
+//		{
+//			std::cerr << "Service Died\n" ;
+//			break;
+//		}
+
+
+		//masterIP = addr.ip;
+		masterIP = "127.0.0.10";
+		//masterPort = addr.port;
+		masterPort = 7777;
+		while( err.errCode != GFSErrorCode::OK && running )
 		{
-			masterIP = addr.ip;
-			masterPort = addr.port;
-			while( err.errCode != GFSErrorCode::OK && running )
+			try{
+				//std::cerr << "Into HeartBeat\n";
+				err = heartBeat();
+				//std::cerr << "Out HeartBeat\n";
+			}
+			catch(...)
 			{
-				try{
-					err = heartBeat();
-				}
-				catch(...)
-				{
-					//TODO...
-
-				}
+				//TODO...
+				std::cerr << "Error!!!!!!!!!\n";
 			}
 		}
-		//std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		runLock.unlock();
+		//std::cerr << "Running: " << running << std::endl;
+		//std::this_thread::yield();
+		std::this_thread::sleep_for(std::chrono::milliseconds(700));
+		//std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
+	//std::cerr << "RunNum: " << runningNumber << std::endl;
+	runningNumber--;
+	//std::cerr << "afterRunNum: " << runningNumber << std::endl;
 
 }
 
@@ -487,6 +519,14 @@ void ChunkServer::Heartbeat()
 GFSError
 	ChunkServer::RPCCreateChunk(ChunkHandle handle)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData = {GFSErrorCode::OK, ""};
 	Chunk c;
 	char *buffer = chunkPool.newData();
@@ -523,6 +563,7 @@ GFSError
 	cLock0.unlock();
 	chunkPool.Delete( buffer );
 
+	runningNumber--;
 	return reData;
 }
 
@@ -530,6 +571,14 @@ GFSError
 std::tuple<GFSError, std::string /*Data*/>
 	ChunkServer::RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return std::make_tuple(GFSError({GFSErrorCode::OperateFailed, "Already Closed."}),"");
+	}
+
 	std::tuple<GFSError, std::string /*Data*/> reData;
 	Chunk c = loadChunkInfo( handle );
 	std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
@@ -551,7 +600,8 @@ std::tuple<GFSError, std::string /*Data*/>
 			reData = std::make_tuple( GFSError({GFSErrorCode::InvalidOperation, "???"}), "" );
 		}
 	}
-	std::cerr << "return" << std::endl;
+
+	runningNumber--;
 	return reData;
 }
 
@@ -560,6 +610,14 @@ std::tuple<GFSError, std::string /*Data*/>
 GFSError
 	ChunkServer::RPCWriteChunk(ChunkHandle handle, std::uint64_t dataID, std::uint64_t offset, std::vector<std::string> secondaries)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData = {GFSErrorCode::OK, ""}, secData;
 	std::uint64_t length;
 	std::vector< std::future<msgpack::object_handle> >
@@ -630,6 +688,7 @@ GFSError
 	if(reData.errCode == GFSErrorCode::OK)
 		deleteData( dataID );
 
+	runningNumber--;
 	return reData;
 
 }
@@ -641,6 +700,14 @@ GFSError
 std::tuple<GFSError, std::uint64_t /*offset*/>
 	ChunkServer::RPCAppendChunk(ChunkHandle handle, std::uint64_t dataID, std::vector<std::string> secondaries)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return std::make_tuple(GFSError({GFSErrorCode::OperateFailed, "Already Closed."}),0);
+	}
+
 	GFSError reData = {GFSErrorCode::OK, ""}, secData;
 	std::uint64_t offset, length;
 	std::vector< std::future<msgpack::object_handle> >
@@ -724,6 +791,7 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 	if(reData.errCode == GFSErrorCode::OK)
 		deleteData( dataID );
 
+	runningNumber--;
 	return std::make_tuple(reData, offset+length);
 }
 
@@ -731,6 +799,14 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 GFSError
 	ChunkServer::RPCApplyMutation(ChunkHandle handle, ChunkVersion version, std::uint64_t serialNo, MutationType type, std::uint64_t dataID, std::uint64_t offset)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData = {GFSErrorCode::OK, ""};
 	std::uint64_t length;
 	//Wait for order
@@ -798,6 +874,7 @@ GFSError
 	if(reData.errCode == GFSErrorCode::OK)
 		deleteData( dataID );
 
+	runningNumber--;
 	return reData;
 }
 
@@ -805,6 +882,15 @@ GFSError
 GFSError
 	ChunkServer::RPCSendCopy(ChunkHandle handle, std::string addr)
 {
+	std::cerr << "send " << handle << " to " << addr << std::endl;
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData = GFSError({GFSErrorCode::OK, ""});
 	ReadLock cLock( lock_chunks );
 
@@ -827,6 +913,7 @@ GFSError
 
 	cLock.unlock();
 
+	runningNumber--;
 	return reData;
 }
 
@@ -835,6 +922,15 @@ GFSError
 GFSError
 	ChunkServer::RPCApplyCopy(ChunkHandle handle, ChunkVersion version, std::string data, std::uint64_t serialNo)
 {
+	std::cerr << "apply\n";
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData = GFSError({GFSErrorCode::OK, ""});
 	Chunk c;
 	c.version = version;
@@ -856,6 +952,7 @@ GFSError
 	cLock0.unlock();
 	cLock.unlock();
 
+	runningNumber--;
 	return reData;
 }
 
@@ -864,6 +961,14 @@ GFSError
 GFSError
 	ChunkServer::RPCGrantLease(std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>> arg )
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData={GFSErrorCode::OK, ""};
 	ChunkHandle handle;
 	ChunkVersion newVersion;
@@ -916,6 +1021,7 @@ GFSError
 		cLock.unlock();
 	}
 
+	runningNumber--;
 	return reData;
 }
 
@@ -924,6 +1030,14 @@ GFSError
 GFSError
 	ChunkServer::RPCUpdateVersion(ChunkHandle handle, ChunkVersion newVersion)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	GFSError reData;
 
 	std::cerr << "UpdateVersion:" << handle << "-" << newVersion << std::endl;
@@ -955,7 +1069,7 @@ GFSError
 	cLock.unlock();
 
 
-
+	runningNumber--;
 	return reData;
 }
 
@@ -965,6 +1079,14 @@ GFSError
 GFSError
 	ChunkServer::RPCPushData(std::uint64_t dataID, std::string data)
 {
+	runningNumber++;
+	ReadLock runLock( lock_running );
+	if( !running )
+	{
+		runningNumber--;
+		return {GFSErrorCode::OperateFailed, "Already Closed."};
+	}
+
 	//std::cerr << "RPC...";
 	GFSError reData = { GFSErrorCode::OK, "" };
 	char *cdata;
@@ -1002,6 +1124,7 @@ GFSError
 	}
 	dcLock.unlock();
 
+	runningNumber--;
 	return reData;
 }
 

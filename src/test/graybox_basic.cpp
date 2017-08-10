@@ -257,10 +257,12 @@ TestResult BasicTest::TestReadChunk()
 
 size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std::uint64_t length)
 {
+	std::cerr << "start\n";
 	std::vector<LightDS::User::RPCAddress> addresses = user.ListService("master");
 	assert(addresses.size() == 1);
 	auto addrMaster = addresses[0];
 
+	std::cerr << "getrep\n";
 	std::vector<std::string> replicas = RPC(addrMaster, "GetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
 	std::vector<std::string> data;
 
@@ -465,6 +467,7 @@ TestResult BasicTest::TestShutdown()
 
 TestResult BasicTest::TestReReplication()
 {
+	const size_t serverTimeout = 5;
 	static const std::string path = "/ReReplication.txt";
 	client.Create(path) | must_succ;
 
@@ -477,13 +480,13 @@ TestResult BasicTest::TestReReplication()
 
 	env.Stop(1);
 	env.Stop(2);
-
+	std::cerr << "after stop " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout) * 2);
-
+	std::cerr << "Sleep...END\n";
 	size_t n = checkConsistency(chunk, offset, data.size());
 	if (n != 2)
 		return TestResult::Fail((format("Expect 2 replicas, got %d") % n).str());
-
+	std::cerr << "pass 1\n";
 	env.Stop(3);
 	env.StartChunkServer(1);
 

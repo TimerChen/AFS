@@ -146,6 +146,7 @@ public:
 		~ChunkPtr() override {
 			if (empty())
 				return;
+			std::cerr << "file writelock\n";
 			writeLock lk(MemoryPool::instance().m);
 			if (--MemoryPool::instance().container[getPos()].fileCnt == 0)
 				terminate();
@@ -176,9 +177,11 @@ public:
 		~ServerPtr() override {
 			if (empty())
 				return;
+			//std::cerr << "server " << addr << " writeLock\n";
 			writeLock lk(MemoryPool::instance().m);
 			auto & exData = MemoryPool::instance().container[getPos()];
 			--exData.serverCnt;
+			//std::cerr << "server " << addr << " free\n";
 			remove(exData.data.location, addr);
 		}
 
@@ -208,6 +211,16 @@ public:
 		readLock lk(m);
 		size_t pos = handle & 0xffffffff;
 		return check(container[pos].data);
+	}
+
+	bool return_if(ChunkHandle handle, ChunkData & data, const std::function<bool(const ChunkData&)> & condition) {
+		readLock lk(m);
+		auto _data = container[handle & 0xffffffff].data;
+		if (condition(_data)) {
+			data = _data;
+			return true;
+		}
+		return false;
 	}
 
 	bool exists(ChunkHandle handle) {
@@ -246,6 +259,7 @@ public:
 	}
 
 	void clear() {
+		std::cerr << "writelock\n";
 		writeLock lk(m);
 		recycler.clear();
 		container.clear();

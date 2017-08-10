@@ -51,7 +51,7 @@ ClientErr Client::fileCreate(const std::string &dir) {
 	{
 		return ClientErr(ClientErrCode::MasterNotFound);
 	}
-
+	std::cerr << "ClientCreate\n";
 	GFSError err;
 	try {
 		err = srv.RPCCall({masterAdd, masterPort}, "CreateFile", dir).get().as<GFSError>();

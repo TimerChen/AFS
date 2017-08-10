@@ -66,6 +66,7 @@ struct ServerDataCopy : public ServerDataBase {
 
 class AddressServerData {
 private:
+public: // debug
 	std::map<Address, ServerData> mp;
 	mutable readWriteMutex m;
 
@@ -147,6 +148,9 @@ public:
 		auto result = std::make_unique<std::priority_queue<std::pair<size_t, Address>>>();
 		for (auto &&item : mp) {
 			result->push(std::make_pair(item.second.handles.size(), item.first));
+		}
+		if (result->size() == 2) {
+			//std::cerr << "!@!" << std::endl;
 		}
 		return result;
 	};
