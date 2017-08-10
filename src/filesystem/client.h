@@ -34,9 +34,7 @@ public:
 	ClientErr fileWrite(const std::string &dir, const std::string &localDir, const std::uint64_t &offset);
 	ClientErr fileWrite_str(const std::string &dir, const std::string &data, const std::uint64_t &offset);
 
-	ClientErr fileWrite(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data) {
-		throw ;
-	}
+	ClientErr fileWrite(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
 
 	ClientErr fileAppend(const std::string &dir, const std::string &localDir);
 	ClientErr fileAppend_str(const std::string &dir, const std::string &data);
@@ -44,6 +42,12 @@ public:
 	std::tuple<ClientErr, std::vector<std::string>> listFile(const std::string & dir);
 
 	std::tuple<ClientErr, ChunkHandle> getChunkHandle(const std::string & dir, size_t idx);;
+
+	std::tuple<ClientErr, std::uint64_t>
+	readChunk(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data);
+
+	std::tuple<ClientErr, std::uint64_t /*offset*/>
+	appendChunk(const ChunkHandle & handle, const std::vector<char> & data);
 
 protected:
 	Address masterAdd;
@@ -70,14 +74,12 @@ public: // test
 	GFSError WriteChunk(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
 
 	std::tuple<GFSError, std::uint64_t /*size*/>
-	ReadChunk(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data) {
-		throw;
-	};
+	ReadChunk(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data);
 
 	std::tuple<GFSError, std::uint64_t /*offset*/>
-	AppendChunk(const ChunkHandle & handle, const std::vector<char> & data) {
+	AppendChunk(const ChunkHandle & handle, const std::vector<char> & data);
 
-	};
+
 };
 
 }

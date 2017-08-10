@@ -679,4 +679,230 @@ GFSError Client::WriteChunk(const ChunkHandle &handle, const std::uint64_t &offs
 	return toGFSError(fileWrite(handle, offset, data));
 }
 
+std::tuple<ClientErr, std::uint64_t>
+Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::vector<char> &data) {
+	std::function<void()> state, getAddresses, read, endFlow;
+	bool running = true;
+
+	GFSError gErr;
+	std::string primary;
+	std::vector<std::string> replicas;
+
+	ClientErr err(ClientErrCode::Unknown);
+
+	getAddresses = [&]()->void {
+		std::tie(gErr, replicas)
+				= srv.RPCCall({masterAdd, masterPort}, "GetReplicas", handle)
+				.get().as<std::tuple<GFSError, std::vector<std::string> /*Locations*/>>();
+		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
+		if (gErr.errCode != GFSErrorCode::OK)
+			throw;
+
+		//Select one replica to read chunk data.
+		primary = replicas[rand()%replicas.size()];
+
+		state = read;
+	};
+	read = [&]()->void {
+		std::string tmp;
+		std::tie(gErr, tmp) =
+				srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset, data.size()).get()
+						.as<std::tuple<GFSError, std::string>>();
+		data = std::vector<char>(data.begin(), data.end());
+		static int repeatTime = 0;
+		if (gErr.errCode != GFSErrorCode::OK) {
+			err = ClientErrCode::Unknown;
+			state = endFlow;
+		}
+		err = ClientErrCode::OK;
+		state = endFlow;
+	};
+	endFlow = [&]()->void {running = false;};
+
+
+	while (running) {
+		state();
+	}
+	return std::make_tuple(err, data.size());
+}
+
+std::tuple<ClientErr, std::uint64_t /*offset*/>
+Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
+	std::function<void()> state, getAddresses, pushData, applyChunk, endFlow;
+	bool running = true;
+
+	GFSError gErr;
+	std::uint64_t expire, id, offset;
+	std::string primary;
+	std::vector<std::string> secondaries;
+
+	ClientErr err(ClientErrCode::Unknown);
+
+	getAddresses = [&]()->void {
+		std::tie(gErr, primary, secondaries, expire)
+				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
+				.get().as<std::tuple<GFSError,
+						std::string /*Primary Address*/,
+						std::vector<std::string> /*Secondary Addresses*/,
+						std::uint64_t /*Expire Timestamp*/>>();
+		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
+		if (gErr.errCode != GFSErrorCode::OK)
+			throw;
+		state = pushData;
+	};
+	pushData = [&]()->void {
+		static int repeatTime = 0;
+		id = rand();
+		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
+				.get().as<GFSError>();
+		if (gErr.errCode != GFSErrorCode::OK) {
+			err =  ClientErr(ClientErrCode::Unknown);
+			if (repeatTime < 3) {
+				++repeatTime;
+				state = pushData;
+			} else {
+				state = endFlow;
+			}
+		}
+		const auto & addrs = secondaries;
+		auto iter = addrs.begin();
+		for (; iter != addrs.end(); ++iter) {
+			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			if (gErr.errCode != GFSErrorCode::OK)
+				break;
+		}
+		if (iter != addrs.end()) {
+			err =  ClientErr(ClientErrCode::Unknown);
+			if (repeatTime < 3) {
+				++repeatTime;
+				state = pushData;
+			} else {
+				state = endFlow;
+			}
+		}
+		repeatTime = 0;
+		state = applyChunk;
+	};
+	applyChunk = [&]()->void {
+		std::tie(gErr, offset)
+				= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
+				.as<std::tuple<GFSError, std::uint64_t>>();
+		static int repeatTime = 0;
+		if (gErr.errCode != GFSErrorCode::OK) {
+			err = ClientErrCode::Unknown;
+			state = endFlow;
+			return ;
+		}
+		err = ClientErrCode::OK;
+		state = endFlow;
+	};
+	endFlow = [&]()->void {running = false;};
+
+	while (running) {
+		state();
+	}
+	return std::make_tuple(err, offset);
+}
+
+std::tuple<GFSError, std::uint64_t /*size*/>
+Client::ReadChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::vector<char> &data) {
+	auto errAns = readChunk(handle, offset, data);
+	return std::make_tuple(toGFSError(std::get<0>(errAns)), std::get<1>(errAns));
+}
+
+std::tuple<GFSError, std::uint64_t /*offset*/>
+Client::AppendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
+	auto errAns = appendChunk(handle, data);
+	return std::make_tuple(toGFSError(std::get<0>(errAns)), std::get<1>(errAns));
+}
+
+ClientErr Client::fileWrite(const ChunkHandle &handle, const std::uint64_t &offset, const std::vector<char> &data) {
+	std::function<void()> state, getAddresses, pushData, applyChunk, endFlow;
+	bool running = true;
+
+	GFSError gErr;
+	std::uint64_t id, expire, length;
+	std::string primary;
+	std::vector<std::string> secondaries;
+
+	ClientErr err(ClientErrCode::Unknown);
+	length = data.size();
+
+	getAddresses = [&]()->void {
+		std::tie(gErr, primary, secondaries, expire)
+				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
+				.get().as<std::tuple<GFSError,
+						std::string /*Primary Address*/,
+						std::vector<std::string> /*Secondary Addresses*/,
+						std::uint64_t /*Expire Timestamp*/>>();
+		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
+		if (gErr.errCode != GFSErrorCode::OK)
+			throw;
+		state = pushData;
+	};
+	pushData = [&]()->void {
+		static int repeatTime = 0;
+		id = rand();
+		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
+				.get().as<GFSError>();
+		if (gErr.errCode != GFSErrorCode::OK) {
+			err =  ClientErr(ClientErrCode::Unknown);
+			if (repeatTime < 3) {
+				++repeatTime;
+				state = pushData;
+			} else {
+				state = endFlow;
+			}
+		}
+		const auto & addrs = secondaries;
+		auto iter = addrs.begin();
+		for (; iter != addrs.end(); ++iter) {
+			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			if (gErr.errCode != GFSErrorCode::OK)
+				break;
+		}
+		if (iter != addrs.end()) {
+			err =  ClientErr(ClientErrCode::Unknown);
+			if (repeatTime < 3) {
+				++repeatTime;
+				state = pushData;
+			} else {
+				state = endFlow;
+			}
+		}
+		repeatTime = 0;
+		state = applyChunk;
+	};
+	applyChunk = [&]()->void {
+		gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
+				.as<GFSError>();
+		static int repeatTime = 0;
+		if (gErr.errCode != GFSErrorCode::OK) {
+			err = ClientErrCode::Unknown;
+			state = endFlow;
+			return ;
+		}
+		err = ClientErrCode::OK;
+		state = endFlow;
+	};
+	endFlow = [&]()->void {running = false;};
+
+	while (running) {
+		state();
+	}
+	return err;
+}
+
 }

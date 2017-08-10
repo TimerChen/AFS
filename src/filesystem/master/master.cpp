@@ -290,6 +290,10 @@ void AFS::Master::reReplicate() {
 }
 
 void AFS::Master::BackgroundActivity() {
+	std::unique_lock<std::mutex>(backgroundM);
+	readLock glk(globalMutex);
+	if (!running)
+		return;
 	checkDeadChunkServer();
 //	collectGarbage();
 	reReplicate();
@@ -311,12 +315,14 @@ void AFS::Master::read(std::ifstream &in) {
 }
 
 void AFS::Master::Start() {
+	std::unique_lock<std::mutex>(backgroundM);
 	writeLock lk(globalMutex);
 	load();
 	running = true;
 }
 
 void AFS::Master::Shutdown() {
+	std::unique_lock<std::mutex>(backgroundM);
 	writeLock lk(globalMutex);
 	save();
 	running = false;
