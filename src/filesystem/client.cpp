@@ -1,3 +1,6 @@
+/*
+ * offset changes
+ */
 #include "client.h"
 
 #include <fstream>
@@ -83,9 +86,9 @@ ClientErr Client::fileMkdir(const std::string &dir) {
  *    b. 如果返回不再持有租约，则会回到3继续进行，重复3次
  *    c. 如果返回已满，则++idx，然后回到2，重复3次
  */
-ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data) {
+ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data, std::uint64_t &offset) {
 	GFSError gErr;
-	std::uint64_t chunkIdx, handle, id, expire, offset;
+	std::uint64_t chunkIdx, handle, id, expire;
 	std::string primary;
 	std::vector<std::string> secondaries;
 
@@ -203,7 +206,9 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		err = ClientErrCode::OK;
 		cur = EndFlow;
 	};
-	auto endFlow = [&]()->void {};
+	auto endFlow = [&]()->void {
+		offset = (chunkIdx-1)*CHUNK_SIZE + offset;
+	};
 
 	std::vector<std::function<void()>> states
 			= {getFileInfo, getHandle, getAddresses, pushData, applyChunk, endFlow};
@@ -219,6 +224,7 @@ ClientErr Client::fileAppend(const std::string &dir, const std::string &localDir
 
 	//Get file length
 	std::fstream fin;
+	std::uint64_t offset;
 	fin.open(localDir, std::ios::in | std::ios::binary);
 	fin.seekg( 0, std::ios_base::end );
 	fileLength = fin.tellg();
@@ -228,7 +234,7 @@ ClientErr Client::fileAppend(const std::string &dir, const std::string &localDir
 		return { ClientErrCode::WrongOperation, "Append-data is out of excepted length."};
 
 	fin.read( buffer, fileLength );
-	return fileAppend_str( dir, std::string(buffer, fileLength) );
+	return fileAppend_str( dir, std::string(buffer, fileLength), offset );
 }
 
 /* fileWrite行为：
@@ -352,7 +358,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
-		gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
+		gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset%CHUNK_SIZE, secondaries).get()
 				.as<GFSError>();
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
@@ -485,7 +491,7 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 	};
 	auto readChunk = [&]()->void {
 		std::tie(gErr, data) =
-			srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset, length).get()
+			srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset%CHUNK_SIZE, length).get()
 				.as<std::tuple<GFSError, std::string>>();
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
@@ -711,21 +717,74 @@ Client::AppendChunk(const ChunkHandle & handle, const std::vector<char> & data) 
 
 }
 
-GFSError Client::Write(const std::string &path, std::uint64_t offset, const std::vector<char> &data)
+GFSError Client::Write(const std::string &dir, std::uint64_t offset, const std::vector<char> &data)
 {
+	std::uint64_t fileLength,nowOffset=offset;
+	ClientErr er;
 
+	//Get file length
+	fileLength = data.size();
+
+	//Spilit file into pieces
+	std::uint64_t nowPosition = 0, thisLength;
+	while( nowPosition < fileLength )
+	{
+		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
+
+
+		er = fileWrite_str( dir, std::string( data.begin()+nowPosition, data.begin()+nowPosition+thisLength ), nowOffset );
+		if( er.code != ClientErrCode::OK )
+			break;
+
+		nowPosition += thisLength;
+		nowOffset += thisLength;
+	}
+
+	return toGFSError(er);
 }
 
 std::tuple<GFSError, std::uint64_t /*size*/>
-Client::Read(const std::string &path, std::uint64_t offset, std::vector<char> &data)
+Client::Read(const std::string &dir, std::uint64_t offset, std::vector<char> &data)
 {
+	std::uint64_t nowOffset=offset, fileLength;
+	ClientErr er;
+	std::string buffer,tmp;
 
+	//Open file
+	fileLength = data.size();
+
+	//Spilit file into pieces
+	std::uint64_t nowPosition = 0, thisLength;
+	while( nowPosition < fileLength )
+	{
+		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowOffset );
+
+		er = fileRead_str( dir, tmp, nowOffset, thisLength );
+		if( er.code != ClientErrCode::OK )
+			return std::make_tuple( toGFSError(er), 0 );
+		buffer = buffer + tmp;
+
+		nowPosition += thisLength;
+		nowOffset += thisLength;
+	}
+
+	data = std::vector<char>( buffer.begin(), buffer.end() );
+	return std::make_tuple( toGFSError(er), fileLength );
 }
 
 std::tuple<GFSError, std::uint64_t /*offset*/>
-Client::Append(const std::string &path, const std::vector<char> &data)
+Client::Append(const std::string &dir, const std::vector<char> &data)
 {
+	std::uint64_t fileLength, offset;
 
+	//Get file length
+	fileLength = data.size();
+
+	if( fileLength > CHUNK_SIZE/4 )
+		return std::make_tuple( toGFSError({ ClientErrCode::WrongOperation, "Append-data is out of excepted length."}), 0 );
+
+	fileAppend_str( dir, std::string(data.begin(), data.end()), offset);
+	return std::make_tuple( toGFSError({ ClientErrCode::OK, ""}), offset-data.size() );
 }
 
 }
