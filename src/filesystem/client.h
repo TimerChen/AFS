@@ -12,9 +12,11 @@ namespace AFS {
 
 class Client {
 public:
-	explicit Client(LightDS::User &_srv, const std::string &MasterAdd="", const uint16_t &MasterPort=7777, const uint16_t &ClientPort=7778);
+	explicit Client(LightDS::User &_srv, const std::string &MasterAdd="", const uint16_t &MasterPort=7777, const uint16_t &ChunkPort=7778);
+	~Client();
 
 	void setMaster(Address add, uint16_t port);
+	void setMaster_test();
 
 protected:
 
@@ -59,9 +61,9 @@ public:
 
 protected:
 	std::string masterAdd;
-	uint16_t masterPort, clientPort;
+	uint16_t masterPort, chunkPort;
 	LightDS::User &srv;
-	char buffer[CHUNK_SIZE];
+	char* buffer;
 
 private:
 	static GFSErrorCode toGFSErrorCode(ClientErrCode err);

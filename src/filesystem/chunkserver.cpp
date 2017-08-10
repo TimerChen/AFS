@@ -326,6 +326,10 @@ void ChunkServer::saveChunkData_noLock( const ChunkHandle &handle, const char *d
 
 void ChunkServer::clearData()
 {
+	WriteLock cLock(lock_chunks);
+	WriteLock dcLock(lock_dataCache);
+	WriteLock cqLock(lock_cacheQueue);
+	WriteLock cmLock(lock_chunkMutex);
 	chunks.clear();
 	chunkMutex.clear();
 	dataCache.clear();
@@ -447,7 +451,6 @@ void ChunkServer::Heartbeat()
 	GFSError err;
 	while(running)
 	{
-		std::this_thread::sleep_for(std::chrono::seconds(5));
 		auto masterList = srv.ListService("master");
 		for( auto addr : masterList )
 		{
@@ -465,7 +468,7 @@ void ChunkServer::Heartbeat()
 				}
 			}
 		}
-
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 }
@@ -960,7 +963,7 @@ GFSError
 	{
 		cdata = chunkPool.newData();
 		std::cerr << "copying...";
-		strncpy( cdata, data.c_str(), data.size() );
+		memcpy( cdata, data.c_str(), data.size() );
 		std::cerr << "push_in_cache...";
 		dataCache[dataID] = std::make_tuple(cdata, data.size());
 	}

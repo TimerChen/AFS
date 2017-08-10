@@ -44,6 +44,8 @@ int main(int argc, char**argv)
 	std::thread srvThd(&LightDS::Service::Run, &srv);
 
 
+	//LightDS::User usr({"172.0.0.1",7778},);
+
 	//chunkserver
 //	AFS::ChunkServer cs(srv,".");
 //	cerr << "Chunk Server Starting....";
@@ -99,11 +101,17 @@ int main(int argc, char**argv)
 //	cerr << (data_recive == data) << endl;
 //	cs.Shutdown();
 
+	//Master
+	//Master master(srv,".");
+
+	//Client
+	Client client(srv);
+
+
 //	ServerA sra(srv);
 
 //	sra.sendMessage( masterIP, port, str );
 
-	Master master(srv,".");
 	srv.Stop();
 	sin << "{\"type\":\"bye\"}\n";
 

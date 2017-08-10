@@ -19,7 +19,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 if(Boost_FOUND)
     set(SOURCE_FILES
-#            main.cpp
+            #main.cpp
             ## ryw begin 14
             components/extrie.hpp
             components/sugar.hpp
