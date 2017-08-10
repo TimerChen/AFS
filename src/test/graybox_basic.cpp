@@ -135,13 +135,13 @@ TestResult BasicTest::TestMkdirList()
 
 TestResult BasicTest::TestGetChunkHandle()
 {
-	//std::cerr << "Creating...";
+//	std::cerr << "Creating..." << std::endl;
 	client.Create("/TestGetChunkHandle.txt") | must_succ;
-	//std::cerr <<"OK\n"<< "Get...1...";
+//	std::cerr <<"OK\n"<< "Get...1...";
 	ChunkHandle chunk1 = client.GetChunkHandle("/TestGetChunkHandle.txt", 0) | must_succ;
-	//std::cerr << "2...";
+//	std::cerr << "2...";
 	ChunkHandle chunk2 = client.GetChunkHandle("/TestGetChunkHandle.txt", 0) | must_succ;
-	//std::cerr <<"OK\n";
+//	std::cerr <<"OK\n";
 	if (chunk1 != chunk2)
 		return TestResult::Fail("Different Chunk Handle: " + std::to_string(chunk1) + " != " + std::to_string(chunk2));
 
@@ -157,14 +157,14 @@ TestResult BasicTest::TestWriteChunk()
 {
 	client.Create("/TestWriteChunk.txt") | must_succ;
 	ChunkHandle chunk = client.GetChunkHandle("/TestWriteChunk.txt", 0) | must_succ;
-	//std::uint16_t nThread = 1;
+	std::uint16_t nThread = 1;
 	static const size_t sizePerThread = pressure;
 	std::thread threads[nThread];
 
 	bool succ = true;
 	TestResult lastError;
 	std::mutex mtxLastError;
-	//std::cerr << "Multithread testing...";
+	std::cerr << "\nMultithread testing...\n";
 	for (size_t i = 0; i < nThread; i++)
 	{
 		threads[i] = std::thread([this, chunk, i, &succ, &lastError, &mtxLastError]()

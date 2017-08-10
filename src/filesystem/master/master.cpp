@@ -267,7 +267,9 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		GFSError terr;
 		int idx = 0;
 		data.primary = "";
+		std::cerr << "trying to grant lease:\n";
 		for (auto &&addr : data.location) {
+			std::cerr << "trying " << addr << std::endl;
 			auto tmpTime = time(nullptr);
 			try {
 				std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>> tmp;
@@ -279,6 +281,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 
 			}
 			if (terr.errCode == GFSErrorCode::OK) {
+				std::cerr << "success" << std::endl;
 				data.leaseGrantTime = tmpTime;
 				data.version++;
 				data.primary = addr;
@@ -298,6 +301,13 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	// 签订租约成功
 	remove(data.location, data.primary);
 	err.errCode = GFSErrorCode::OK;
+
+	std::cerr << "Chunk: " << handle << "\nPrimary is " << data.primary << std::endl;
+	std::cerr << "Secondaries: \n";
+	for (auto &&item : data.location)
+		std::cerr << item << ' ';
+	std::cerr << std::endl;
+
 	return std::make_tuple(
 			err, data.primary, data.location, data.leaseGrantTime + LeaseExpiredTime
 	);

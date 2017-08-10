@@ -1049,7 +1049,7 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 	length = data.size();
 
 	getAddresses = [&]()->void {
-		std::cerr << "getAddress\n";
+		std::cerr << "getAddress" << std::endl;
 		try {
 			std::tie(gErr, primary, secondaries, expire)
 					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
@@ -1076,7 +1076,7 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 		state = pushData;
 	};
 	pushData = [&]()->void {
-		std::cerr <<"pushData\n";
+		std::cerr <<"pushData" << std::endl;
 		static int repeatTime = 0;
 		id = rand();
 		try {
@@ -1153,7 +1153,6 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 
 GFSError Client::WriteChunk(const ChunkHandle &handle, const std::uint64_t &offset, const std::vector<char> &data) {
 	return toGFSError(writeChunk(handle, offset, data));
-
 }
 
 GFSError Client::Write(const std::string &dir, std::uint64_t offset, const std::vector<char> &data)
