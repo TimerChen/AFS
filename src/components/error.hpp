@@ -59,7 +59,7 @@ enum class ClientErrCode {
 	OK = 0, Unknown,
 	MasterNotFound, ServerNotFound,
 	NoSuchFileDir, FileDirAlreadyExists,
-	WrongOperation,
+	WrongOperation, ReadEOF
 };
 
 struct ClientErr {

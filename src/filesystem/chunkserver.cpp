@@ -452,7 +452,15 @@ void ChunkServer::Heartbeat()
 	chunkPort = 7778;
 	while(running)
 	{
-		auto masterList = srv.ListService("master");
+		std::vector<LightDS::User::RPCAddress> masterList;
+		try{
+			masterList = srv.ListService("master");
+		}catch(...)
+		{
+			std::cerr << "Service Died\n" ;
+			break;
+		}
+
 		for( auto addr : masterList )
 		{
 			masterIP = addr.ip;
@@ -469,6 +477,7 @@ void ChunkServer::Heartbeat()
 				}
 			}
 		}
+		//std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
@@ -956,7 +965,7 @@ GFSError
 GFSError
 	ChunkServer::RPCPushData(std::uint64_t dataID, std::string data)
 {
-	std::cerr << "RPC...";
+	//std::cerr << "RPC...";
 	GFSError reData = { GFSErrorCode::OK, "" };
 	char *cdata;
 	WriteLock dcLock( lock_dataCache );
@@ -965,9 +974,9 @@ GFSError
 	else
 	{
 		cdata = chunkPool.newData();
-		std::cerr << "copying...";
+		//std::cerr << "copying...";
 		memcpy( cdata, data.c_str(), data.size() );
-		std::cerr << "push_in_cache...";
+		//std::cerr << "push_in_cache...";
 		dataCache[dataID] = std::make_tuple(cdata, data.size());
 	}
 
@@ -975,7 +984,7 @@ GFSError
 	if( reData.errCode == GFSErrorCode::OK )
 	{
 		WriteLock cqLock(lock_cacheQueue);
-		std::cerr << "push_in_queue...";
+		//std::cerr << "push_in_queue...";
 		cacheQueue.push_back( dataID );
 
 

@@ -43,12 +43,14 @@ bool BasicTest::Run()
 //		{"ReadChunk", &BasicTest::TestReadChunk},
 //		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
 //		{"AppendChunk", &BasicTest::TestAppendChunk},
-		{"BigData", &BasicTest::TestBigData},
-		{"Shutdown", &BasicTest::TestShutdown},
+//		{"BigData", &BasicTest::TestBigData},
+
 		{"ReReplication", &BasicTest::TestReReplication},
 		{"PersistentChunkServer", &BasicTest::TestPersistentChunkServer},
 		{"PersistentMaster", &BasicTest::TestPersistentMaster},
 		{"DiskError", &BasicTest::TestDiskError},
+
+		{"Shutdown", &BasicTest::TestShutdown},
 	};
 
 	for (auto &pair : testcases)

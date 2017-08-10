@@ -155,9 +155,14 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	};
 	auto getHandle  = [&]()->void {
 		try {
+			if(chunkIdx == 0)
 			std::tie(gErr, handle) =
-					srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
-					            chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+				  srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, 0
+						  ).get().as<std::tuple<GFSError, ChunkHandle>>();
+			else
+			std::tie(gErr, handle) =
+					srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, chunkIdx-1
+						  ).get().as<std::tuple<GFSError, ChunkHandle>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
 			err = ClientErr(ClientErrCode::Unknown);
@@ -275,7 +280,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = EndFlow;
 	};
 	auto endFlow = [&]()->void {
-		offset = (chunkIdx-1)*CHUNK_SIZE + offset;
+
 	};
 
 	std::vector<std::function<void()>> states
@@ -285,6 +290,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	while (cur != EndFlow) {
 		states[cur]();
 	}
+	offset = (chunkIdx-1)*CHUNK_SIZE + offset;
 	return err;
 }
 ClientErr Client::fileAppend(const std::string &dir, const std::string &localDir) {
@@ -461,7 +467,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	};
 	auto applyChunk = [&]()->void {
 		try {
-			gErr = srv.RPCCall({primary, chunkPort}, "WriteChunk", handle, id, offset, secondaries).get()
+			gErr = srv.RPCCall({primary, chunkPort}, "WriteChunk", handle, id, offset%CHUNK_SIZE, secondaries).get()
 					.as<GFSError>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
@@ -622,7 +628,7 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 	auto readChunk = [&]()->void {
 		try {
 			std::tie(gErr, data) =
-					srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset, length).get()
+					srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset%CHUNK_SIZE, length).get()
 							.as<std::tuple<GFSError, std::string>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
@@ -631,6 +637,10 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 			return;
 		}
 		static int repeatTime = 0;
+		if (gErr.errCode == GFSErrorCode::OperationOverflow)
+		{
+			err = ClientErr(ClientErrCode::ReadEOF);
+		}else
 		if (gErr.errCode != GFSErrorCode::OK) {
 			if (repeatTime < 3) {
 				++repeatTime;
@@ -1168,7 +1178,7 @@ GFSError Client::Write(const std::string &dir, std::uint64_t offset, const std::
 	while( nowPosition < fileLength )
 	{
 		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
-
+		std::cerr << "Write+ : " << nowPosition << " " << thisLength << std::endl;
 
 		er = fileWrite_str( dir, std::string( data.begin()+nowPosition, data.begin()+nowPosition+thisLength ), nowOffset );
 		if( er.code != ClientErrCode::OK )
@@ -1195,19 +1205,26 @@ Client::Read(const std::string &dir, std::uint64_t offset, std::vector<char> &da
 	std::uint64_t nowPosition = 0, thisLength;
 	while( nowPosition < fileLength )
 	{
-		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowOffset );
+		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
+		std::cerr << "Read+ : " << nowPosition << " " << thisLength << std::endl;
 
 		er = fileRead_str( dir, tmp, nowOffset, thisLength );
-		if( er.code != ClientErrCode::OK )
+		if( er.code != ClientErrCode::OK && er.code != ClientErrCode::ReadEOF )
 			return std::make_tuple( toGFSError(er), 0 );
 		buffer = buffer + tmp;
+		if( er.code == ClientErrCode::ReadEOF )
+		{
+			//nowPosition += std::stoull(er.description);
+			break;
+		}
 
 		nowPosition += thisLength;
 		nowOffset += thisLength;
+
 	}
 
 	data = std::vector<char>( buffer.begin(), buffer.end() );
-	return std::make_tuple( toGFSError(er), fileLength );
+	return std::make_tuple( toGFSError(er), buffer.size() );
 }
 
 std::tuple<GFSError, std::uint64_t /*offset*/>
