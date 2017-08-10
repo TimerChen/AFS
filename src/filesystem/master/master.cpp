@@ -262,6 +262,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	auto leaseExpired = [](const ChunkData & data) {
 		return data.leaseGrantTime + LeaseExpiredTime < time(nullptr);
 	};
+	bool grt = false;
 	auto grantLease = [&](ChunkData & data) {
 		// 尝试和某台服务器签订租约，如果尝试过后全都失败，则失败
 		GFSError terr;
@@ -285,6 +286,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 				data.leaseGrantTime = tmpTime;
 				data.version++;
 				data.primary = addr;
+				grt = true;
 				break;
 			}
 		}
@@ -299,13 +301,15 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		);
 	}
 	// 签订租约成功
-	MemoryPool::instance().updateData_if(handle, [](const ChunkData & data){return true;},
-	                                     [&](ChunkData & data){
-		                                     data.version++;
-	                                     });
 	remove(data.location, data.primary);
-	for (auto &&server : data.location) {
-		srv.RPCCall({server, chunkPort}, "UpdateVersion", handle, data.version + 1);
+	if (grt) {
+		MemoryPool::instance().updateData_if(handle, [](const ChunkData &data) { return true; },
+		                                     [&](ChunkData &data) {
+			                                     data.version++;
+		                                     });
+		for (auto &&server : data.location) {
+			srv.RPCCall({server, chunkPort}, "UpdateVersion", handle, data.version + 1);
+		}
 	}
 	err.errCode = GFSErrorCode::OK;
 
