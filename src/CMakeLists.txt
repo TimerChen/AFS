@@ -19,7 +19,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 if(Boost_FOUND)
     set(SOURCE_FILES
-            main.cpp
+#            main.cpp
             ## ryw begin 14
             components/extrie.hpp
             components/sugar.hpp
@@ -61,11 +61,22 @@ if(Boost_FOUND)
             LightDS/include/pool.hpp
             LightDS/include/rpc.hpp
             LightDS/include/service.hpp
+            LightDS/include/user.hpp
+            LightDS/include/common.hpp
+            LightDS/include/pipeservice.hpp
+
 
             JsonCPP/jsoncpp.cpp
 
             tests/LightDSTest/servera.h     tests/LightDSTest/servera.cpp
             tests/LightDSTest/serverb.h     tests/LightDSTest/serverb.cpp
+
+            test/common.h
+            test/common_headers.h
+            test/pipestream.hpp
+            test/graybox.cpp
+            test/graybox_basic.h            test/graybox_basic.cpp
+            test/graybox_env.h              test/graybox_env.cpp
 
 
 

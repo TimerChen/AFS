@@ -6,50 +6,57 @@
 
 AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
 		: Server(srv, rootDir), logc(rootDir, std::bind(&Master::write, this, std::placeholders::_1))  {
+
+	chunkPort = 7778;
+	bindFunctions();
+}
+
+void AFS::Master::bindFunctions()
+{
 	srv.RPCBind<std::tuple<GFSError, std::vector<ChunkHandle>>
 			(std::vector<ChunkHandle>, std::vector<std::tuple<ChunkHandle, ChunkVersion>>, std::vector<ChunkHandle>)>
 			("Heartbeat", std::bind(&Master::RPCHeartbeat, this,
-			                        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+									std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
 	srv.RPCBind<std::tuple<GFSError, std::string, std::vector<std::string>, std::uint64_t>
 			(ChunkHandle)>
 			("GetPrimaryAndSecondaries", std::bind(&Master::RPCGetPrimaryAndSecondaries, this,
-			                                       std::placeholders::_1));
+												   std::placeholders::_1));
 
 	srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
 			(ChunkHandle)>
 			("GetReplicas", std::bind(&Master::RPCGetReplicas, this,
-			                          std::placeholders::_1));
+									  std::placeholders::_1));
 
 	srv.RPCBind<std::tuple<GFSError, bool, std::uint64_t, std::uint64_t>
 			(std::string)>
 			("GetFileInfo", std::bind(&Master::RPCGetFileInfo, this,
-			                          std::placeholders::_1));
+									  std::placeholders::_1));
 
 	srv.RPCBind<GFSError
 			(std::string)>
 			("CreateFile", std::bind(&Master::RPCCreateFile, this,
-			                         std::placeholders::_1));
+									 std::placeholders::_1));
 
 	srv.RPCBind<GFSError
 			(std::string)>
 			("DeleteFile", std::bind(&Master::RPCDeleteFile, this,
-			                         std::placeholders::_1));
+									 std::placeholders::_1));
 
 	srv.RPCBind<GFSError
 			(std::string)>
 			("Mkdir", std::bind(&Master::RPCMkdir, this,
-			                    std::placeholders::_1));
+								std::placeholders::_1));
 
 	srv.RPCBind<std::tuple<GFSError, std::vector<std::string>>
 			(std::string)>
 			("ListFile", std::bind(&Master::RPCListFile, this,
-			                       std::placeholders::_1));
+								   std::placeholders::_1));
 
 	srv.RPCBind<std::tuple<GFSError, ChunkHandle>
 			(std::string, std::uint64_t)>
 			("GetChunkHandle", std::bind(&Master::RPCGetChunkHandle, this,
-			                             std::placeholders::_1, std::placeholders::_2));
+										 std::placeholders::_1, std::placeholders::_2));
 }
 
 void AFS::Master::checkDeadChunkServer() {
@@ -132,7 +139,7 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		for (int k = 0; k < 3; ++k) { // 创建3个副本
 			for (int i = 0; i < 5; ++i) {
 				addr = asdm.chooseServer();
-				err = srv.RPCCall({addr, 0}, "CreateChunk", handle).get().as<GFSError>();
+				err = srv.RPCCall({addr, chunkPort}, "CreateChunk", handle).get().as<GFSError>();
 				if (err.errCode == GFSErrorCode::OK)
 					break;
 			}
@@ -252,7 +259,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		data.primary = "";
 		for (auto &&addr : data.location) {
 			auto tmpTime = time(nullptr);
-			terr = srv.RPCCall({addr, 0},
+			terr = srv.RPCCall({addr, chunkPort},
 			                  "GrantLease",
 			                  std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime))
 					.get().as<GFSError>();
@@ -284,7 +291,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 void AFS::Master::reReplicate() {
 	auto pq = std::move(*(asdm.getPQ().release()));
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
-			return srv.RPCCall({src, 0}, "SendCopy", tar, handle).get().as<GFSError>();
+			return srv.RPCCall({src, chunkPort}, "SendCopy", tar, handle).get().as<GFSError>();
 	};
 	pfdm.reReplicate(pq, rpcCall);
 }

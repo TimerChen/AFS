@@ -22,6 +22,9 @@
 namespace AFS {
 
 class Master : public Server {
+
+	//friend class BasicTest;
+
 protected:
 	void save() final;
 	void load() final;
@@ -53,6 +56,8 @@ private:
 	void collectGarbage();
 
 	void reReplicate();
+
+	void bindFunctions();
 protected:
 public: // debug
 	// BackgroundActivity does all the background activities:
@@ -131,6 +136,9 @@ private:
 	void write(std::ofstream & out) const;
 
 	void read(std::ifstream & in);
+
+protected:
+	std::uint16_t chunkPort;
 };
 
 }
