@@ -303,12 +303,9 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	// 签订租约成功
 	remove(data.location, data.primary);
 	if (grt) {
-		MemoryPool::instance().updateData_if(handle, [](const ChunkData &data) { return true; },
-		                                     [&](ChunkData &data) {
-			                                     data.version++;
-		                                     });
+
 		for (auto &&server : data.location) {
-			srv.RPCCall({server, chunkPort}, "UpdateVersion", handle, data.version + 1);
+			srv.RPCCall({server, chunkPort}, "UpdateVersion", handle, data.version);
 		}
 	}
 	err.errCode = GFSErrorCode::OK;

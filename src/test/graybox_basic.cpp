@@ -157,7 +157,7 @@ TestResult BasicTest::TestWriteChunk()
 {
 	client.Create("/TestWriteChunk.txt") | must_succ;
 	ChunkHandle chunk = client.GetChunkHandle("/TestWriteChunk.txt", 0) | must_succ;
-	std::uint16_t nThread = 1;
+	//std::uint16_t nThread = 1;
 	static const size_t sizePerThread = pressure;
 	std::thread threads[nThread];
 
