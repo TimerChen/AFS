@@ -882,6 +882,7 @@ GFSError
 		else if( ( itr->second.version == newVersion-1 && !itr->second.primary() )
 			|| ( itr->second.version == newVersion && itr->second.primary() ) )
 		{
+			
 			//Write Infomation
 			itr->second.isPrimary = 1;
 			itr->second.expireTime = expireTime;
