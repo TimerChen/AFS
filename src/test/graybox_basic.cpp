@@ -263,7 +263,12 @@ size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std:
 	std::vector<std::string> data;
 
 	for (auto &replica : replicas)
-		data.push_back(RPC(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
+	{
+		std::cerr << "ReadChunk:" << replica << std::endl;
+		auto tmp = std::move(RPC({replica,7778}, "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
+		std::cerr << "Return Over\n";
+		data.push_back( tmp );
+	}
 
 	for (size_t i = 1; i < data.size(); i++)
 	{

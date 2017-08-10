@@ -1,18 +1,12 @@
 # AFS
 A simplified Google File System of the PPCA lesson of ACM class, which called ACM File System.
 ## Remain to do
-* master.h shouldn't have function implementations, and some functions' name are very ambiguous, we need to make them more clearly, so we can easily know what will them do.
-
-* Choose a way to know the IP and port.
-
-
-* The LightDS::Service's Run() and Stop() is very strange, we may need to rewrite something?
 
 * Test all the code.
- 
-* Try to unified the error type.
 
-* Review the code.(?)
+* (*)Try to unified the error type.
+
+* (*)Review the code.(?)
 ## A simple sample to use LightDS
 servera.h
 ```c++
