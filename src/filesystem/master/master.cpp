@@ -139,7 +139,11 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		for (int k = 0; k < 3; ++k) { // 创建3个副本
 			for (int i = 0; i < 5; ++i) {
 				addr = asdm.chooseServer();
-				err = srv.RPCCall({addr, chunkPort}, "CreateChunk", handle).get().as<GFSError>();
+				try {
+					err = srv.RPCCall({addr, chunkPort}, "CreateChunk", handle).get().as<GFSError>();
+				} catch (...) {
+					return false;
+				}
 				if (err.errCode == GFSErrorCode::OK)
 					break;
 			}
@@ -259,10 +263,14 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		data.primary = "";
 		for (auto &&addr : data.location) {
 			auto tmpTime = time(nullptr);
-			terr = srv.RPCCall({addr, chunkPort},
-			                  "GrantLease",
-			                  std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime))
-					.get().as<GFSError>();
+			try {
+				terr = srv.RPCCall({addr, chunkPort},
+				                   "GrantLease",
+				                   std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime))
+						.get().as<GFSError>();
+			} catch (...) {
+
+			}
 			if (terr.errCode == GFSErrorCode::OK) {
 				data.leaseGrantTime = tmpTime;
 				data.version++;
@@ -291,7 +299,13 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 void AFS::Master::reReplicate() {
 	auto pq = std::move(*(asdm.getPQ().release()));
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
-			return srv.RPCCall({src, chunkPort}, "SendCopy", tar, handle).get().as<GFSError>();
+		GFSError err;
+		try {
+			err = srv.RPCCall({src, chunkPort}, "SendCopy", tar, handle).get().as<GFSError>();
+		} catch (...) {
+			err.errCode = GFSErrorCode::TransmissionErr;
+		}
+		return err;
 	};
 	pfdm.reReplicate(pq, rpcCall);
 }

@@ -32,7 +32,12 @@ void Client::setMaster(Address add, uint16_t port) {
 ClientErr Client::fileCreate(const std::string &dir) {
 	if(!checkMasterAddress())
 		return ClientErr(ClientErrCode::MasterNotFound);
-	auto err = srv.RPCCall({masterAdd, clientPort}, "CreateFile", dir).get().as<GFSError>();
+	GFSError err;
+	try {
+		err = srv.RPCCall({masterAdd, clientPort}, "CreateFile", dir).get().as<GFSError>();
+	} catch (...) {
+		err.errCode = GFSErrorCode::TransmissionErr;
+	}
 	if (err.errCode == GFSErrorCode::OK)
 		return ClientErr(ClientErrCode::OK);
 
@@ -43,7 +48,7 @@ ClientErr Client::fileCreate(const std::string &dir) {
 		case (int)GFSErrorCode::NoSuchFileDir:
 			return ClientErr(ClientErrCode::NoSuchFileDir);
 		default:
-			throw ;
+			break;
 	}
 	return ClientErr(ClientErrCode::Unknown);
 }
@@ -51,7 +56,12 @@ ClientErr Client::fileCreate(const std::string &dir) {
 ClientErr Client::fileMkdir(const std::string &dir) {
 	if(!checkMasterAddress())
 		return ClientErr(ClientErrCode::MasterNotFound);
-	auto err = srv.RPCCall({masterAdd, clientPort}, "Mkdir", dir).get().as<GFSError>();
+	GFSError err;
+	try {
+		err = srv.RPCCall({masterAdd, clientPort}, "Mkdir", dir).get().as<GFSError>();
+	} catch (...) {
+		err.errCode = GFSErrorCode::TransmissionErr;
+	}
 	if (err.errCode == GFSErrorCode::OK)
 		return ClientErr(ClientErrCode::OK);
 
@@ -62,8 +72,9 @@ ClientErr Client::fileMkdir(const std::string &dir) {
 		case (int)GFSErrorCode::NoSuchFileDir:
 			return ClientErr(ClientErrCode::NoSuchFileDir);
 		default:
-			throw ;
+			break;
 	}
+	return ClientErr(ClientErrCode::Unknown);
 }
 
 
@@ -97,12 +108,19 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	auto getFileInfo = [&]()->void {
 		bool isDir;
 		std::uint64_t len;
-		std::tie(gErr, isDir, len, chunkIdx)
-				= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
-				.as<std::tuple<GFSError,
-						bool /*IsDir*/,
-						std::uint64_t /*Length*/,
-						std::uint64_t /*Chunks*/>>();
+		try {
+			std::tie(gErr, isDir, len, chunkIdx)
+					= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
+					.as<std::tuple<GFSError,
+							bool /*IsDir*/,
+							std::uint64_t /*Length*/,
+							std::uint64_t /*Chunks*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchFileDir) {
 			cur = EndFlow;
 			err = ClientErr(ClientErrCode::NoSuchFileDir);
@@ -116,9 +134,16 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetHandle;
 	};
 	auto getHandle  = [&]()->void {
-		std::tie(gErr, handle) =
-				srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
-				            chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		try {
+			std::tie(gErr, handle) =
+					srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
+					            chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		switch ((int)gErr.errCode) {
 			case (int) GFSErrorCode::OK:
 				break;
@@ -130,12 +155,19 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
-		std::tie(gErr, primary, secondaries, expire)
-				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
-				.get().as<std::tuple<GFSError,
-						std::string /*Primary Address*/,
-						std::vector<std::string> /*Secondary Addresses*/,
-						std::uint64_t /*Expire Timestamp*/>>();
+		try {
+			std::tie(gErr, primary, secondaries, expire)
+					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
+					.get().as<std::tuple<GFSError,
+							std::string /*Primary Address*/,
+							std::vector<std::string> /*Secondary Addresses*/,
+							std::uint64_t /*Expire Timestamp*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			cur = EndFlow;
@@ -148,8 +180,15 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	auto pushData = [&]()->void {
 		static int repeatTime = 0;
 		id = rand();
-		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
-				.get().as<GFSError>();
+		try {
+			gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
+					.get().as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
@@ -162,7 +201,14 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		const auto & addrs = secondaries;
 		auto iter = addrs.begin();
 		for (; iter != addrs.end(); ++iter) {
-			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			try {
+				gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			} catch (...) {
+				gErr.errCode = GFSErrorCode::TransmissionErr;
+				err = ClientErr(ClientErrCode::Unknown);
+				cur = EndFlow;
+				return;
+			}
 			if (gErr.errCode != GFSErrorCode::OK)
 				break;
 		}
@@ -179,9 +225,16 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
-		std::tie(gErr, offset)
-				= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
-				.as<std::tuple<GFSError, std::uint64_t>>();
+		try {
+			std::tie(gErr, offset)
+					= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
+					.as<std::tuple<GFSError, std::uint64_t>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		static int repeatTime = 0;
 		if (gErr.errCode == GFSErrorCode::OperationOverflow) {
 			++chunkIdx;
@@ -260,12 +313,19 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	auto getFileInfo = [&]()->void {
 		bool isDir;
 		std::uint64_t len;
-		std::tie(gErr, isDir, len, chunkIdx)
-				= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
-				.as<std::tuple<GFSError,
-						bool /*IsDir*/,
-						std::uint64_t /*Length*/,
-						std::uint64_t /*Chunks*/>>();
+		try {
+			std::tie(gErr, isDir, len, chunkIdx)
+					= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
+					.as<std::tuple<GFSError,
+							bool /*IsDir*/,
+							std::uint64_t /*Length*/,
+							std::uint64_t /*Chunks*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchFileDir) {
 			cur = EndFlow;
 			err = ClientErr(ClientErrCode::NoSuchFileDir);
@@ -286,10 +346,16 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	};
 	auto getHandle  = [&]()->void {
 		chunkIdx = offset/CHUNK_SIZE;
-
-		std::tie(gErr, handle) =
-				srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
-							chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		try {
+			std::tie(gErr, handle) =
+					srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
+					            chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		switch ((int)gErr.errCode) {
 			case (int) GFSErrorCode::OK:
 				break;
@@ -301,12 +367,19 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
-		std::tie(gErr, primary, secondaries, expire)
-				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
-				.get().as<std::tuple<GFSError,
-						std::string /*Primary Address*/,
-						std::vector<std::string> /*Secondary Addresses*/,
-						std::uint64_t /*Expire Timestamp*/>>();
+		try {
+			std::tie(gErr, primary, secondaries, expire)
+					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
+					.get().as<std::tuple<GFSError,
+							std::string /*Primary Address*/,
+							std::vector<std::string> /*Secondary Addresses*/,
+							std::uint64_t /*Expire Timestamp*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			cur = EndFlow;
@@ -319,8 +392,15 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	auto pushData = [&]()->void {
 		static int repeatTime = 0;
 		id = rand();
-		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
-				.get().as<GFSError>();
+		try {
+			gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
+					.get().as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
@@ -333,7 +413,14 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		const auto & addrs = secondaries;
 		auto iter = addrs.begin();
 		for (; iter != addrs.end(); ++iter) {
-			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			try {
+				gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			} catch (...) {
+				gErr.errCode = GFSErrorCode::TransmissionErr;
+				err = ClientErr(ClientErrCode::Unknown);
+				cur = EndFlow;
+				return;
+			}
 			if (gErr.errCode != GFSErrorCode::OK)
 				break;
 		}
@@ -350,8 +437,15 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
-		gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
-				.as<GFSError>();
+		try {
+			gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
+					.as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
 			if (repeatTime < 3) {
@@ -424,12 +518,19 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 	auto getFileInfo = [&]()->void {
 		bool isDir;
 		std::uint64_t len;
-		std::tie(gErr, isDir, len, chunkIdx)
-				= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
-				.as<std::tuple<GFSError,
-						bool /*IsDir*/,
-						std::uint64_t /*Length*/,
-						std::uint64_t /*Chunks*/>>();
+		try {
+			std::tie(gErr, isDir, len, chunkIdx)
+					= srv.RPCCall({masterAdd, masterPort}, "GetFileInfo", dir).get()
+					.as<std::tuple<GFSError,
+							bool /*IsDir*/,
+							std::uint64_t /*Length*/,
+							std::uint64_t /*Chunks*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchFileDir) {
 			cur = EndFlow;
 			err = ClientErr(ClientErrCode::NoSuchFileDir);
@@ -451,9 +552,16 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 	auto getHandle  = [&]()->void {
 		chunkIdx = offset/CHUNK_SIZE;
 
-		std::tie(gErr, handle) =
-				srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
-							chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		try {
+			std::tie(gErr, handle) =
+					srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir,
+					            chunkIdx).get().as<std::tuple<GFSError, ChunkHandle>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		switch ((int)gErr.errCode) {
 			case (int) GFSErrorCode::OK:
 				break;
@@ -465,9 +573,16 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
-		std::tie(gErr, replicas)
-				= srv.RPCCall({masterAdd, masterPort}, "GetReplicas", handle)
-				.get().as<std::tuple<GFSError, std::vector<std::string> /*Locations*/>>();
+		try {
+			std::tie(gErr, replicas)
+					= srv.RPCCall({masterAdd, masterPort}, "GetReplicas", handle)
+					.get().as<std::tuple<GFSError, std::vector<std::string> /*Locations*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			cur = EndFlow;
@@ -482,9 +597,16 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 		cur = ReadChunk;
 	};
 	auto readChunk = [&]()->void {
-		std::tie(gErr, data) =
-			srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset, length).get()
-				.as<std::tuple<GFSError, std::string>>();
+		try {
+			std::tie(gErr, data) =
+					srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset, length).get()
+							.as<std::tuple<GFSError, std::string>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			cur = EndFlow;
+			return;
+		}
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
 			if (repeatTime < 3) {
@@ -638,8 +760,13 @@ GFSError Client::toGFSError(ClientErr err) {
 std::tuple<ClientErr, std::vector<std::string>> Client::listFile(const std::string &dir) {
 	if(!checkMasterAddress())
 		return std::make_tuple(ClientErr(ClientErrCode::MasterNotFound), std::vector<std::string>());
-	auto errVecstring = srv.RPCCall({masterAdd, masterPort}, "ListFile", dir)
-			.get().as<std::tuple<GFSError, std::vector<std::string>>>();
+	std::tuple<GFSError, std::vector<std::string>> errVecstring;
+	try {
+		errVecstring = srv.RPCCall({masterAdd, masterPort}, "ListFile", dir)
+				.get().as<std::tuple<GFSError, std::vector<std::string>>>();
+	} catch (...) {
+		return std::make_tuple(ClientErr(ClientErrCode::Unknown), std::vector<std::string>());
+	}
 	GFSError gErr = std::get<0>(errVecstring);
 	ClientErrCode err;
 	switch ((int)gErr.errCode) { // todo write a function to do the conversion
@@ -675,8 +802,13 @@ std::tuple<GFSError, std::vector<std::string>> Client::List(const std::string &d
 std::tuple<ClientErr, ChunkHandle> Client::getChunkHandle(const std::string &dir, size_t idx) {
 	if(!checkMasterAddress())
 		return std::make_tuple(ClientErr(ClientErrCode::MasterNotFound), ChunkHandle());
-	auto errHandle = srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, idx)
-			.get().as<std::tuple<GFSError, ChunkHandle>>();
+	std::tuple<GFSError, ChunkHandle> errHandle;
+	try {
+		errHandle = srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, idx)
+				.get().as<std::tuple<GFSError, ChunkHandle>>();
+	} catch (...) {
+		return std::make_tuple(ClientErr(ClientErrCode::Unknown), ChunkHandle());
+	}
 	if (std::get<0>(errHandle).errCode == GFSErrorCode::OK) // todo err
 		return std::make_tuple(ClientErr(ClientErrCode::OK), std::get<1>(errHandle));
 	return std::make_tuple(ClientErr(ClientErrCode::Unknown), ChunkHandle());
@@ -717,9 +849,16 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 	ClientErr err(ClientErrCode::Unknown);
 
 	getAddresses = [&]()->void {
-		std::tie(gErr, replicas)
-				= srv.RPCCall({masterAdd, masterPort}, "GetReplicas", handle)
-				.get().as<std::tuple<GFSError, std::vector<std::string> /*Locations*/>>();
+		try {
+			std::tie(gErr, replicas)
+					= srv.RPCCall({masterAdd, masterPort}, "GetReplicas", handle)
+					.get().as<std::tuple<GFSError, std::vector<std::string> /*Locations*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			state = endFlow;
@@ -735,9 +874,16 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 	};
 	read = [&]()->void {
 		std::string tmp;
+		try {
 		std::tie(gErr, tmp) =
 				srv.RPCCall({primary, masterPort}, "ReadChunk", handle, offset, data.size()).get()
 						.as<std::tuple<GFSError, std::string>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		data = std::vector<char>(data.begin(), data.end());
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
@@ -758,6 +904,9 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 
 std::tuple<ClientErr, std::uint64_t /*offset*/>
 Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
+	if (data.size() > CHUNK_SIZE / 4) {
+		return std::make_tuple(ClientErr(ClientErrCode::Unknown), 0);
+	}
 	std::function<void()> state, getAddresses, pushData, applyChunk, endFlow;
 	bool running = true;
 
@@ -769,12 +918,19 @@ Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
 	ClientErr err(ClientErrCode::Unknown);
 
 	getAddresses = [&]()->void {
+		try {
 		std::tie(gErr, primary, secondaries, expire)
 				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
 				.get().as<std::tuple<GFSError,
 						std::string /*Primary Address*/,
 						std::vector<std::string> /*Secondary Addresses*/,
 						std::uint64_t /*Expire Timestamp*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			state = endFlow;
@@ -787,8 +943,15 @@ Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
 	pushData = [&]()->void {
 		static int repeatTime = 0;
 		id = rand();
+		try {
 		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
 				.get().as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
@@ -801,7 +964,14 @@ Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
 		const auto & addrs = secondaries;
 		auto iter = addrs.begin();
 		for (; iter != addrs.end(); ++iter) {
-			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			try {
+				gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			} catch (...) {
+				gErr.errCode = GFSErrorCode::TransmissionErr;
+				err = ClientErr(ClientErrCode::Unknown);
+				state = endFlow;
+				return;
+			}
 			if (gErr.errCode != GFSErrorCode::OK)
 				break;
 		}
@@ -818,9 +988,16 @@ Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
 		state = applyChunk;
 	};
 	applyChunk = [&]()->void {
-		std::tie(gErr, offset)
-				= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
-				.as<std::tuple<GFSError, std::uint64_t>>();
+		try {
+			std::tie(gErr, offset)
+					= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
+					.as<std::tuple<GFSError, std::uint64_t>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err = ClientErrCode::Unknown;
@@ -863,12 +1040,19 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 	length = data.size();
 
 	getAddresses = [&]()->void {
-		std::tie(gErr, primary, secondaries, expire)
-				= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
-				.get().as<std::tuple<GFSError,
-						std::string /*Primary Address*/,
-						std::vector<std::string> /*Secondary Addresses*/,
-						std::uint64_t /*Expire Timestamp*/>>();
+		try {
+			std::tie(gErr, primary, secondaries, expire)
+					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
+					.get().as<std::tuple<GFSError,
+							std::string /*Primary Address*/,
+							std::vector<std::string> /*Secondary Addresses*/,
+							std::uint64_t /*Expire Timestamp*/>>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		if (gErr.errCode == GFSErrorCode::NoSuchChunk) {
 			err = ClientErr(ClientErrCode::Unknown);
 			state = endFlow;
@@ -881,8 +1065,15 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 	pushData = [&]()->void {
 		static int repeatTime = 0;
 		id = rand();
-		gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
-				.get().as<GFSError>();
+		try {
+			gErr = srv.RPCCall({primary, masterPort}, "PushData", id, data)
+					.get().as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
@@ -895,7 +1086,14 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 		const auto & addrs = secondaries;
 		auto iter = addrs.begin();
 		for (; iter != addrs.end(); ++iter) {
-			gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			try {
+				gErr = srv.RPCCall({*iter, masterPort}, "PushData", id, data).get().as<GFSError>();
+			} catch (...) {
+				gErr.errCode = GFSErrorCode::TransmissionErr;
+				err = ClientErr(ClientErrCode::Unknown);
+				state = endFlow;
+				return;
+			}
 			if (gErr.errCode != GFSErrorCode::OK)
 				break;
 		}
@@ -912,8 +1110,15 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 		state = applyChunk;
 	};
 	applyChunk = [&]()->void {
-		gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
-				.as<GFSError>();
+		try {
+			gErr = srv.RPCCall({primary, masterPort}, "WriteChunk", handle, id, offset, secondaries).get()
+					.as<GFSError>();
+		} catch (...) {
+			gErr.errCode = GFSErrorCode::TransmissionErr;
+			err = ClientErr(ClientErrCode::Unknown);
+			state = endFlow;
+			return;
+		}
 		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err = ClientErrCode::Unknown;
