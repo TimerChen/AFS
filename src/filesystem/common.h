@@ -33,7 +33,8 @@ enum class GFSErrorCode : std::uint32_t {
 	PermissionDenied,
 	ChunkFull,
 	Failed,
-	MasterDown
+	MasterDown,
+	TransmissionErr
 };
 
 
