@@ -992,6 +992,7 @@ Client::appendChunk(const ChunkHandle &handle, const std::vector<char> &data) {
 			std::tie(gErr, offset)
 					= srv.RPCCall({primary, masterPort}, "AppendChunk", handle, id, secondaries).get()
 					.as<std::tuple<GFSError, std::uint64_t>>();
+			offset -= data.size();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
 			err = ClientErr(ClientErrCode::Unknown);
