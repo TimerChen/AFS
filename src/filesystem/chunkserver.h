@@ -14,36 +14,11 @@
 
 namespace AFS {
 
-/*
 class ChunkServer : public Server
 {
 
-	class ChunkData
-	{
+	//friend class BasicTest;
 
-	public:
-
-		long long name, version;
-		short end;
-		char data[Chunk::CHUNKSIZE];
-
-		ChunkData();
-
-	};
-
-
-public:
-	ChunkServer();
-
-};
-*/
-
-
-
-
-
-class ChunkServer : public Server
-{
 public:
 	enum MutationType : std::uint32_t
 	{
@@ -64,7 +39,7 @@ public:
 	void Shutdown();
 
 
-protected:
+public:
 	// RPCCreateChunk is called by master to create a new chunk given the chunk handle.
 	GFSError
 		RPCCreateChunk(ChunkHandle handle);
@@ -159,8 +134,8 @@ protected:
 	void garbageCollect( const std::vector<ChunkHandle> &gbg );
 	GFSError heartBeat();
 	void Heartbeat();
+	void clearData();
 protected:
-	std::stringstream ss;
 	std::uint32_t MaxCacheSize;
 	std::map< ChunkHandle, Chunk > chunks;
 	std::map< ChunkHandle, ReadWriteMutex > chunkMutex;

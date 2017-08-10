@@ -28,6 +28,7 @@ ChunkPool::~ChunkPool()
 		garbage.pop();
 		delete [] p;
 	}
+	cLock.unlock();
 }
 void ChunkPool::Delete(char* &data)
 {
@@ -47,6 +48,7 @@ char* ChunkPool::newData()
 		throw( ChunkPoolEmpty() );
 	char *re = garbage.front();
 	garbage.pop();
+	++freshed[re];
 	return re;
 }
 void ChunkPool::copy(char* data)
@@ -60,6 +62,16 @@ bool ChunkPool::empty()
 	//bool re = garbage.size() <= subPoolSize;
 	ReadLock cLock(lock);
 	return garbage.size() <= subPoolSize;
+}
+void ChunkPool::clear()
+{
+	WriteLock cLock(lock);
+	for( auto itr : freshed )
+	{
+		garbage.push(itr.first);
+	}
+	freshed.clear();
+	cLock.unlock();
 }
 
 }

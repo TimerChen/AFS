@@ -17,6 +17,7 @@ public:
 	char*	newData();
 	void	copy( char* data );
 	bool	empty();
+	void	clear();
 private:
 	static const std::uint32_t		subPoolSize = 16+3;
 	std::uint32_t					dataSize;

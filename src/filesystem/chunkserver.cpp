@@ -110,9 +110,7 @@ void ChunkServer::Start()
 	Server::Start();
 	load();
 
-	//TODO???
-	//std::thread service(&LightDS::Service::Run, &srv);
-	//service.detach();
+	std::thread( &ChunkServer::Heartbeat, this ).detach();
 }
 void ChunkServer::load()
 {
@@ -121,14 +119,15 @@ void ChunkServer::load()
 }
 void ChunkServer::loadSettings()
 {
+	/*
 	std::ifstream fin((rootDir / chunkFolder / ".setting").native());
 	if( !fin.is_open() )
 	{
 		std::ofstream fout( (rootDir / chunkFolder / ".setting").native() );
 		//IP and Port
-		fout << 0 << " " << 0 << '\n';
+		fout << "127.0.0.1" << " " << "12308" << '\n';
 		//Chunks Folder
-		fout << '\n';
+		fout << 'data\n';
 		fout.close();
 		fin.open( (rootDir / chunkFolder / ".setting").native() );
 	}
@@ -141,13 +140,15 @@ void ChunkServer::loadSettings()
 	//Load other..
 
 	//Close file
-	fin.close();
+	fin.close();*/
 }
 
 void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 {
 	using namespace boost::filesystem;
 	std::string fname;
+	if( !exists( Path ) )
+		boost::filesystem::create_directory(Path);
 	if( !exists( Path ) || !is_directory( Path ) )
 		throw( DirNotFound() );
 	directory_iterator end_itr;
@@ -211,7 +212,7 @@ Chunk ChunkServer::loadChunkInfo_noLock( const ChunkHandle &handle )
 	std::fstream fin;
 
 	//Open file
-	fin.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native(), std::ios::in | std::ios::binary );
+	fin.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native() );
 	if( !fin.is_open() )
 	{
 		throw( DirNotFound() );
@@ -242,7 +243,7 @@ std::string ChunkServer::loadChunkData_noLock( const ChunkHandle &handle, const 
 	std::string str;
 
 	//Open file
-	fin.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native(), std::ios::in | std::ios::binary );
+	fin.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native() );
 	if( !fin.is_open() )
 	{
 		throw( DirNotFound() );
@@ -282,8 +283,11 @@ void ChunkServer::saveChunkInfo_noLock( const ChunkHandle &handle, const Chunk &
 	std::fstream fout;
 
 	//Open file
-	fout.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native(), std::ios::out | std::ios::binary );
-
+	fout.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native() );
+	if( !fout.is_open() )
+	{
+		throw( DirNotFound() );
+	}
 	//Write
 	fout.write( (char*)&c.version, sizeof(c.version) );
 	fout.write( (char*)&c.length , sizeof(c.length ) );
@@ -307,8 +311,11 @@ void ChunkServer::saveChunkData_noLock( const ChunkHandle &handle, const char *d
 	std::fstream fout;
 
 	//Open file
-	fout.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native(), std::ios::out | std::ios::binary );
-
+	fout.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native() );
+	if( !fout.is_open() )
+	{
+		throw( DirNotFound() );
+	}
 	//Read
 	fout.seekp( sizeof(ChunkVersion) + sizeof(Chunk::ChunkLength) + offset );
 	fout.write( data, length );
@@ -317,12 +324,24 @@ void ChunkServer::saveChunkData_noLock( const ChunkHandle &handle, const char *d
 	fout.close();
 }
 
+void ChunkServer::clearData()
+{
+	chunks.clear();
+	chunkMutex.clear();
+	dataCache.clear();
+	while( cacheQueue.empty() )
+		cacheQueue.pop_back();
+	chunkPool.clear();
+}
+
 void ChunkServer::Shutdown()
 {
-	//TODO???
+
 	//srv.Stop();
 
 	//At End
+	//TODO???
+	clearData();
 	Server::Shutdown();
 }
 
@@ -403,6 +422,7 @@ GFSError ChunkServer::heartBeat()
 			allChunks.push_back( std::make_tuple( chk.first, chk.second.version) );
 			if( chk.second.primary() && chk.second.needExtensions )
 			{
+				chk.second.needExtensions = 0;
 				leaseExtensions.push_back( chk.first );
 			}
 		}else{
@@ -428,16 +448,24 @@ void ChunkServer::Heartbeat()
 	while(running)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(5));
-		do{
-			try{
-				err = heartBeat();
-			}
-			catch(...)
+		auto masterList = srv.ListService("master");
+		for( auto addr : masterList )
+		{
+			masterIP = addr.ip;
+			masterPort = addr.port;
+			while( err.errCode != GFSErrorCode::OK && running )
 			{
-				//TODO...
+				try{
+					err = heartBeat();
+				}
+				catch(...)
+				{
+					//TODO...
 
+				}
 			}
-		}while( err.errCode != GFSErrorCode::OK && running );
+		}
+
 	}
 
 }
@@ -446,6 +474,7 @@ void ChunkServer::Heartbeat()
 GFSError
 	ChunkServer::RPCCreateChunk(ChunkHandle handle)
 {
+	GFSError reData = {GFSErrorCode::OK, ""};
 	Chunk c;
 	char *buffer = chunkPool.newData();
 	//The version start form zero ?????
@@ -457,16 +486,31 @@ GFSError
 	WriteLock cmLock( lock_chunkMutex );
 	WriteLock cLock0(chunkMutex[handle]);
 	cmLock.unlock();
-
-	chunks[handle] = c;
+	if(chunks.count(handle))
+	{
+		reData = {GFSErrorCode::InvalidOperation, "File existence."};
+	}else
+		chunks[handle] = c;
 	cLock.unlock();
 
-	saveChunkInfo_noLock( handle, c );
-	saveChunkData_noLock( handle, buffer );
+	std::ofstream fout;
+	fout.open( (rootDir / chunkFolder / (std::to_string(handle)+".chk")).native() );
+	fout.close();
+
+	if( reData == GFSErrorCode::OK )
+	{
+		try{
+			saveChunkInfo_noLock( handle, c );
+			saveChunkData_noLock( handle, buffer );
+		}catch(...){
+			reData = {GFSErrorCode::Unknown, ""};
+		}
+	}
+
 	cLock0.unlock();
 	chunkPool.Delete( buffer );
 
-	return {GFSErrorCode::OK, ""};
+	return reData;
 }
 
 // RPCReadChunk is called by client, read chunk data and return
@@ -475,22 +519,27 @@ std::tuple<GFSError, std::string /*Data*/>
 {
 	std::tuple<GFSError, std::string /*Data*/> reData;
 	Chunk c = loadChunkInfo( handle );
+	std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
+
 	if(offset + length > c.length)
 	{
-		reData = std::make_tuple( GFSError({GFSErrorCode::InvalidOperation, "ReadOverflow"}), "" );
+		reData = std::make_tuple( GFSError({GFSErrorCode::OperationOverflow, "ReadOverflow"}), "" );
+		length = c.length - offset;
+	}
+	if( offset > CHUNK_SIZE )
+	{
+		std::get<1>(reData) = "";
 	}else{
 		try{
 			std::get<1>(reData) = std::move( loadChunkData( handle, offset, length ) );
-			std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
 		}
 		catch(...)
 		{
 			reData = std::make_tuple( GFSError({GFSErrorCode::InvalidOperation, "???"}), "" );
 		}
-
-
 	}
-	return std::move(reData);
+
+	return reData;
 }
 
 // RPCWriteChunk is called by client
@@ -519,6 +568,7 @@ GFSError
 		{
 			if( offset + length <= CHUNK_SIZE )
 			{
+				cItr->second.needExtensions = 1;
 				reData = GFSError({GFSErrorCode::OK, ""});
 				//Local memory
 				cItr->second.finished++;
@@ -533,9 +583,12 @@ GFSError
 				}
 
 				//Local disk
-				saveChunkInfo_noLock( handle, cItr->second );
 				saveChunkData_noLock(handle, std::get<0>(dcItr->second), offset, length);
-
+				saveChunkInfo_noLock( handle, cItr->second );
+				/*
+				Chunk tmp = loadChunkInfo_noLock( handle );
+				std::cerr << "tmp:" << tmp.length;
+				*/
 			}
 			else
 				reData = GFSError({GFSErrorCode::OperationOverflow, "Read overflow"});
@@ -595,6 +648,7 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 		offset = cItr->second.length;
 		if( cItr->second.primary() )
 		{
+			cItr->second.needExtensions = 1;
 			//Local memory
 			cItr->second.finished++;
 			if( offset + length <= CHUNK_SIZE )
@@ -817,10 +871,10 @@ GFSError
 		auto itr = chunks.find(handle);
 		if( itr == chunks.end() )
 		{
-			reData.errCode = GFSErrorCode::InvalidOperation;
+			reData.errCode = GFSErrorCode::OperationOverflow;
 			reData.description = reData.description
 								 + std::to_string( handle ) + " "
-								 + std::to_string((std::uint32_t)GFSErrorCode::OperationOverflow) + "\n";
+								 + "OperationOverflow" + "\n";
 		}
 		else if( ( itr->second.version == newVersion-1 && !itr->second.primary() )
 			|| ( itr->second.version == newVersion && itr->second.primary() ) )
@@ -833,17 +887,17 @@ GFSError
 		}
 		else if( itr->second.version < newVersion )
 		{
-			reData.errCode = GFSErrorCode::InvalidOperation;
+			reData.errCode = GFSErrorCode::ChunkVersionExpired;
 			reData.description = reData.description
 								 + std::to_string( handle ) + " "
-								 + std::to_string((std::uint32_t)GFSErrorCode::ChunkVersionExpired) + "\n";
+								 + "ChunkVersionExpired" + "\n";
 		}
 		else // itr->version > newVersion
 		{
 			reData.errCode = GFSErrorCode::InvalidOperation;
 			reData.description = reData.description
 								 + std::to_string( handle ) + " "
-								 + std::to_string((std::uint32_t)GFSErrorCode::InvalidOperation) + "\n";
+								 + "InvalidOperation" + "\n";
 		}
 		cLock0.unlock();
 		cLock.unlock();
@@ -867,6 +921,7 @@ GFSError
 	auto itr = chunks.find(handle);
 	if( itr->second.version == newVersion-1 )
 	{
+		itr->second.expireTime = 0;
 		itr->second.update(newVersion);
 		itr->second.isPrimary = 0;
 		saveChunkInfo_noLock( handle, itr->second );
@@ -895,15 +950,18 @@ GFSError
 GFSError
 	ChunkServer::RPCPushData(std::uint64_t dataID, std::string data)
 {
+	std::cerr << "RPC...";
 	GFSError reData = { GFSErrorCode::OK, "" };
 	char *cdata;
 	WriteLock dcLock( lock_dataCache );
-	if( !dataCache.count( dataID ) )
+	if( dataCache.count( dataID ) )
 		reData = { GFSErrorCode::InvalidOperation, "DataId existence" };
 	else
 	{
 		cdata = chunkPool.newData();
+		std::cerr << "copying...";
 		strncpy( cdata, data.c_str(), data.size() );
+		std::cerr << "push_in_cache...";
 		dataCache[dataID] = std::make_tuple(cdata, data.size());
 	}
 
@@ -911,12 +969,14 @@ GFSError
 	if( reData.errCode == GFSErrorCode::OK )
 	{
 		WriteLock cqLock(lock_cacheQueue);
+		std::cerr << "push_in_queue...";
 		cacheQueue.push_back( dataID );
 
 
 		//when chunkPool.empty() == true it is using the sub-pool of it.
 		while( cacheQueue.size() > MaxCacheSize || chunkPool.empty() )
 		{
+			std::cerr << "pop_old...";
 			dataID = cacheQueue.front();
 			auto idc = dataCache.find( dataID );
 			chunkPool.Delete( std::get<0>( idc->second ) );

@@ -22,6 +22,9 @@
 namespace AFS {
 
 class Master : public Server {
+
+	//friend class BasicTest;
+
 protected:
 	void save() final;
 	void load() final;
@@ -32,7 +35,7 @@ private:
 
 	// 用于在开关机和存读档时候，除了上述情况以外的函数，都只应尝试获得读锁
 	readWriteMutex    globalMutex;
-
+	std::mutex        backgroundM;
 
 private:
 	// return the number of the chunks whose lease has been extended successfully
@@ -53,6 +56,8 @@ private:
 	void collectGarbage();
 
 	void reReplicate();
+
+	void bindFunctions();
 protected:
 public: // debug
 	// BackgroundActivity does all the background activities:
@@ -131,6 +136,9 @@ private:
 	void write(std::ofstream & out) const;
 
 	void read(std::ifstream & in);
+
+protected:
+	std::uint16_t chunkPort;
 };
 
 }
