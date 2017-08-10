@@ -40,14 +40,15 @@ public:
 	ClientErr fileAppend(const std::string &dir, const std::string &localDir);
 	ClientErr fileAppend_str(const std::string &dir, const std::string &data);
 
-	ClientErr fileRead(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data);
-	ClientErr fileWrite(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
-	ClientErr fileAppend(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
+//	ClientErr fileRead(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data);
+//	ClientErr fileWrite(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
+//	ClientErr fileAppend(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
 
 	std::tuple<ClientErr, std::vector<std::string>> listFile(const std::string & dir);
 
 	std::tuple<ClientErr, ChunkHandle> getChunkHandle(const std::string & dir, size_t idx);
 
+	/// chunk
 	ClientErr writeChunk(const ChunkHandle &handle, const std::uint64_t &offset, const std::vector<char> &data);
 
 	std::tuple<ClientErr, std::uint64_t>
@@ -78,9 +79,8 @@ public: // test
 	std::tuple<GFSError, ChunkHandle>
 			GetChunkHandle(const std::string & dir, std::size_t idx);
 
-	GFSError WriteChunk(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data) {
-		return toGFSError(writeChunk(handle, offset, data));
-	}
+	/// chunk
+	GFSError WriteChunk(const ChunkHandle & handle, const std::uint64_t & offset, const std::vector<char> & data);
 
 	std::tuple<GFSError, std::uint64_t /*size*/>
 	ReadChunk(const ChunkHandle & handle, const std::uint64_t & offset, std::vector<char> & data);
@@ -90,6 +90,8 @@ public: // test
 
 	GFSError Write(const std::string &path, std::uint64_t offset, const std::vector<char> &data);
 
+
+	/// file
 	std::tuple<GFSError, std::uint64_t /*size*/>
 	Read(const std::string &path, std::uint64_t offset, std::vector<char> &data);
 
