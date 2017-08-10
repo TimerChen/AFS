@@ -74,6 +74,7 @@ size_t AFS::Master::leaseExtend(const Address &addr, const std::vector<AFS::Chun
 	auto extendLease = [](ChunkData & data) {
 		data.leaseGrantTime = time(nullptr);
 	};
+	//TODO...
 	size_t cnt = 0;
 	for (auto &&handle : handles) {
 		cnt += (size_t)MemoryPool::instance().updateData_if(handle, permission, extendLease);
@@ -125,6 +126,7 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 
 std::tuple<AFS::GFSError, AFS::ChunkHandle>
 AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
+	//std::cerr << "Be Called...\n" << std::endl;
 	readLock glk(globalMutex);
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), ChunkHandle());
@@ -138,7 +140,11 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 		bool result = false;
 		for (int k = 0; k < 3; ++k) { // 创建3个副本
 			for (int i = 0; i < 5; ++i) {
-				addr = asdm.chooseServer();
+				auto data = MemoryPool::instance().getData(handle);
+				addr = asdm.chooseServer(data.location);
+				if (addr == "") { // tem
+					return false;
+				}
 				try {
 					err = srv.RPCCall({addr, chunkPort}, "CreateChunk", handle).get().as<GFSError>();
 				} catch (...) {
@@ -264,9 +270,10 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		for (auto &&addr : data.location) {
 			auto tmpTime = time(nullptr);
 			try {
+				std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>> tmp;
+				tmp.emplace_back(std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime));
 				terr = srv.RPCCall({addr, chunkPort},
-				                   "GrantLease",
-				                   std::make_tuple(handle, data.version + 1, tmpTime + LeaseExpiredTime))
+								   "GrantLease", tmp)
 						.get().as<GFSError>();
 			} catch (...) {
 

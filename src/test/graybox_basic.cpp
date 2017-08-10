@@ -135,18 +135,21 @@ TestResult BasicTest::TestMkdirList()
 
 TestResult BasicTest::TestGetChunkHandle()
 {
+	//std::cerr << "Creating...";
 	client.Create("/TestGetChunkHandle.txt") | must_succ;
-
+	//std::cerr <<"OK\n"<< "Get...1...";
 	ChunkHandle chunk1 = client.GetChunkHandle("/TestGetChunkHandle.txt", 0) | must_succ;
+	//std::cerr << "2...";
 	ChunkHandle chunk2 = client.GetChunkHandle("/TestGetChunkHandle.txt", 0) | must_succ;
-
+	//std::cerr <<"OK\n";
 	if (chunk1 != chunk2)
 		return TestResult::Fail("Different Chunk Handle: " + std::to_string(chunk1) + " != " + std::to_string(chunk2));
 
+	//std::cerr <<"Invalid Operation...";
 	auto ret = client.GetChunkHandle("/TestGetChunkHandle.txt", 2);
 	if (std::get<0>(ret).errCode == GFSErrorCode::OK)
 		return TestResult::Fail("Discontinuous chunk should not be created");
-
+	//std::cerr << "OK";
 	return TestResult::Pass();
 }
 
@@ -154,23 +157,24 @@ TestResult BasicTest::TestWriteChunk()
 {
 	client.Create("/TestWriteChunk.txt") | must_succ;
 	ChunkHandle chunk = client.GetChunkHandle("/TestWriteChunk.txt", 0) | must_succ;
-
+	//std::uint16_t nThread = 1;
 	static const size_t sizePerThread = pressure;
 	std::thread threads[nThread];
 
 	bool succ = true;
 	TestResult lastError;
 	std::mutex mtxLastError;
-
+	//std::cerr << "Multithread testing...";
 	for (size_t i = 0; i < nThread; i++)
 	{
 		threads[i] = std::thread([this, chunk, i, &succ, &lastError, &mtxLastError]()
 		{
+			//std::cerr << "thread " << i << std::endl;
 			std::vector<char> data(sizePerThread);
 			for (size_t j = 0; j < sizePerThread; j++)
 				data[j] = char(j & 0xff);
 			GFSError err = client.WriteChunk(chunk, i * sizePerThread, data);
-
+			//std::cerr << "writeChunk completed, err.errcode = " << (int)err.errCode << std::endl;
 			if (err.errCode != GFSErrorCode::OK)
 			{
 				std::lock_guard<std::mutex> lock(mtxLastError);
@@ -182,7 +186,7 @@ TestResult BasicTest::TestWriteChunk()
 
 	for (auto &thread : threads)
 		thread.join();
-
+	//std::cerr << "[OK]\n";
 	if (!succ)
 		return lastError;
 
@@ -194,6 +198,7 @@ TestResult BasicTest::TestReadChunk()
 	ChunkHandle chunk = client.GetChunkHandle("/TestWriteChunk.txt", 0) | must_succ;
 
 	static const size_t sizePerThread = pressure;
+	//std::uint16_t nThread = 1;
 	std::thread threads[nThread];
 
 	bool succ = true;
@@ -254,11 +259,11 @@ size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std:
 	assert(addresses.size() == 1);
 	auto addrMaster = addresses[0];
 
-	std::vector<std::string> replicas = RPC(addrMaster, "RPCGetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
+	std::vector<std::string> replicas = RPC(addrMaster, "GetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
 	std::vector<std::string> data;
 
 	for (auto &replica : replicas)
-		data.push_back(RPC(LightDS::User::RPCAddress::from_string(replica), "RPCReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
+		data.push_back(RPC(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
 
 	for (size_t i = 1; i < data.size(); i++)
 	{

@@ -84,20 +84,27 @@ public:
 
 	void deleteFailedChunks(const Address & addr, const std::vector<ChunkHandle> & handles);
 
-	Address chooseServer() const {
+	Address chooseServer(const std::vector<std::string> & already) const {
 		readLock lk(m);
-		static auto lastChoice = mp.cbegin();
-		auto start = lastChoice;
-		while (1) {
-			++lastChoice;
-			if (lastChoice == start) // 找了一圈还找不到就算失败
-				return "";
-			if (lastChoice == mp.cend())
-				lastChoice = mp.cbegin();
-			if (lastChoice->second.handles.size() < ChunkNumPerServer) {
-				return lastChoice->first;
-			}
+		for (auto && item : mp) {
+			if (std::find(already.begin(), already.end(), item.first) != already.end())
+				continue;
+			return item.first;
 		}
+		return "";
+
+//		staic auto lastChoice = mp.cbegin();
+//		auto start = lastChoice;
+//		while (1) {
+//			++lastChoice;
+//			if (lastChoice == start) // 找了一圈还找不到就算失败
+//				return "";
+//			if (lastChoice == mp.cend())
+//				lastChoice = mp.cbegin();
+//			if (lastChoice->second.handles.size() < ChunkNumPerServer) {
+//				return lastChoice->first;
+//			}
+//		}
 	}
 
 	void addChunk(const Address & addr, ChunkHandle handle) {
