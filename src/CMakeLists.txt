@@ -61,11 +61,22 @@ if(Boost_FOUND)
             LightDS/include/pool.hpp
             LightDS/include/rpc.hpp
             LightDS/include/service.hpp
+            LightDS/include/user.hpp
+            LightDS/include/common.hpp
+            LightDS/include/pipeservice.hpp
+
 
             JsonCPP/jsoncpp.cpp
 
             tests/LightDSTest/servera.h     tests/LightDSTest/servera.cpp
             tests/LightDSTest/serverb.h     tests/LightDSTest/serverb.cpp
+
+#            test/common.h
+#            test/common_headers.h
+#            test/pipestream.hpp
+#            test/graybox.cpp
+#            test/graybox_basic.h            test/graybox_basic.cpp
+#            test/graybox_env.h              test/graybox_env.cpp
 
 
 
@@ -86,6 +97,7 @@ if(Boost_FOUND)
 
             ## ryw end 65
             ## cjx begin 66
+            ${CMAKE_SOURCE_DIR}/test
             ${CMAKE_SOURCE_DIR}/filesystem
             ${CMAKE_SOURCE_DIR}/LightDS/include
             ${CMAKE_SOURCE_DIR}/JsonCPP

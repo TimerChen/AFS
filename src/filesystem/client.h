@@ -12,7 +12,7 @@ namespace AFS {
 
 class Client {
 public:
-	explicit Client(LightDS::Service &_srv, const Address &MasterAdd, const uint16_t &MasterPort=13208);
+	explicit Client(LightDS::Service &_srv, const std::string &MasterAdd="", const uint16_t &MasterPort=7777, const uint16_t &ClientPort=7778);
 
 	void setMaster(Address add, uint16_t port);
 
@@ -43,11 +43,11 @@ public:
 
 	std::tuple<ClientErr, std::vector<std::string>> listFile(const std::string & dir);
 
-	std::tuple<ClientErr, ChunkHandle> getChunkHandle(const std::string & dir, size_t idx);;
+	std::tuple<ClientErr, ChunkHandle> getChunkHandle(const std::string & dir, size_t idx);
 
 protected:
-	Address masterAdd;
-	uint16_t masterPort;
+	std::string masterAdd;
+	uint16_t masterPort, clientPort;
 	LightDS::Service &srv;
 	char buffer[CHUNK_SIZE];
 

@@ -13,8 +13,16 @@ bool Client::checkMasterAddress() const {
 	return !masterAdd.empty();
 }
 
-Client::Client(LightDS::Service &_srv, const Address &MasterAdd, const uint16_t &MasterPort)
-	: srv(_srv), masterAdd(MasterAdd), masterPort(MasterPort){}
+Client::Client(LightDS::Service &_srv, const Address &MasterAdd, const uint16_t &MasterPort, const uint16_t &ClientPort)
+	: srv(_srv), masterAdd(MasterAdd), masterPort(MasterPort),clientPort(ClientPort)
+{
+	if( masterAdd == "" )
+	{
+		auto addr = srv.ListService("master")[0];
+		masterAdd = addr.ip;
+		masterPort = addr.port;
+	}
+}
 
 
 void Client::setMaster(Address add, uint16_t port) {
@@ -26,7 +34,7 @@ void Client::setMaster(Address add, uint16_t port) {
 ClientErr Client::fileCreate(const std::string &dir) {
 	if(!checkMasterAddress())
 		return ClientErr(ClientErrCode::MasterNotFound);
-	auto err = srv.RPCCall({masterAdd, masterPort}, "CreateFile", dir).get().as<GFSError>();
+	auto err = srv.RPCCall({masterAdd, clientPort}, "CreateFile", dir).get().as<GFSError>();
 	if (err.errCode == GFSErrorCode::OK)
 		return ClientErr(ClientErrCode::OK);
 
@@ -45,7 +53,7 @@ ClientErr Client::fileCreate(const std::string &dir) {
 ClientErr Client::fileMkdir(const std::string &dir) {
 	if(!checkMasterAddress())
 		return ClientErr(ClientErrCode::MasterNotFound);
-	auto err = srv.RPCCall({masterAdd, masterPort}, "Mkdir", dir).get().as<GFSError>();
+	auto err = srv.RPCCall({masterAdd, clientPort}, "Mkdir", dir).get().as<GFSError>();
 	if (err.errCode == GFSErrorCode::OK)
 		return ClientErr(ClientErrCode::OK);
 

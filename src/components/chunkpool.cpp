@@ -28,6 +28,7 @@ ChunkPool::~ChunkPool()
 		garbage.pop();
 		delete [] p;
 	}
+	cLock.unlock();
 }
 void ChunkPool::Delete(char* &data)
 {
@@ -47,6 +48,7 @@ char* ChunkPool::newData()
 		throw( ChunkPoolEmpty() );
 	char *re = garbage.front();
 	garbage.pop();
+	++freshed[re];
 	return re;
 }
 void ChunkPool::copy(char* data)

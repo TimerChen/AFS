@@ -14,34 +14,6 @@
 
 namespace AFS {
 
-/*
-class ChunkServer : public Server
-{
-
-	class ChunkData
-	{
-
-	public:
-
-		long long name, version;
-		short end;
-		char data[Chunk::CHUNKSIZE];
-
-		ChunkData();
-
-	};
-
-
-public:
-	ChunkServer();
-
-};
-*/
-
-
-
-
-
 class ChunkServer : public Server
 {
 public:
@@ -160,7 +132,6 @@ protected:
 	GFSError heartBeat();
 	void Heartbeat();
 protected:
-	std::stringstream ss;
 	std::uint32_t MaxCacheSize;
 	std::map< ChunkHandle, Chunk > chunks;
 	std::map< ChunkHandle, ReadWriteMutex > chunkMutex;

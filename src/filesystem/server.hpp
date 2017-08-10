@@ -37,7 +37,7 @@ public:
 	//Your Start() should use this one at first.
 	virtual void Start()
 	{
-		if(!running)
+		if(running)
 			throw( AFS::ServerIllegalOperation() );
 		running = true;
 	}
