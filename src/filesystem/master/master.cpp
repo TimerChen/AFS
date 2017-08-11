@@ -119,12 +119,12 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<AFS::ChunkHandle>());
 
-//	std::cerr << srv.getRPCCaller() << " beats\n";
-//	std::cerr << "left servers: ";
-//	for (auto && item : asdm.mp) {
-//		std::cerr << item.first << "  ";
-//	}
-//	std::cerr << std::endl;
+	std::cerr << srv.getRPCCaller() << " beats " << time(nullptr) << std::endl;
+	std::cerr << "left servers: ";
+	for (auto && item : asdm.mp) {
+		std::cerr << item.first << "  ";
+	}
+	std::cerr << std::endl;
 	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
 	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
 	auto result2 = std::move(*checkGarbage(chunks).release());
@@ -337,20 +337,20 @@ void AFS::Master::reReplicate() {
 		//std::cerr << "RPCCALL\n";
 		GFSError err;
 		try {
+			std::cerr << "sending...\n";
 			err = srv.RPCCall({src, chunkPort}, "SendCopy", handle, tar).get().as<GFSError>();
+			std::cerr << "sent!!!!\n";
 		} catch (...) {
 			err.errCode = GFSErrorCode::TransmissionErr;
 		}
 		return err;
 	};
-	if (pq.size() == 2) {
-		//std::cerr << 2 << std::endl;
-	}
 	pfdm.reReplicate(pq, rpcCall);
 }
 
 void AFS::Master::BackgroundActivity() {
 	while (1) {
+		//std::cerr << "Backgournd " << time(nullptr) << std::endl;
 		//std::cerr << asdm.mp.size() << std::endl;
 		if (asdm.mp.size() == 0) {
 			//std::cerr << 1 ;
@@ -360,8 +360,10 @@ void AFS::Master::BackgroundActivity() {
 		if (!running)
 			return;
 		checkDeadChunkServer();
+		//std::cerr << "bg check dead servers\n";
 //		collectGarbage();
 		reReplicate();
+		//std::cerr << "bg reReplicate\n";
 	}
 }
 

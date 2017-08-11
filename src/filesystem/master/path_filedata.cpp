@@ -106,6 +106,9 @@ void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::A
 				return tdata.location.size() < data.replicationFactor;
 			});
 			if (flag) {
+				if (cdata.location.size() == pq.size())
+					return;
+
 				auto numAAddr = pq.top();
 				while (std::find(cdata.location.begin(), cdata.location.end(),
 					   numAAddr.second) != cdata.location.end()) {

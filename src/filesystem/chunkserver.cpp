@@ -947,7 +947,7 @@ GFSError
 	auto cItr = chunks.find(handle);
 	cItr->second = c;
 	saveChunkInfo_noLock( handle, c );
-	saveChunkData_noLock( handle, data.c_str(), data.size() );
+	saveChunkData_noLock( handle, data.c_str(), 0, data.size() );
 
 	cLock0.unlock();
 	cLock.unlock();
