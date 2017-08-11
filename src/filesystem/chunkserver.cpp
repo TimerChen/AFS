@@ -914,6 +914,7 @@ GFSError
 	cLock.unlock();
 
 	runningNumber--;
+	std::cerr << "rpc sent\n";
 	return reData;
 }
 
@@ -953,6 +954,7 @@ GFSError
 	cLock.unlock();
 
 	runningNumber--;
+	std::cerr << "applied\n";
 	return reData;
 }
 

@@ -195,21 +195,22 @@ AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
 
 std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
 AFS::Master::RPCGetFileInfo(std::string path_str) {
+	std::cerr << "trying getting file info....\n";
 	readLock glk(globalMutex);
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), 0, 0, 0);
-
+	std::cerr << "start getting...\n";
 	GFSError err;
 	auto path = PathParser::instance().parse(path_str);
 	auto errMd = pfdm.getData(*path);
 	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
+	std::cerr << "got!!\n";
 	if (errMd.first == MasterError::NotExists)
 		return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
 	if (errMd.second.type == FileData::Type::Folder) {
 		err.errCode = GFSErrorCode::WrongOperation;
 		return std::make_tuple(err, true, std::uint64_t(), std::uint64_t());
 	}
-	// todo length
 	return std::make_tuple(err, false, -1, errMd.second.handles.size());
 }
 
@@ -331,16 +332,19 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 
 void AFS::Master::reReplicate() {
 	auto pq = std::move(*(asdm.getPQ().release()));
-	if (pq.empty())
+	if (pq.empty()) {
 		return;
+	}
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
 		//std::cerr << "RPCCALL\n";
 		GFSError err;
 		try {
-			std::cerr << "sending...\n";
+			const auto & debug_t1 = asdm.mp[tar];
+			std::cerr << src << "sending...\n";
 			err = srv.RPCCall({src, chunkPort}, "SendCopy", handle, tar).get().as<GFSError>();
 			std::cerr << "sent!!!!\n";
 		} catch (...) {
+			std::cerr << "wtf wtf wtf\n";
 			err.errCode = GFSErrorCode::TransmissionErr;
 		}
 		return err;
@@ -350,11 +354,6 @@ void AFS::Master::reReplicate() {
 
 void AFS::Master::BackgroundActivity() {
 	while (1) {
-		//std::cerr << "Backgournd " << time(nullptr) << std::endl;
-		//std::cerr << asdm.mp.size() << std::endl;
-		if (asdm.mp.size() == 0) {
-			//std::cerr << 1 ;
-		}
 		std::unique_lock<std::mutex>(backgroundM);
 		readLock glk(globalMutex);
 		if (!running)

@@ -92,6 +92,10 @@ AFS::PathFileData::getHandle(const AFS::PathFileData::Path &path, std::uint64_t 
 	return std::make_pair(MasterError::OK, ans);
 }
 
+void AFS::PathFileData::read(std::ifstream &in) {
+	mp.read(in);
+}
+
 void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::Address>> &pq,
                                     const std::function<AFS::GFSError(const AFS::Address &, const AFS::Address &,
                                                                       AFS::ChunkHandle)> &send) {
@@ -102,21 +106,33 @@ void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::A
 		for (auto &&chunk : data.handles) {
 			auto handle = chunk.getHandle();
 			ChunkData cdata;
-			bool flag = MemoryPool::instance().return_if(handle, cdata,[&](const ChunkData & tdata) { // 如果副本服务器个数小于复制因子
+
+			// 检查副本服务器个数小于复制因子
+			bool flag = MemoryPool::instance().return_if(handle, cdata,[&](const ChunkData & tdata) {
 				return tdata.location.size() < data.replicationFactor;
 			});
 			if (flag) {
 				if (cdata.location.size() == pq.size())
 					return;
+				std::cerr << "chunk " << handle << "is in danger.\n";
+				int cnt = 0;
 
 				auto numAAddr = pq.top();
 				while (std::find(cdata.location.begin(), cdata.location.end(),
-					   numAAddr.second) != cdata.location.end()) {
-					 pq.pop();
+					   numAAddr.second) != cdata.location.end() && cnt < cdata.location.size() * 2) {
+					std::cerr << cnt++ << std::endl;
+					pq.pop();
 					 numAAddr = pq.top();
 					 pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
 				} // 取一个当前location中没有的服务器
-				//std::cerr << "Chunk " << handle << " is in danger.\n";
+				if (std::find(cdata.location.begin(), cdata.location.end(),
+				              numAAddr.second) != cdata.location.end()) {
+					std::cerr << "ffffffffuck\n";
+					return;
+				}
+
+
+				std::cerr << "got a server\n";
 				GFSError err;
 				// 让某一个服务器给目标服务器发送消息
 				for (auto &&location : cdata.location) {
@@ -130,8 +146,17 @@ void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::A
 						  pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
 					 }
 				}
+				std::cerr << cnt << cnt << cnt << std::endl;
 			}
 		}
 	};
-	mp.iterate({}, re);
+	mp.iterate_all(re);
+}
+
+void AFS::PathFileData::write(std::ofstream &out) const {
+	mp.write(out);
+}
+
+void AFS::PathFileData::clear() {
+	mp.clear();
 }
