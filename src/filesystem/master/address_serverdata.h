@@ -85,80 +85,20 @@ public:
 
 	void deleteFailedChunks(const Address & addr, const std::vector<ChunkHandle> & handles);
 
-	Address chooseServer(const std::vector<std::string> & already) const {
-		readLock lk(m);
-		for (auto && item : mp) {
-			if (std::find(already.begin(), already.end(), item.first) != already.end())
-				continue;
-			return item.first;
-		}
-		return "";
+	Address chooseServer(const std::vector<std::string> & already) const;
 
-//		staic auto lastChoice = mp.cbegin();
-//		auto start = lastChoice;
-//		while (1) {
-//			++lastChoice;
-//			if (lastChoice == start) // 找了一圈还找不到就算失败
-//				return "";
-//			if (lastChoice == mp.cend())
-//				lastChoice = mp.cbegin();
-//			if (lastChoice->second.handles.size() < ChunkNumPerServer) {
-//				return lastChoice->first;
-//			}
-//		}
-	}
+	void addChunk(const Address & addr, ChunkHandle handle);
 
-	void addChunk(const Address & addr, ChunkHandle handle) {
-		writeLock lk(m);
-		auto & data = mp[addr];
-		data.handles.emplace_back(MemoryPool::instance().getServerPtr(handle, addr));
-	}
+	void write(std::ofstream & out) const;
 
-	void write(std::ofstream & out) const {
-		readLock lk(m);
-		IOTool<Address> tool1;
-		IOTool<ServerData> tool2;
-		auto sz = (int)mp.size();
-		out.write((char*)&sz, sizeof(sz));
-		for (auto &&item : mp) {
-			tool1.write(out, item.first);
-			tool2.write(out, item.second);
-		}
-	}
-
-	void read(std::ifstream & in) {
-		writeLock lk(m);
-		IOTool<Address> tool1;
-		IOTool<ServerData> tool2;
-		int sz = -1;
-		in.read((char*)&sz, sizeof(int));
-		for (int i = 0; i < sz; ++i) {
-			std::pair<Address, ServerData> tmp;
-			tool1.read(in, tmp.first);
-			tool2.read(in, tmp.second);
-			mp.insert(std::move(tmp));
-		}
-	}
+	void read(std::ifstream & in);
 
 	// 第一维为服务器上当前chunk数，第二维维地址
 	// 这些数据是为了帮助负载平衡的，所以即使在实际使用时候，较真实情况相对落后也没关系
 	std::unique_ptr<std::priority_queue<std::pair<size_t, Address>>>
-	getPQ() const {
-		readLock lk(m);
-		auto result = std::make_unique<std::priority_queue<std::pair<size_t, Address>>>();
-		for (auto &&item : mp) {
-			result->push(std::make_pair(item.second.handles.size(), item.first));
-		}
-		if (result->size() == 2) {
-			//std::cerr << "!@!" << std::endl;
-		}
-		return result;
-	};
+	getPQ() const;;
 
-	void clear() {
-		writeLock lk(m);
-		mp.clear();
-	}
+	void clear();
 };
 }
 
