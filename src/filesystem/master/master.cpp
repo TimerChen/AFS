@@ -119,12 +119,12 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<AFS::ChunkHandle>());
 
-	std::cerr << srv.getRPCCaller() << " beats " << time(nullptr) << std::endl;
-	std::cerr << "left servers: ";
-	for (auto && item : asdm.mp) {
-		std::cerr << item.first << "  ";
-	}
-	std::cerr << std::endl;
+//	std::cerr << srv.getRPCCaller() << " beats " << time(nullptr) << std::endl;
+//	std::cerr << "left servers: ";
+//	for (auto && item : asdm.mp) {
+//		std::cerr << item.first << "  ";
+//	}
+//	std::cerr << std::endl;
 	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
 	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
 	auto result2 = std::move(*checkGarbage(chunks).release());

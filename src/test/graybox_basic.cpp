@@ -43,8 +43,7 @@ bool BasicTest::Run()
 //		{"ReadChunk", &BasicTest::TestReadChunk},
 //		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
 //		{"AppendChunk", &BasicTest::TestAppendChunk},
-//		{"BigData", &BasicTest::TestBigData},
-
+		{"BigData", &BasicTest::TestBigData},
 		{"ReReplication", &BasicTest::TestReReplication},
 		{"PersistentChunkServer", &BasicTest::TestPersistentChunkServer},
 		{"PersistentMaster", &BasicTest::TestPersistentMaster},
