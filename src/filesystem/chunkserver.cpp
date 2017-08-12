@@ -571,6 +571,7 @@ GFSError
 std::tuple<GFSError, std::string /*Data*/>
 	ChunkServer::RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length)
 {
+	std::cerr << "RPCLength: " << length << std::endl;
 	runningNumber++;
 	ReadLock runLock( lock_running );
 	if( !running )
@@ -580,9 +581,14 @@ std::tuple<GFSError, std::string /*Data*/>
 	}
 
 	std::tuple<GFSError, std::string /*Data*/> reData;
-	Chunk c = loadChunkInfo( handle );
-	std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
+	ReadLock cLock ( lock_chunks );
+	ReadLock cmLock( lock_chunkMutex );
+	ReadLock cLock0(chunkMutex[handle]);
+	cmLock.unlock();
 
+	Chunk c = loadChunkInfo_noLock( handle );
+	std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
+	std::cerr << "CHUNKLENGTH: " << chunks[handle].length << " " << c.length << std::endl;
 	if(offset + length > c.length)
 	{
 		reData = std::make_tuple( GFSError({GFSErrorCode::OperationOverflow, "ReadOverflow"}), "" );
@@ -593,7 +599,7 @@ std::tuple<GFSError, std::string /*Data*/>
 		std::get<1>(reData) = "";
 	}else{
 		try{
-			std::get<1>(reData) = std::move( loadChunkData( handle, offset, length ) );
+			std::get<1>(reData) = std::move( loadChunkData_noLock( handle, offset, length ) );
 		}
 		catch(...)
 		{
@@ -733,7 +739,7 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 			cItr->second.finished++;
 			if( offset + length <= CHUNK_SIZE )
 			{
-
+				std::cerr << "ADDLENGTH" << cItr->second.length << " " << length << std::endl;
 				cItr->second.length += length;
 				reData = GFSError({GFSErrorCode::OK, ""});
 			}
