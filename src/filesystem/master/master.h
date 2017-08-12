@@ -36,6 +36,7 @@ private:
 	// 用于在开关机和存读档时候，除了上述情况以外的函数，都只应尝试获得读锁
 	readWriteMutex    globalMutex;
 	std::mutex        backgroundM;
+	std::mutex        creatingM;
 
 private:
 	// return the number of the chunks whose lease has been extended successfully

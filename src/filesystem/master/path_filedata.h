@@ -26,7 +26,7 @@ struct FileDataBase {
 
 	Type        type{Type::Unknown};
 	std::string name;
-	size_t      replicationFactor{3};
+	size_t      replicationFactor{2};
 	time_t      deleteTime{0};
 
 	virtual void write(std::ofstream & out) const {
@@ -122,19 +122,13 @@ public:
 
 	MasterError deleteFile(const Path & path);
 
-	void reReplicate(std::priority_queue<std::pair<size_t, Address>> & pq,
-	const std::function<GFSError(const Address & /*src*/, const Address &, ChunkHandle)> & send);
+	void reReplicate(const std::vector<Address> & servers,
+	    const std::function<GFSError(const Address & /*src*/, const Address &, ChunkHandle)> & send);
 
-	void read(std::ifstream & in) {
-		mp.read(in);
-	}
-	void write(std::ofstream & out) const {
-		mp.write(out);
-	}
+	void read(std::ifstream & in);
+	void write(std::ofstream & out) const;
 
-	void clear() {
-		mp.clear();
-	}
+	void clear();
 
 };
 }

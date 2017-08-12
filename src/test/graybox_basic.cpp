@@ -36,20 +36,20 @@ BasicTest::~BasicTest()
 bool BasicTest::Run()
 {
 	std::pair<std::string, TestResult(BasicTest::*)()> testcases[] = {
-//		{"CreateFile", &BasicTest::TestCreateFile},
-//		{"MkdirList", &BasicTest::TestMkdirList},
-//		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
-//		{"WriteChunk", &BasicTest::TestWriteChunk},
-//		{"ReadChunk", &BasicTest::TestReadChunk},
-//		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
-//		{"AppendChunk", &BasicTest::TestAppendChunk},
+		{"CreateFile", &BasicTest::TestCreateFile},
+		{"MkdirList", &BasicTest::TestMkdirList},
+		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
+		{"WriteChunk", &BasicTest::TestWriteChunk},
+		{"ReadChunk", &BasicTest::TestReadChunk},
+		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
+		{"AppendChunk", &BasicTest::TestAppendChunk},
 		{"BigData", &BasicTest::TestBigData},
 		{"ReReplication", &BasicTest::TestReReplication},
-		{"PersistentChunkServer", &BasicTest::TestPersistentChunkServer},
-		{"PersistentMaster", &BasicTest::TestPersistentMaster},
-		{"DiskError", &BasicTest::TestDiskError},
-
-		{"Shutdown", &BasicTest::TestShutdown},
+//		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
+//		{"PersistentMaster", &BasicTest::TestPersistentMaster},
+//		{"DiskError", &BasicTest::TestDiskError},
+//
+//		{"Shutdown", &BasicTest::TestShutdown},
 	};
 
 	for (auto &pair : testcases)
@@ -388,9 +388,11 @@ TestResult BasicTest::TestBigData()
 		std::cerr << "No." << i << std::endl;
 		dataAppend.resize(chunkSize / 4 - 1);
 		generateRandomData(dataAppend, 0x19260817 + i);
-
+		std::cerr << "data prepared\n";
 		std::uint64_t offset = client.Append(path, dataAppend) | must_succ;
+		std::cerr << "appended\n";
 		length = client.Read(path, offset, readData) | must_succ;
+		std::cerr << "Readdddddd\n";
 		if(length != dataAppend.size())
 			return TestResult::Fail((format("Data size mismatch when testing append: %d != %d") % length % dataAppend.size()).str());
 		for (size_t j = 0; j < dataAppend.size(); j++)
@@ -466,7 +468,7 @@ TestResult BasicTest::TestShutdown()
 
 TestResult BasicTest::TestReReplication()
 {
-	const size_t serverTimeout = 5;
+	const size_t serverTimeout = 20;
 	static const std::string path = "/ReReplication.txt";
 	client.Create(path) | must_succ;
 
@@ -477,7 +479,9 @@ TestResult BasicTest::TestReReplication()
 
 	std::uint64_t offset = client.AppendChunk(chunk, data) | must_succ;
 
+	std::cerr << "stopping...\n";
 	env.Stop(1);
+	std::cerr << "stop 1\n";
 	env.Stop(2);
 	std::cerr << "after stop " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout) * 2);
@@ -516,6 +520,7 @@ TestResult BasicTest::TestReReplication()
 
 TestResult BasicTest::TestPersistentChunkServer()
 {
+	const size_t serverTimeout = 7;
 	static const std::string path = "/PersistentChunkServer.txt";
 	client.Create(path) | must_succ;
 
@@ -536,6 +541,7 @@ TestResult BasicTest::TestPersistentChunkServer()
 	env.StartChunkServer(3);
 	env.StartChunkServer(4);
 
+	std::cerr << "before sleep " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
 	checkData(path, offset, data);

@@ -132,8 +132,9 @@ private:
 			auto ptr = item.second;
 			_iterate(ptr, fcs);
 		}
-		if (p == header)
+		if (p == header) {
 			return;
+		}
 		fcs(*p->value);
 	}
 	template <class D>
@@ -208,19 +209,22 @@ public:
 			rlks->emplace_back(readLock(p->m));
 			auto &idx = *beg;
 			iter = p->child.find(idx);
-			if (iter == p->child.end())
+			if (iter == p->child.end()) {
 				return ExtrieError::NotExist;
+			}
 			p = iter->second;
 		}
 		wlks->emplace_back(writeLock(p->m));
 		bool insert = false;
 		tie(iter, insert) = p->child.insert(std::make_pair(*(end - 1), get_node()));
-		if (!insert)
+		if (!insert) {
 			return ExtrieError::Exist;
+		}
 		iter->second->pnt = p;
 		p = iter->second;
 		wlks->emplace_back(writeLock(p->m));
 		p->value = new T(std::forward<TT>(value));
+
 		return ExtrieError::OK;
 	}
 	template <class TT>
@@ -240,8 +244,9 @@ public:
 			rlks->emplace_back(readLock(p->m));
 			auto &idx = *beg;
 			iter = p->child.find(idx);
-			if (iter == p->child.end())
+			if (iter == p->child.end()) {
 				return ExtrieError::NotExist;
+			}
 			p = iter->second;
 		}
 		rlks->emplace_back(readLock(p->m));
@@ -288,8 +293,14 @@ public:
 		if (!p)
 			return false;
 		rlks->pop_back();
+//		std::cerr << "lock!\n";
 		_iterate(p, fcs);
+//		std::cerr << "free!!\n";
 		return true;
+	}
+
+	void iterate_all(const std::function<void(T&)> & fcs) {
+		_iterate(header, fcs);
 	}
 
 	template <class D>

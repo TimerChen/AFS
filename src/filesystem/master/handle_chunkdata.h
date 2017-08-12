@@ -215,7 +215,7 @@ public:
 
 	bool return_if(ChunkHandle handle, ChunkData & data, const std::function<bool(const ChunkData&)> & condition) {
 		readLock lk(m);
-		auto _data = container[handle & 0xffffffff].data;
+		const auto &_data = container[handle & 0xffffffff].data;
 		if (condition(_data)) {
 			data = _data;
 			return true;
