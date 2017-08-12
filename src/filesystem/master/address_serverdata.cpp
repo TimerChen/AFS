@@ -3,6 +3,7 @@
 //
 
 #include "address_serverdata.h"
+#include <fstream>
 
 std::pair<AFS::MasterError, AFS::ServerDataCopy>
 AFS::AddressServerData::getData(const AFS::Address &addr) const {
@@ -18,6 +19,7 @@ bool AFS::AddressServerData::isDead(const AFS::ServerData &data) const {
 
 std::unique_ptr<std::vector<AFS::Address>>
 AFS::AddressServerData::checkDeadChunkServer() {
+	std::ofstream fout("./data/log.txt", std::ios::app);
 	readLock lk(m);
 	std::vector<std::map<Address, ServerData>::iterator> iterErased;
 	for (auto iter = mp.begin(); iter != mp.end(); ++iter) {
@@ -30,6 +32,9 @@ AFS::AddressServerData::checkDeadChunkServer() {
 	writeLock wlk(m);
 	auto result = std::make_unique<std::vector<AFS::Address>>();
 	for (auto &&eiter : iterErased) {
+		fout << time(nullptr) << ", " << eiter->first << " died, last beat time = "
+		     << eiter->second.lastBeatTime << std::endl;
+
 		std::cerr << eiter->first << ", last beat time = " << eiter->second.lastBeatTime << std::endl;
 		result->emplace_back(eiter->first);
 		mp.erase(eiter);
@@ -145,4 +150,13 @@ std::unique_ptr<std::priority_queue<std::pair<size_t, AFS::Address>>> AFS::Addre
 void AFS::AddressServerData::clear() {
 	writeLock lk(m);
 	mp.clear();
+}
+
+std::unique_ptr<std::vector<AFS::Address>> AFS::AddressServerData::listServers() const {
+	readLock lk(m);
+	auto result = std::make_unique<std::vector<Address>>();
+	for (auto &&item : mp) {
+		result->push_back(item.first);
+	}
+	return result;
 }

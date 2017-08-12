@@ -882,7 +882,6 @@ GFSError
 GFSError
 	ChunkServer::RPCSendCopy(ChunkHandle handle, std::string addr)
 {
-	std::cerr << "send " << handle << " to " << addr << std::endl;
 	runningNumber++;
 	ReadLock runLock( lock_running );
 	if( !running )
@@ -895,6 +894,7 @@ GFSError
 	ReadLock cLock( lock_chunks );
 
 	auto cItr = chunks.find( handle );
+	std::cerr << "send " << handle << "." << cItr->second.finished << " to " << addr << std::endl;
 	if( cItr != chunks.end() )
 	{
 		ReadLock cmLock( lock_chunkMutex );
@@ -904,9 +904,15 @@ GFSError
 		std::string str = loadChunkData_noLock( handle, 0, c.length );
 		cLock0.unlock();
 
-		msgpack::object_handle msg =
-				srv.RPCCall( {addr,chunkPort/*???*/}, "ApplyCopy",
-								handle, c.version, str, c.finished );
+		msgpack::object_handle msg;
+		try {
+			msg = srv.RPCCall({addr, chunkPort/*???*/}, "ApplyCopy",
+					            handle, c.version, str, c.finished);
+		} catch (...) {
+			// tmp
+			reData.errCode = GFSErrorCode::TransmissionErr;
+			return reData;
+		}
 		reData = msg.get().as<GFSError>();
 	}else
 		reData = GFSError({GFSErrorCode::InvalidOperation, "No such chunk"});
@@ -946,6 +952,9 @@ GFSError
 	cmLock.unlock();
 
 	auto cItr = chunks.find(handle);
+	std::cerr << "length = " << cItr->second.length << " <- " << c.length << std::endl;
+	std::cerr << "prefix: " << (int)data[0] << (int)data[1] << (int)data[2] << std::endl;
+	std::cerr << cItr->second.finished << " <- " << c.finished << std::endl;
 	cItr->second = c;
 	saveChunkInfo_noLock( handle, c );
 	saveChunkData_noLock( handle, data.c_str(), 0, data.size() );

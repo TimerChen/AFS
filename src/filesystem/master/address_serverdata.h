@@ -98,6 +98,8 @@ public:
 	std::unique_ptr<std::priority_queue<std::pair<size_t, Address>>>
 	getPQ() const;;
 
+	std::unique_ptr<std::vector<Address>> listServers() const;
+
 	void clear();
 };
 }

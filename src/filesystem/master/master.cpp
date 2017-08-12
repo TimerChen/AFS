@@ -3,6 +3,7 @@
 //
 
 #include "master.h"
+#include <fstream>
 
 AFS::Master::Master(LightDS::Service &srv, const std::string &rootDir)
 		: Server(srv, rootDir), logc(rootDir, std::bind(&Master::write, this, std::placeholders::_1))  {
@@ -119,22 +120,39 @@ AFS::Master::RPCHeartbeat(std::vector<AFS::ChunkHandle> leaseExtensions,
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), std::vector<AFS::ChunkHandle>());
 
-//	std::cerr << srv.getRPCCaller() << " beats " << time(nullptr) << std::endl;
-//	std::cerr << "left servers: ";
-//	for (auto && item : asdm.mp) {
-//		std::cerr << item.first << "  ";
-//	}
-//	std::cerr << std::endl;
+	std::ofstream fout("./data/" + srv.getRPCCaller() + ".txt", std::ios::app);
+	fout << srv.getRPCCaller() << " beats " << time(nullptr) << std::endl;
+	fout << "got: ";
+	for (auto &&chunk : chunks) {
+		fout << "(" << std::get<0>(chunk) << ", " << std::get<1>(chunk) << ")  ";
+	}
+	fout << std::endl;
+	fout << "failed: ";
+	for (auto &&failedChunk : failedChunks) {
+		fout << failedChunk << ' ';
+	}
+	fout << std::endl;
+
+	std::unique_lock<std::mutex> blk(backgroundM);
 	auto result1 = ErrTranslator::masterErrTOGFSError(updateChunkServer(srv.getRPCCaller(), chunks));
+	blk.unlock();
+
 	auto success_num = leaseExtend(srv.getRPCCaller(), leaseExtensions);
+
 	auto result2 = std::move(*checkGarbage(chunks).release());
+	fout << "Garbage: ";
+	for (auto &&item : result2) {
+		fout << item << ' ';
+	}
+	fout << std::endl;
+
 	deleteFailedChunks(srv.getRPCCaller(), failedChunks);
+
 	return std::make_tuple(GFSError(result1), result2);
 }
 
 std::tuple<AFS::GFSError, AFS::ChunkHandle>
 AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
-	//std::cerr << "Be Called...\n" << std::endl;
 	readLock glk(globalMutex);
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), ChunkHandle());
@@ -331,28 +349,32 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 }
 
 void AFS::Master::reReplicate() {
-	auto pq = std::move(*(asdm.getPQ().release()));
-	if (pq.empty()) {
+	auto servers = std::move(*(asdm.listServers().release()));
+	if (servers.empty()) {
 		return;
 	}
 	auto rpcCall = [&](const Address & src, const Address & tar, ChunkHandle handle)->GFSError {
-		//std::cerr << "RPCCALL\n";
 		GFSError err;
 		try {
-			const auto & debug_t1 = asdm.mp[tar];
+			auto debug_data = MemoryPool::instance().getData(handle);
 			std::cerr << src << "sending...\n";
 			err = srv.RPCCall({src, chunkPort}, "SendCopy", handle, tar).get().as<GFSError>();
+			if (err.errCode != GFSErrorCode::OK)
+				return err;
 			std::cerr << "sent!!!!\n";
+			err.errCode = GFSErrorCode::OK;
+			asdm.addChunk(tar, handle);
 		} catch (...) {
 			std::cerr << "wtf wtf wtf\n";
 			err.errCode = GFSErrorCode::TransmissionErr;
 		}
 		return err;
 	};
-	pfdm.reReplicate(pq, rpcCall);
+	pfdm.reReplicate(servers, rpcCall);
 }
 
 void AFS::Master::BackgroundActivity() {
+	int cnt = 0;
 	while (1) {
 		std::unique_lock<std::mutex>(backgroundM);
 		readLock glk(globalMutex);
@@ -363,6 +385,7 @@ void AFS::Master::BackgroundActivity() {
 //		collectGarbage();
 		reReplicate();
 		//std::cerr << "bg reReplicate\n";
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 }
 

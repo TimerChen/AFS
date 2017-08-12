@@ -36,16 +36,16 @@ BasicTest::~BasicTest()
 bool BasicTest::Run()
 {
 	std::pair<std::string, TestResult(BasicTest::*)()> testcases[] = {
-//		{"CreateFile", &BasicTest::TestCreateFile},
-//		{"MkdirList", &BasicTest::TestMkdirList},
-//		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
-//		{"WriteChunk", &BasicTest::TestWriteChunk},
-//		{"ReadChunk", &BasicTest::TestReadChunk},
-//		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
-//		{"AppendChunk", &BasicTest::TestAppendChunk},
-//		{"BigData", &BasicTest::TestBigData},
+		{"CreateFile", &BasicTest::TestCreateFile},
+		{"MkdirList", &BasicTest::TestMkdirList},
+		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
+		{"WriteChunk", &BasicTest::TestWriteChunk},
+		{"ReadChunk", &BasicTest::TestReadChunk},
+		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
+		{"AppendChunk", &BasicTest::TestAppendChunk},
+		{"BigData", &BasicTest::TestBigData},
 		{"ReReplication", &BasicTest::TestReReplication},
-		{"PersistentChunkServer", &BasicTest::TestPersistentChunkServer},
+//		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
 //		{"PersistentMaster", &BasicTest::TestPersistentMaster},
 //		{"DiskError", &BasicTest::TestDiskError},
 //
@@ -468,7 +468,7 @@ TestResult BasicTest::TestShutdown()
 
 TestResult BasicTest::TestReReplication()
 {
-	const size_t serverTimeout = 7;
+	const size_t serverTimeout = 20;
 	static const std::string path = "/ReReplication.txt";
 	client.Create(path) | must_succ;
 
@@ -520,6 +520,7 @@ TestResult BasicTest::TestReReplication()
 
 TestResult BasicTest::TestPersistentChunkServer()
 {
+	const size_t serverTimeout = 7;
 	static const std::string path = "/PersistentChunkServer.txt";
 	client.Create(path) | must_succ;
 
@@ -540,6 +541,7 @@ TestResult BasicTest::TestPersistentChunkServer()
 	env.StartChunkServer(3);
 	env.StartChunkServer(4);
 
+	std::cerr << "before sleep " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
 	checkData(path, offset, data);

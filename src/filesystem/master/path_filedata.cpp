@@ -3,6 +3,7 @@
 //
 
 #include "path_filedata.h"
+#include <fstream>
 
 bool AFS::PathFileData::checkData(const AFS::PathFileData::Path &path) const {
 	return mp.check(path);
@@ -77,8 +78,10 @@ AFS::PathFileData::getHandle(const AFS::PathFileData::Path &path, std::uint64_t 
 	bool success = false;
 	ChunkHandle ans;
 	auto f = [&](FileData & data) {
-		if (data.handles.size() < idx) // 添加一个也不够的情况
+		if (data.handles.size() < idx) { // 添加一个也不够的情况
+			std::cerr << "idx overflow\n";
 			return;
+		}
 		if (data.handles.size() == idx) {
 			data.handles.emplace_back(MemoryPool::instance().newChunk());
 			if (!createChunk(data.handles.back().getHandle())) // 创建失败
@@ -96,9 +99,10 @@ void AFS::PathFileData::read(std::ifstream &in) {
 	mp.read(in);
 }
 
-void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::Address>> &pq,
+void AFS::PathFileData::reReplicate(const std::vector<Address> & servers,
                                     const std::function<AFS::GFSError(const AFS::Address &, const AFS::Address &,
                                                                       AFS::ChunkHandle)> &send) {
+	std::ofstream fout("./log.txt", std::ios::app);
 	auto re = [&](FileData & data) { // 对于某一份文件，检查其各个chunk，对于不够的复制
 		if (data.type != FileData::Type::File)
 			return ;
@@ -112,41 +116,36 @@ void AFS::PathFileData::reReplicate(std::priority_queue<std::pair<size_t, AFS::A
 				return tdata.location.size() < data.replicationFactor;
 			});
 			if (flag) {
-				if (cdata.location.size() == pq.size())
-					return;
-				std::cerr << "chunk " << handle << "is in danger.\n";
-				int cnt = 0;
+				fout << time(nullptr) << ", ";
+				fout << "chunk " << handle << " is in danger.\n";
+				std::cerr << "chunk " << handle << " is in danger.\n";
 
-				auto numAAddr = pq.top();
-				while (std::find(cdata.location.begin(), cdata.location.end(),
-					   numAAddr.second) != cdata.location.end() && cnt < cdata.location.size() * 2) {
-					std::cerr << cnt++ << std::endl;
-					pq.pop();
-					 numAAddr = pq.top();
-					 pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
-				} // 取一个当前location中没有的服务器
-				if (std::find(cdata.location.begin(), cdata.location.end(),
-				              numAAddr.second) != cdata.location.end()) {
-					std::cerr << "ffffffffuck\n";
-					return;
+				for (auto &&tar : servers) {
+					bool success = false;
+					for (auto &&src : cdata.location) {
+						if (cdata.location.end()
+						    != std::find(cdata.location.begin(), cdata.location.end(), tar))
+							continue;
+
+						fout << time(nullptr) << ", ";
+						fout << "trying... send " << handle << " from " << src << " to " << tar << std::endl;
+						GFSError gErr;
+						try {
+							gErr = send(src, tar, handle);
+						} catch (...) {
+							gErr.errCode = GFSErrorCode::TransmissionErr;
+						}
+						if (gErr.errCode == GFSErrorCode::OK) {
+							fout << "succeed!\n";
+							success = true;
+							break;
+						}
+						fout << "failed, errCode = " << (int)gErr.errCode << std::endl;
+					}
+					if (success) {
+						break;
+					}
 				}
-
-
-				std::cerr << "got a server\n";
-				GFSError err;
-				// 让某一个服务器给目标服务器发送消息
-				for (auto &&location : cdata.location) {
-					   //std::cerr << "trying send " << location << " to " << numAAddr.second << std::endl;
-					   err = send(location, numAAddr.second, handle);
-					 if (err.errCode == GFSErrorCode::OK) {
-						  break;
-					 }
-					 if (err.errCode == GFSErrorCode::OK) {
-						  pq.pop();
-						  pq.push(std::make_pair(2 * (numAAddr.first - 1), numAAddr.second));
-					 }
-				}
-				std::cerr << cnt << cnt << cnt << std::endl;
 			}
 		}
 	};

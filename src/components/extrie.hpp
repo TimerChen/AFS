@@ -299,10 +299,6 @@ public:
 		return true;
 	}
 
-	void operate(const std::vector<U> & index, const std::function<void(T&)> & fc) {
-
-	}
-
 	void iterate_all(const std::function<void(T&)> & fcs) {
 		_iterate(header, fcs);
 	}

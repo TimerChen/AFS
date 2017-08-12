@@ -622,7 +622,6 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 
 		//Select one replica to read chunk data.
 		primary = replicas[rand()%replicas.size()];
-
 		cur = ReadChunk;
 	};
 	auto readChunk = [&]()->void {
@@ -1207,13 +1206,13 @@ Client::Read(const std::string &dir, std::uint64_t offset, std::vector<char> &da
 	{
 		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
 		std::cerr << "Read+ : " << nowPosition << " " << thisLength << std::endl;
-
+		std::cerr << "nowOffset = " << nowOffset << std::endl;
 		er = fileRead_str( dir, tmp, nowOffset, thisLength );
-		if( er.code != ClientErrCode::OK && er.code != ClientErrCode::ReadEOF )
-			return std::make_tuple( toGFSError(er), 0 );
+		if( er.code != ClientErrCode::OK && er.code != ClientErrCode::ReadEOF )return std::make_tuple( toGFSError(er), 0 );
 		buffer = buffer + tmp;
 		if( er.code == ClientErrCode::ReadEOF )
 		{
+			er.code = ClientErrCode::OK;
 			//nowPosition += std::stoull(er.description);
 			break;
 		}
