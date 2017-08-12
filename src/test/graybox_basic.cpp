@@ -531,6 +531,8 @@ TestResult BasicTest::TestPersistentChunkServer()
 	std::uint64_t offset = client.Append(path, data) | must_succ;
 	std::cerr << "offset = " << offset << std::endl;
 
+	std::cerr << "Offset:" << offset << std::endl;
+
 	env.Stop(1);
 	env.Stop(2);
 	env.Stop(3);
@@ -547,10 +549,12 @@ TestResult BasicTest::TestPersistentChunkServer()
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
 	checkData(path, offset, data);
-
+	std::cerr << "Pass1\n";
 	generateRandomData(data, 0x14142136);
 	offset = client.Append(path, data) | must_succ;
 	std::cerr << "offset = " << offset << std::endl;
+
+	std::cerr << "Offset:" << offset << std::endl;
 
 	checkData(path, offset, data);
 

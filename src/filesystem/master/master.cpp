@@ -215,12 +215,18 @@ std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
 AFS::Master::RPCGetFileInfo(std::string path_str) {
 	std::cerr << "trying getting file info....\n";
 	readLock glk(globalMutex);
+	std::cerr << "RPCCall...";
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), 0, 0, 0);
 	std::cerr << "start getting...\n";
 	GFSError err;
+	std::cerr << "1...";
 	auto path = PathParser::instance().parse(path_str);
+
+	std::cerr << "2...";
 	auto errMd = pfdm.getData(*path);
+
+	std::cerr << "OK\n";
 	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
 	std::cerr << "got!!\n";
 	if (errMd.first == MasterError::NotExists)
