@@ -196,12 +196,18 @@ AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
 std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
 AFS::Master::RPCGetFileInfo(std::string path_str) {
 	readLock glk(globalMutex);
+	std::cerr << "RPCCall...";
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), 0, 0, 0);
 
 	GFSError err;
+	std::cerr << "1...";
 	auto path = PathParser::instance().parse(path_str);
+
+	std::cerr << "2...";
 	auto errMd = pfdm.getData(*path);
+
+	std::cerr << "OK\n";
 	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
 	if (errMd.first == MasterError::NotExists)
 		return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
