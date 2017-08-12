@@ -28,7 +28,7 @@ using writeLock = std::unique_lock<boost::shared_mutex>;
 // const
 namespace AFS {
 
-constexpr time_t  ExpiredTime = 300;     // 若服务器...s不心跳，则认为死亡
+constexpr time_t  ExpiredTime = 20;     // 若服务器...s不心跳，则认为死亡
 constexpr clock_t BackgroundInterval = 1 * CLOCKS_PER_SEC;
 constexpr size_t  CheckPointSize = 500; // 累积...条log后触发checkpoint
 

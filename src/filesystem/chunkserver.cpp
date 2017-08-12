@@ -500,7 +500,7 @@ void ChunkServer::Heartbeat()
 			catch(...)
 			{
 				//TODO...
-				std::cerr << "Error!!!!!!!!!\n";
+//				std::cerr << "Error!!!!!!!!!\n";
 			}
 		}
 		runLock.unlock();

@@ -126,6 +126,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	int cur = GetFileInfo;
 
 	auto getFileInfo = [&]()->void {
+		std::cerr << "get file info\n";
 		bool isDir;
 		std::uint64_t len;
 		try {
@@ -154,6 +155,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetHandle;
 	};
 	auto getHandle  = [&]()->void {
+		std::cerr << "get handle\n";
 		try {
 			if(chunkIdx == 0)
 				chunkIdx++;
@@ -177,6 +179,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
+		std::cerr << "get address\n";
 		try {
 			std::tie(gErr, primary, secondaries, expire)
 					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
@@ -200,6 +203,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = PushData;
 	};
 	auto pushData = [&]()->void {
+		std::cerr << "push data\n";
 		static int repeatTime = 0;
 		id = rand();
 		try {
@@ -248,6 +252,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
+		std::cerr << "apply chunk\n";
 		try {
 			std::tie(gErr, offset)
 					= srv.RPCCall({primary, chunkPort}, "AppendChunk", handle, id, secondaries).get()
@@ -269,6 +274,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 				++repeatTime;
 				cur = GetFileInfo;
 			} else {
+				std::cerr << err.description << std::endl;
 				err = ClientErrCode::Unknown;
 				cur = EndFlow;
 			}

@@ -1,0 +1,12 @@
+/Applications/CLion.app/Contents/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" /Users/aaronren/Projects/CLionProjects/AFS/src
+-- Boost version: 1.64.0
+-- Found the following Boost libraries:
+--   system
+--   thread
+--   filesystem
+--   chrono
+--   date_time
+--   atomic
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/aaronren/Projects/CLionProjects/AFS/src/cmake-build-release

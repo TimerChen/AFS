@@ -102,7 +102,7 @@ void AFS::PathFileData::read(std::ifstream &in) {
 void AFS::PathFileData::reReplicate(const std::vector<Address> & servers,
                                     const std::function<AFS::GFSError(const AFS::Address &, const AFS::Address &,
                                                                       AFS::ChunkHandle)> &send) {
-	std::ofstream fout("./log.txt", std::ios::app);
+	std::ofstream fout("./data/log.txt", std::ios::app);
 	auto re = [&](FileData & data) { // 对于某一份文件，检查其各个chunk，对于不够的复制
 		if (data.type != FileData::Type::File)
 			return ;

@@ -45,9 +45,9 @@ bool BasicTest::Run()
 //		{"AppendChunk", &BasicTest::TestAppendChunk},
 //		{"BigData", &BasicTest::TestBigData},
 //		{"ReReplication", &BasicTest::TestReReplication},
-		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
+//		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
 //		{"PersistentMaster", &BasicTest::TestPersistentMaster},
-//		{"DiskError", &BasicTest::TestDiskError},
+		{"DiskError", &BasicTest::TestDiskError},
 //
 //		{"Shutdown", &BasicTest::TestShutdown},
 	};
@@ -468,7 +468,7 @@ TestResult BasicTest::TestShutdown()
 
 TestResult BasicTest::TestReReplication()
 {
-	const size_t serverTimeout = 20;
+//	const size_t serverTimeout = 7;
 	static const std::string path = "/ReReplication.txt";
 	client.Create(path) | must_succ;
 
@@ -520,7 +520,7 @@ TestResult BasicTest::TestReReplication()
 
 TestResult BasicTest::TestPersistentChunkServer()
 {
-	const size_t serverTimeout = 7;
+//	const size_t serverTimeout = 7;
 	static const std::string path = "/PersistentChunkServer.txt";
 	client.Create(path) | must_succ;
 
@@ -567,7 +567,7 @@ TestResult BasicTest::TestPersistentMaster()
 	client.Mkdir("/PersistentMaster") | must_succ;
 	client.Create(path) | must_succ;
 
-	const uint64_t serverTimeout = 7;
+//	const uint64_t serverTimeout = 7;
 
 	std::vector<char> data(pressure);
 	generateRandomData(data, 0x57721566);

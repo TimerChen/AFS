@@ -286,7 +286,6 @@ private: // concurrency_test
 			for (; beg < end; ++beg) {
 				if (t[indexes[beg]] != stdt[indexes[beg]]) {
 					cout << "WA" << endl;
-					throw ;
 				}
 			}
 		};
