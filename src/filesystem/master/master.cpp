@@ -374,12 +374,12 @@ void AFS::Master::reReplicate() {
 }
 
 void AFS::Master::BackgroundActivity() {
+	std::unique_lock<std::mutex> glk(shutdownM);
 	int cnt = 0;
 	while (1) {
 		std::unique_lock<std::mutex>(backgroundM);
-		readLock glk(globalMutex);
 		if (!running)
-			return;
+			break;
 		checkDeadChunkServer();
 		//std::cerr << "bg check dead servers\n";
 //		collectGarbage();
@@ -387,6 +387,7 @@ void AFS::Master::BackgroundActivity() {
 		//std::cerr << "bg reReplicate\n";
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
+	std::cerr << "Background ended\n";
 }
 
 void AFS::Master::write(std::ofstream &out) const {
@@ -414,10 +415,18 @@ void AFS::Master::Start() {
 }
 
 void AFS::Master::Shutdown() {
-	std::unique_lock<std::mutex>(backgroundM);
+	std::unique_lock<std::mutex> blk(backgroundM);
 	writeLock lk(globalMutex);
-	save();
 	running = false;
+	blk.unlock();
+	std::unique_lock<std::mutex> sdlk(shutdownM);
+	save();
+	pfdm.clear();
+	std::cerr << "pfdm cleared\n";
+	asdm.clear();
+	std::cerr << "asdm cleared\n";
+	MemoryPool::instance().clear();
+	std::cerr << "memory pool cleared\n";
 }
 
 void AFS::Master::save() {

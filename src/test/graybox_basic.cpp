@@ -36,16 +36,16 @@ BasicTest::~BasicTest()
 bool BasicTest::Run()
 {
 	std::pair<std::string, TestResult(BasicTest::*)()> testcases[] = {
-		{"CreateFile", &BasicTest::TestCreateFile},
-		{"MkdirList", &BasicTest::TestMkdirList},
-		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
-		{"WriteChunk", &BasicTest::TestWriteChunk},
-		{"ReadChunk", &BasicTest::TestReadChunk},
-		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
-		{"AppendChunk", &BasicTest::TestAppendChunk},
-		{"BigData", &BasicTest::TestBigData},
-		{"ReReplication", &BasicTest::TestReReplication},
-//		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
+//		{"CreateFile", &BasicTest::TestCreateFile},
+//		{"MkdirList", &BasicTest::TestMkdirList},
+//		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
+//		{"WriteChunk", &BasicTest::TestWriteChunk},
+//		{"ReadChunk", &BasicTest::TestReadChunk},
+//		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
+//		{"AppendChunk", &BasicTest::TestAppendChunk},
+//		{"BigData", &BasicTest::TestBigData},
+//		{"ReReplication", &BasicTest::TestReReplication},
+		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
 //		{"PersistentMaster", &BasicTest::TestPersistentMaster},
 //		{"DiskError", &BasicTest::TestDiskError},
 //
@@ -525,9 +525,11 @@ TestResult BasicTest::TestPersistentChunkServer()
 	client.Create(path) | must_succ;
 
 	std::vector<char> data(pressure);
+	std::cerr << "pressure = " << pressure << std::endl;
 	generateRandomData(data, 0x27182818);
 
 	std::uint64_t offset = client.Append(path, data) | must_succ;
+	std::cerr << "offset = " << offset << std::endl;
 
 	env.Stop(1);
 	env.Stop(2);
@@ -548,6 +550,7 @@ TestResult BasicTest::TestPersistentChunkServer()
 
 	generateRandomData(data, 0x14142136);
 	offset = client.Append(path, data) | must_succ;
+	std::cerr << "offset = " << offset << std::endl;
 
 	checkData(path, offset, data);
 
@@ -560,16 +563,24 @@ TestResult BasicTest::TestPersistentMaster()
 	client.Mkdir("/PersistentMaster") | must_succ;
 	client.Create(path) | must_succ;
 
+	const uint64_t serverTimeout = 7;
+
 	std::vector<char> data(pressure);
 	generateRandomData(data, 0x57721566);
 
+	std::cerr << "start appending...\n";
 	std::uint64_t offset = client.Append(path, data) | must_succ;
+	std::cerr << "appended\n";
 
+	std::cerr << "stoping....\n";
 	env.Stop(0);
+	std::cerr << "stoped\n";
 
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
+	std::cerr << "start master\n";
 	env.StartMaster(0);
+	std::cerr << "started\n";
 
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 

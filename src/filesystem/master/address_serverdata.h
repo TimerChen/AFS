@@ -101,6 +101,10 @@ public:
 	std::unique_ptr<std::vector<Address>> listServers() const;
 
 	void clear();
+
+	~AddressServerData() {
+		std::cerr << "asdm destroyed\n";
+	}
 };
 }
 

@@ -130,6 +130,9 @@ public:
 
 	void clear();
 
+	~PathFileData() {
+		std::cerr << "pfdm destroyed\n";
+	}
 };
 }
 

@@ -22,8 +22,12 @@
 namespace AFS {
 
 class Master : public Server {
-
-	//friend class BasicTest;
+public:
+	~Master() final {
+		std::unique_lock<std::mutex>(backgroundM);
+		writeLock lk(globalMutex);
+		std::cerr << "master destroying\n";
+	}
 
 protected:
 	void save() final;
@@ -36,7 +40,7 @@ private:
 	// 用于在开关机和存读档时候，除了上述情况以外的函数，都只应尝试获得读锁
 	readWriteMutex    globalMutex;
 	std::mutex        backgroundM;
-	std::mutex        creatingM;
+	std::mutex        shutdownM;
 
 private:
 	// return the number of the chunks whose lease has been extended successfully

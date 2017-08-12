@@ -259,10 +259,14 @@ public:
 	}
 
 	void clear() {
-		std::cerr << "writelock\n";
 		writeLock lk(m);
 		recycler.clear();
 		container.clear();
+	}
+
+	~MemoryPool() {
+		std::cerr << container.size() << recycler.size();
+		std::cerr << "Memory Pool destroyed\n";
 	}
 };
 
