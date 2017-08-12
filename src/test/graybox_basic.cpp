@@ -47,9 +47,9 @@ bool BasicTest::Run()
 //		{"ReReplication", &BasicTest::TestReReplication},
 //		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
 //		{"PersistentMaster", &BasicTest::TestPersistentMaster},
-		{"DiskError", &BasicTest::TestDiskError},
+//		{"DiskError", &BasicTest::TestDiskError},
 //
-//		{"Shutdown", &BasicTest::TestShutdown},
+		{"Shutdown", &BasicTest::TestShutdown},
 	};
 
 	for (auto &pair : testcases)

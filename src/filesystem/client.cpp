@@ -270,7 +270,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 			return;
 		}
 		if (gErr.errCode != GFSErrorCode::OK) {
-			if (repeatTime < 3) {
+			if (true) {
 				++repeatTime;
 				cur = GetFileInfo;
 			} else {
