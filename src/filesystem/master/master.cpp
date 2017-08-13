@@ -215,7 +215,7 @@ AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
 	auto data = MemoryPool::instance().getData(handle);
 	err.errCode = GFSErrorCode::OK;
 
-	for( auto itr : data.location )
+	for( auto &itr : data.location )
 		itr = LightDS::User::RPCAddress({itr,chunkPort}).to_string();
 
 	return std::make_tuple(err, std::move(data.location));

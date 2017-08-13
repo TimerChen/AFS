@@ -650,7 +650,7 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 			try {
 //				std::cerr << "Remote Read Length:" << length << std::endl;
 				std::tie(gErr, data) =
-						srv.RPCCall({replica, chunkPort}, "ReadChunk", handle,
+						srv.RPCCall(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", handle,
 						            offset % CHUNK_SIZE, length).get()
 								.as<std::tuple<GFSError, std::string>>();
 			} catch (...) {
@@ -914,7 +914,7 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 		std::string tmp;
 		try {
 		std::tie(gErr, tmp) =
-				srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset, data.size()).get()
+				srv.RPCCall(LightDS::User::RPCAddress::from_string(primary), "ReadChunk", handle, offset, data.size()).get()
 						.as<std::tuple<GFSError, std::string>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
@@ -1244,7 +1244,7 @@ Client::Read(const std::string &dir, std::uint64_t offset, std::vector<char> &da
 
 	}
 
-	std::cerr << "Real buffer length: " << tmp.size() << std::endl;
+	//std::cerr << "Real buffer length: " << tmp.size() << std::endl;
 	data = std::vector<char>( buffer.begin(), buffer.end() );
 	return std::make_tuple( toGFSError(er), buffer.size() );
 }

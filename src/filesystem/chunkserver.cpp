@@ -182,7 +182,7 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 			//continue;
 			if( fname.size() > 4 && fname.substr( fname.size()-4, 4 ) == ".chk" )
 			{
-				std::clog << "Loading chunk("<< itr->path().filename().native() <<") from disk...." ;//<< std::endl;
+				//std::clog << "Loading chunk("<< itr->path().filename().native() <<") from disk...." ;//<< std::endl;
 
 				fname = fname.substr(0, fname.size()-4);
 
@@ -198,7 +198,7 @@ void ChunkServer::loadFiles( const boost::filesystem::path &Path )
 				chunks[handle] = c;
 				cLock.unlock();
 
-				std::clog << "OK" << std::endl;
+				//std::clog << "OK" << std::endl;
 			}else{
 				//TODO
 

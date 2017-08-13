@@ -79,7 +79,7 @@ AFS::PathFileData::getHandle(const AFS::PathFileData::Path &path, std::uint64_t 
 	ChunkHandle ans;
 	auto f = [&](FileData & data) {
 		if (data.handles.size() < idx) { // 添加一个也不够的情况
-			std::cerr << "idx overflow\n";
+//			std::cerr << "idx overflow\n";
 			return;
 		}
 		if (data.handles.size() == idx) {
@@ -118,7 +118,7 @@ void AFS::PathFileData::reReplicate(const std::vector<Address> & servers,
 			if (flag) {
 				fout << time(nullptr) << ", ";
 				fout << "chunk " << handle << " is in danger.\n";
-				std::cerr << "chunk " << handle << " is in danger.\n";
+//				std::cerr << "chunk " << handle << " is in danger.\n";
 
 				for (auto &&tar : servers) {
 					bool success = false;

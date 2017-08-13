@@ -103,7 +103,7 @@ public:
 	void clear();
 
 	~AddressServerData() {
-		std::cerr << "asdm destroyed\n";
+//		std::cerr << "asdm destroyed\n";
 	}
 };
 }

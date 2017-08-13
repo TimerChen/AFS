@@ -255,23 +255,23 @@ TestResult BasicTest::TestReadChunk()
 
 size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std::uint64_t length)
 {
-	std::cerr << "start\n";
+	//std::cerr << "start\n";
 	std::vector<LightDS::User::RPCAddress> addresses = user.ListService("master");
 	assert(addresses.size() == 1);
 	auto addrMaster = addresses[0];
 
-	std::cerr << "getrep\n";
+	//std::cerr << "getrep\n";
 	std::vector<std::string> replicas = RPC(addrMaster, "GetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
 	std::vector<std::string> data;
 
 	for (auto &replica : replicas)
 	{
-		std::cerr << "ReadChunk:" << replica << std::endl;
+		//std::cerr << "ReadChunk:" << replica << std::endl;
 		auto tmp =
-		user.RPCCall({replica, 7778}, "ReadChunk", chunk, offset, length).get().as<
+		user.RPCCall(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", chunk, offset, length).get().as<
 				std::tuple<GFSError, std::string /*Data*/> >();
 //		auto tmp = std::move(RPC({replica,7778}, "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
-		std::cerr << "Return Over\n";
+		//std::cerr << "Return Over\n";
 		if( std::get<0>(tmp) == AFS::GFSErrorCode::OK )
 			data.push_back( std::get<1>(tmp) );
 	}
@@ -384,14 +384,14 @@ TestResult BasicTest::TestBigData()
 	
 	for (size_t i = 0; i < appendCount; i++)
 	{
-		std::cerr << "No." << i << std::endl;
+		//std::cerr << "No." << i << std::endl;
 		dataAppend.resize(chunkSize / 4 - 1);
 		generateRandomData(dataAppend, 0x19260817 + i);
-		std::cerr << "data prepared\n";
+		//std::cerr << "data prepared\n";
 		std::uint64_t offset = client.Append(path, dataAppend) | must_succ;
-		std::cerr << "appended\n";
+		//std::cerr << "appended\n";
 		length = client.Read(path, offset, readData) | must_succ;
-		std::cerr << "Readdddddd\n";
+		//std::cerr << "Read\n";
 		if(length != dataAppend.size())
 			return TestResult::Fail((format("Data size mismatch when testing append: %d != %d") % length % dataAppend.size()).str());
 		for (size_t j = 0; j < dataAppend.size(); j++)
@@ -478,17 +478,17 @@ TestResult BasicTest::TestReReplication()
 
 	std::uint64_t offset = client.AppendChunk(chunk, data) | must_succ;
 
-	std::cerr << "stopping...\n";
+	//std::cerr << "stopping...\n";
 	env.Stop(1);
-	std::cerr << "stop 1\n";
+	//std::cerr << "stop 1\n";
 	env.Stop(2);
-	std::cerr << "after stop " << time(nullptr) << std::endl;
+	//std::cerr << "after stop " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout) * 2);
-	std::cerr << "Sleep...END\n";
+	//std::cerr << "Sleep...END\n";
 	size_t n = checkConsistency(chunk, offset, data.size());
 	if (n != 2)
 		return TestResult::Fail((format("Expect 2 replicas, got %d") % n).str());
-	std::cerr << "pass 1\n";
+	//std::cerr << "pass 1\n";
 	env.Stop(3);
 	env.StartChunkServer(1);
 
@@ -524,13 +524,13 @@ TestResult BasicTest::TestPersistentChunkServer()
 	client.Create(path) | must_succ;
 
 	std::vector<char> data(pressure);
-	std::cerr << "pressure = " << pressure << std::endl;
+//	std::cerr << "pressure = " << pressure << std::endl;
 	generateRandomData(data, 0x27182818);
 
 	std::uint64_t offset = client.Append(path, data) | must_succ;
-	std::cerr << "offset = " << offset << std::endl;
+	//std::cerr << "offset = " << offset << std::endl;
 
-	std::cerr << "Offset:" << offset << std::endl;
+	//std::cerr << "Offset:" << offset << std::endl;
 
 	env.Stop(1);
 	env.Stop(2);
@@ -544,16 +544,16 @@ TestResult BasicTest::TestPersistentChunkServer()
 	env.StartChunkServer(3);
 	env.StartChunkServer(4);
 
-	std::cerr << "before sleep " << time(nullptr) << std::endl;
+	//std::cerr << "before sleep " << time(nullptr) << std::endl;
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
 	checkData(path, offset, data);
-	std::cerr << "Pass1\n";
+	//std::cerr << "Pass1\n";
 	generateRandomData(data, 0x14142136);
 	offset = client.Append(path, data) | must_succ;
-	std::cerr << "offset = " << offset << std::endl;
+	//std::cerr << "offset = " << offset << std::endl;
 
-	std::cerr << "Offset:" << offset << std::endl;
+	//std::cerr << "Offset:" << offset << std::endl;
 
 	checkData(path, offset, data);
 
@@ -571,19 +571,19 @@ TestResult BasicTest::TestPersistentMaster()
 	std::vector<char> data(pressure);
 	generateRandomData(data, 0x57721566);
 
-	std::cerr << "start appending...\n";
+	//std::cerr << "start appending...\n";
 	std::uint64_t offset = client.Append(path, data) | must_succ;
-	std::cerr << "appended\n";
+	//std::cerr << "appended\n";
 
-	std::cerr << "stoping....\n";
+	//std::cerr << "stoping....\n";
 	env.Stop(0);
-	std::cerr << "stoped\n";
+	//std::cerr << "stoped\n";
 
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
-	std::cerr << "start master\n";
+	//std::cerr << "start master\n";
 	env.StartMaster(0);
-	std::cerr << "started\n";
+	//std::cerr << "started\n";
 
 	std::this_thread::sleep_for(std::chrono::seconds(serverTimeout));
 
