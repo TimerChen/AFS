@@ -47,7 +47,7 @@ static must_succ_tag must_succ;
 inline void checkError(const GFSError &gfsError)
 {
 	if (gfsError.errCode != GFSErrorCode::OK) {
-		throw ;
+		//throw ;
 		throw TestException(TestResult::Fail(
 				"GFS Call Failed (code=" + std::to_string(int(gfsError.errCode)) + "): " + gfsError.description));
 	}

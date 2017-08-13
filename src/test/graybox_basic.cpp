@@ -269,7 +269,7 @@ size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std:
 	{
 		std::cerr << "ReadChunk:" << replica << std::endl;
 		auto tmp =
-		user.RPCCall({replica,7778}, "ReadChunk", chunk, offset, length).get().as<
+		user.RPCCall(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", chunk, offset, length).get().as<
 				std::tuple<GFSError, std::string /*Data*/> >();
 		//auto tmp = std::move(RPC({replica,7778}, "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
 		std::cerr << "Return Over\n";

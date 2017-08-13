@@ -774,15 +774,20 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 		if( reData.errCode == GFSErrorCode::OK || reData.errCode == GFSErrorCode::OperationOverflow )
 		for( std::uint32_t ii = 0; ii < secondaries.size(); ++ii )
 		{
-			msg = msgs[ii].get();
-			if( reData.errCode == GFSErrorCode::OK )
+			try{
+				msg = msgs[ii].get();
+				if( reData.errCode == GFSErrorCode::OK )
+				{
+					secData = msg.get().as<GFSError>();
+					if( secData.errCode != GFSErrorCode::OK )
+						reData = GFSError({GFSErrorCode::OperateFailed, "Partly failed"});
+				}else{
+					//TODO...???
+					;
+				}
+			}catch(...)
 			{
-				secData = msg.get().as<GFSError>();
-				if( secData.errCode != GFSErrorCode::OK )
-					reData = GFSError({GFSErrorCode::OperateFailed, "Partly failed"});
-			}else{
-				//TODO...???
-				;
+				reData = GFSError({GFSErrorCode::OperateFailed, "Partly failed"});
 			}
 
 		}
@@ -914,12 +919,11 @@ GFSError
 		try {
 			msg = srv.RPCCall({addr, chunkPort/*???*/}, "ApplyCopy",
 					            handle, c.version, str, c.finished);
+			reData = msg.get().as<GFSError>();
 		} catch (...) {
 			// tmp
-			reData.errCode = GFSErrorCode::TransmissionErr;
-			return reData;
+			reData = GFSError({GFSErrorCode::TransmissionErr, "Transmission Failed"});
 		}
-		reData = msg.get().as<GFSError>();
 	}else
 		reData = GFSError({GFSErrorCode::InvalidOperation, "No such chunk"});
 
