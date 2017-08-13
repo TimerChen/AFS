@@ -5,8 +5,6 @@
 #include "common.h"
 #include "graybox_env.h"
 
-using namespace AFS;
-
 class BasicTest
 {
 public:

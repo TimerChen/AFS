@@ -1,9 +1,7 @@
 #include "common_headers.h"
 #include "graybox_env.h"
-
-using boost::format;
 using namespace AFS;
-
+using boost::format;
 
 const std::uint16_t Environment::portMaster = 7777;
 const std::uint16_t Environment::portChunkServer = 7778;
