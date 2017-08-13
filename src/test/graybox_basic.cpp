@@ -254,11 +254,11 @@ size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std:
 	assert(addresses.size() == 1);
 	auto addrMaster = addresses[0];
 
-	std::vector<std::string> replicas = RPC(addrMaster, "RPCGetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
+	std::vector<std::string> replicas = RPC(addrMaster, "GetReplicas", &Master::RPCGetReplicas)(chunk) | must_succ;
 	std::vector<std::string> data;
 
 	for (auto &replica : replicas)
-		data.push_back(RPC(LightDS::User::RPCAddress::from_string(replica), "RPCReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
+		data.push_back(RPC(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
 
 	for (size_t i = 1; i < data.size(); i++)
 	{
