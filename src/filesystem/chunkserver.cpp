@@ -123,7 +123,7 @@ void ChunkServer::Start()
 	runLock.unlock();
 	runningNumber--;
 	std::thread( &ChunkServer::Heartbeat, this ).detach();
-	std::cerr << "Start\n" << std::endl;
+//	std::cerr << "Start\n" << std::endl;
 }
 void ChunkServer::load()
 {
@@ -360,7 +360,7 @@ void ChunkServer::Shutdown()
 	//TODO???
 	clearData();
 	Server::Shutdown();
-	std::cerr << "Shunkdown Over.\n";
+//	std::cerr << "Shunkdown Over.\n";
 	runLock.unlock();
 }
 
@@ -571,7 +571,7 @@ GFSError
 std::tuple<GFSError, std::string /*Data*/>
 	ChunkServer::RPCReadChunk(ChunkHandle handle, std::uint64_t offset, std::uint64_t length)
 {
-	std::cerr << "RPCLength: " << length << std::endl;
+//	std::cerr << "RPCLength: " << length << std::endl;
 	runningNumber++;
 	ReadLock runLock( lock_running );
 	if( !running )
@@ -588,7 +588,7 @@ std::tuple<GFSError, std::string /*Data*/>
 
 	Chunk c = loadChunkInfo_noLock( handle );
 	std::get<0>(reData) = GFSError({GFSErrorCode::OK, ""});
-	std::cerr << "CHUNKLENGTH: " << chunks[handle].length << " " << c.length << std::endl;
+//	std::cerr << "CHUNKLENGTH: " << chunks[handle].length << " " << c.length << std::endl;
 	if(offset + length > c.length)
 	{
 		reData = std::make_tuple( GFSError({GFSErrorCode::OperationOverflow, "ReadOverflow"}), "" );
@@ -739,7 +739,7 @@ std::tuple<GFSError, std::uint64_t /*offset*/>
 			cItr->second.finished++;
 			if( offset + length <= CHUNK_SIZE )
 			{
-				std::cerr << "ADDLENGTH" << cItr->second.length << " " << length << std::endl;
+//				std::cerr << "ADDLENGTH" << cItr->second.length << " " << length << std::endl;
 				cItr->second.length += length;
 				reData = GFSError({GFSErrorCode::OK, ""});
 			}
@@ -905,7 +905,7 @@ GFSError
 	ReadLock cLock( lock_chunks );
 
 	auto cItr = chunks.find( handle );
-	std::cerr << "send " << handle << "." << cItr->second.finished << " to " << addr << std::endl;
+//	std::cerr << "send " << handle << "." << cItr->second.finished << " to " << addr << std::endl;
 	if( cItr != chunks.end() )
 	{
 		ReadLock cmLock( lock_chunkMutex );
@@ -930,7 +930,7 @@ GFSError
 	cLock.unlock();
 
 	runningNumber--;
-	std::cerr << "rpc sent\n";
+//	std::cerr << "rpc sent\n";
 	return reData;
 }
 
@@ -939,7 +939,7 @@ GFSError
 GFSError
 	ChunkServer::RPCApplyCopy(ChunkHandle handle, ChunkVersion version, std::string data, std::uint64_t serialNo)
 {
-	std::cerr << "apply\n";
+//	std::cerr << "apply\n";
 	runningNumber++;
 	ReadLock runLock( lock_running );
 	if( !running )
@@ -962,9 +962,9 @@ GFSError
 	cmLock.unlock();
 
 	auto cItr = chunks.find(handle);
-	std::cerr << "length = " << cItr->second.length << " <- " << c.length << std::endl;
-	std::cerr << "prefix: " << (int)data[0] << (int)data[1] << (int)data[2] << std::endl;
-	std::cerr << cItr->second.finished << " <- " << c.finished << std::endl;
+//	std::cerr << "length = " << cItr->second.length << " <- " << c.length << std::endl;
+//	std::cerr << "prefix: " << (int)data[0] << (int)data[1] << (int)data[2] << std::endl;
+//	std::cerr << cItr->second.finished << " <- " << c.finished << std::endl;
 	cItr->second = c;
 	saveChunkInfo_noLock( handle, c );
 	saveChunkData_noLock( handle, data.c_str(), 0, data.size() );
@@ -973,7 +973,7 @@ GFSError
 	cLock.unlock();
 
 	runningNumber--;
-	std::cerr << "applied\n";
+//	std::cerr << "applied\n";
 	return reData;
 }
 
@@ -1017,7 +1017,7 @@ GFSError
 		else if( ( itr->second.version == newVersion-1 && !itr->second.primary() )
 			|| ( itr->second.version == newVersion && itr->second.primary() ) )
 		{
-			std::cerr << "RPCGrantLease: " << handle << " " << newVersion << std::endl;
+//			std::cerr << "RPCGrantLease: " << handle << " " << newVersion << std::endl;
 			//Write Infomation
 			itr->second.isPrimary = 1;
 			itr->second.expireTime = expireTime;
@@ -1061,7 +1061,7 @@ GFSError
 
 	GFSError reData;
 
-	std::cerr << "UpdateVersion:" << handle << "-" << newVersion << std::endl;
+//	std::cerr << "UpdateVersion:" << handle << "-" << newVersion << std::endl;
 
 	ReadLock cLock( lock_chunks );
 	ReadLock cmLock( lock_chunkMutex );
@@ -1134,7 +1134,7 @@ GFSError
 		//when chunkPool.empty() == true it is using the sub-pool of it.
 		while( cacheQueue.size() > MaxCacheSize || chunkPool.empty() )
 		{
-			std::cerr << "pop_old...";
+//			std::cerr << "pop_old...";
 			dataID = cacheQueue.front();
 			auto idc = dataCache.find( dataID );
 			chunkPool.Delete( std::get<0>( idc->second ) );

@@ -36,20 +36,19 @@ BasicTest::~BasicTest()
 bool BasicTest::Run()
 {
 	std::pair<std::string, TestResult(BasicTest::*)()> testcases[] = {
-//		{"CreateFile", &BasicTest::TestCreateFile},
-//		{"MkdirList", &BasicTest::TestMkdirList},
-//		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
-//		{"WriteChunk", &BasicTest::TestWriteChunk},
-//		{"ReadChunk", &BasicTest::TestReadChunk},
-//		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
-//		{"AppendChunk", &BasicTest::TestAppendChunk},
-//		{"BigData", &BasicTest::TestBigData},
-//		{"ReReplication", &BasicTest::TestReReplication},
-//		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
-//		{"PersistentMaster", &BasicTest::TestPersistentMaster},
-//		{"DiskError", &BasicTest::TestDiskError},
-//
+		{"CreateFile", &BasicTest::TestCreateFile},
+		{"MkdirList", &BasicTest::TestMkdirList},
+		{"GetChunkHandle", &BasicTest::TestGetChunkHandle},
+		{"WriteChunk", &BasicTest::TestWriteChunk},
+		{"ReadChunk", &BasicTest::TestReadChunk},
+		{"ReplicaConsistency", &BasicTest::TestReplicaConsistency},
+		{"AppendChunk", &BasicTest::TestAppendChunk},
 		{"Shutdown", &BasicTest::TestShutdown},
+		{"BigData", &BasicTest::TestBigData},
+		{"ReReplication", &BasicTest::TestReReplication},
+		{"Persistent ChunkServer", &BasicTest::TestPersistentChunkServer},
+		{"PersistentMaster", &BasicTest::TestPersistentMaster},
+		{"DiskError", &BasicTest::TestDiskError}
 	};
 
 	for (auto &pair : testcases)
@@ -269,9 +268,9 @@ size_t BasicTest::checkConsistency(ChunkHandle chunk, std::uint64_t offset, std:
 	{
 		std::cerr << "ReadChunk:" << replica << std::endl;
 		auto tmp =
-		user.RPCCall(LightDS::User::RPCAddress::from_string(replica), "ReadChunk", chunk, offset, length).get().as<
+		user.RPCCall({replica, 7778}, "ReadChunk", chunk, offset, length).get().as<
 				std::tuple<GFSError, std::string /*Data*/> >();
-		//auto tmp = std::move(RPC({replica,7778}, "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
+//		auto tmp = std::move(RPC({replica,7778}, "ReadChunk", &ChunkServer::RPCReadChunk)(chunk, offset, length) | must_succ);
 		std::cerr << "Return Over\n";
 		if( std::get<0>(tmp) == AFS::GFSErrorCode::OK )
 			data.push_back( std::get<1>(tmp) );

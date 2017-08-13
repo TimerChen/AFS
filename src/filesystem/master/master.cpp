@@ -160,24 +160,30 @@ AFS::Master::RPCGetChunkHandle(std::string path_str, std::uint64_t chunkIndex) {
 	auto logptr = logc.getPtr(OpCode::AddChunk);
 	auto path = PathParser::instance().parse(path_str);
 
+	std::ofstream fout("./data/createChunk", std::ios::app);
+
+	auto servers = std::move(*(asdm.listServers().release()));
+
 	auto createChunk = [&](ChunkHandle handle)->bool {
 		Address addr;
 		GFSError err;
 		bool result = false;
 		for (int k = 0; k < 3; ++k) { // 创建3个副本
-			for (int i = 0; i < 5; ++i) {
+			for (int i = 0; i < servers.size(); ++i) {
+				addr = servers[i];
 				auto data = MemoryPool::instance().getData(handle);
-				addr = asdm.chooseServer(data.location);
-				if (addr == "") { // tem
-					return false;
-				}
 				try {
+					fout << "trying... " << addr << " create chunk " << handle << std::endl;
 					err = srv.RPCCall({addr, chunkPort}, "CreateChunk", handle).get().as<GFSError>();
 				} catch (...) {
-					return false;
+					fout << addr << " down\n";
+					continue;
 				}
-				if (err.errCode == GFSErrorCode::OK)
+				if (err.errCode == GFSErrorCode::OK) {
+					fout << "succeed\n";
 					break;
+				}
+				fout << "failed\n";
 			}
 			if (err.errCode == GFSErrorCode::OK) {
 				asdm.addChunk(addr, handle);
@@ -217,22 +223,22 @@ AFS::Master::RPCGetReplicas(AFS::ChunkHandle handle) {
 
 std::tuple<AFS::GFSError, bool, uint64_t, uint64_t>
 AFS::Master::RPCGetFileInfo(std::string path_str) {
-	std::cerr << "trying getting file info....\n";
+//	std::cerr << "trying getting file info....\n";
 	readLock glk(globalMutex);
-	std::cerr << "RPCCall...";
+//	std::cerr << "RPCCall...";
 	if (!running)
 		return std::make_tuple(GFSError(GFSErrorCode::MasterDown), 0, 0, 0);
-	std::cerr << "start getting...\n";
+//	std::cerr << "start getting...\n";
 	GFSError err;
-	std::cerr << "1...";
+//	std::cerr << "1...";
 	auto path = PathParser::instance().parse(path_str);
 
-	std::cerr << "2...";
+//	std::cerr << "2...";
 	auto errMd = pfdm.getData(*path);
 
-	std::cerr << "OK\n";
+//	std::cerr << "OK\n";
 	err.errCode = ErrTranslator::masterErrTOGFSError(errMd.first);
-	std::cerr << "got!!\n";
+//	std::cerr << "got!!\n";
 	if (errMd.first == MasterError::NotExists)
 		return std::make_tuple(err, false, std::uint64_t(), std::uint64_t());
 	if (errMd.second.type == FileData::Type::Folder) {
@@ -305,9 +311,9 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 		GFSError terr;
 		int idx = 0;
 		data.primary = "";
-		std::cerr << "trying to grant lease:\n";
+//		std::cerr << "trying to grant lease:\n";
 		for (auto &&addr : data.location) {
-			std::cerr << "trying " << addr << std::endl;
+//			std::cerr << "trying " << addr << std::endl;
 			auto tmpTime = time(nullptr);
 			try {
 				std::vector<std::tuple<ChunkHandle /*handle*/, ChunkVersion /*newVersion*/, std::uint64_t /*expire timestamp*/>> tmp;
@@ -319,7 +325,7 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 
 			}
 			if (terr.errCode == GFSErrorCode::OK) {
-				std::cerr << "success" << std::endl;
+//				std::cerr << "success" << std::endl;
 				data.leaseGrantTime = tmpTime;
 				data.version++;
 				data.primary = addr;
@@ -347,11 +353,11 @@ AFS::Master::RPCGetPrimaryAndSecondaries(AFS::ChunkHandle handle) {
 	}
 	err.errCode = GFSErrorCode::OK;
 
-	std::cerr << "Chunk: " << handle << "\nPrimary is " << data.primary << std::endl;
-	std::cerr << "Secondaries: \n";
+//	std::cerr << "Chunk: " << handle << "\nPrimary is " << data.primary << std::endl;
+//	std::cerr << "Secondaries: \n";
 	for (auto &&item : data.location)
-		std::cerr << item << ' ';
-	std::cerr << std::endl;
+//		std::cerr << item << ' ';
+//	std::cerr << std::endl;
 
 	return std::make_tuple(
 			err, data.primary, data.location, data.leaseGrantTime + LeaseExpiredTime
@@ -367,15 +373,15 @@ void AFS::Master::reReplicate() {
 		GFSError err;
 		try {
 			auto debug_data = MemoryPool::instance().getData(handle);
-			std::cerr << src << "sending...\n";
+//			std::cerr << src << "sending...\n";
 			err = srv.RPCCall({src, chunkPort}, "SendCopy", handle, tar).get().as<GFSError>();
 			if (err.errCode != GFSErrorCode::OK)
 				return err;
-			std::cerr << "sent!!!!\n";
+//			std::cerr << "sent!!!!\n";
 			err.errCode = GFSErrorCode::OK;
 			asdm.addChunk(tar, handle);
 		} catch (...) {
-			std::cerr << "wtf wtf wtf\n";
+//			std::cerr << "wtf wtf wtf\n";
 			err.errCode = GFSErrorCode::TransmissionErr;
 		}
 		return err;
@@ -397,7 +403,7 @@ void AFS::Master::BackgroundActivity() {
 		//std::cerr << "bg reReplicate\n";
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
-	std::cerr << "Background ended\n";
+//	std::cerr << "Background ended\n";
 }
 
 void AFS::Master::write(std::ofstream &out) const {
@@ -432,11 +438,11 @@ void AFS::Master::Shutdown() {
 	std::unique_lock<std::mutex> sdlk(shutdownM);
 	save();
 	pfdm.clear();
-	std::cerr << "pfdm cleared\n";
+//	std::cerr << "pfdm cleared\n";
 	asdm.clear();
-	std::cerr << "asdm cleared\n";
+//	std::cerr << "asdm cleared\n";
 	MemoryPool::instance().clear();
-	std::cerr << "memory pool cleared\n";
+//	std::cerr << "memory pool cleared\n";
 }
 
 void AFS::Master::save() {

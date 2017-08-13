@@ -146,7 +146,7 @@ public:
 		~ChunkPtr() override {
 			if (empty())
 				return;
-			std::cerr << "file writelock\n";
+//			std::cerr << "file writelock\n";
 			writeLock lk(MemoryPool::instance().m);
 			if (--MemoryPool::instance().container[getPos()].fileCnt == 0)
 				terminate();
@@ -265,8 +265,8 @@ public:
 	}
 
 	~MemoryPool() {
-		std::cerr << container.size() << recycler.size();
-		std::cerr << "Memory Pool destroyed\n";
+//		std::cerr << container.size() << recycler.size();
+//		std::cerr << "Memory Pool destroyed\n";
 	}
 };
 

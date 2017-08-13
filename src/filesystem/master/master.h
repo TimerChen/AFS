@@ -26,7 +26,7 @@ public:
 	~Master() final {
 		std::unique_lock<std::mutex>(backgroundM);
 		writeLock lk(globalMutex);
-		std::cerr << "master destroying\n";
+//		std::cerr << "master destroying\n";
 	}
 
 protected:

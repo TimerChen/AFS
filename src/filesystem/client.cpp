@@ -51,7 +51,7 @@ ClientErr Client::fileCreate(const std::string &dir) {
 	{
 		return ClientErr(ClientErrCode::MasterNotFound);
 	}
-	std::cerr << "ClientCreate\n";
+//	std::cerr << "ClientCreate\n";
 	GFSError err;
 	try {
 		err = srv.RPCCall({masterAdd, masterPort}, "CreateFile", dir).get().as<GFSError>();
@@ -126,7 +126,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	int cur = GetFileInfo;
 
 	auto getFileInfo = [&]()->void {
-		std::cerr << "get file info\n";
+//		std::cerr << "get file info\n";
 		bool isDir;
 		std::uint64_t len;
 		try {
@@ -155,7 +155,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetHandle;
 	};
 	auto getHandle  = [&]()->void {
-		std::cerr << "get handle\n";
+//		std::cerr << "get handle\n";
 		try {
 			if(chunkIdx == 0)
 				chunkIdx++;
@@ -180,7 +180,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 	};
 	auto getAddresses = [&]()->void {
 		static int repeatTime = 0;
-		std::cerr << "get address\n";
+//		std::cerr << "get address\n";
 		try {
 			std::tie(gErr, primary, secondaries, expire)
 					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
@@ -201,7 +201,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		}
 
 		if (gErr.errCode != GFSErrorCode::OK) {
-						std::cerr <<"GAError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+//						std::cerr <<"GAError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
 				++repeatTime;
@@ -213,7 +213,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = PushData;
 	};
 	auto pushData = [&]()->void {
-		std::cerr << "push data\n";
+//		std::cerr << "push data\n";
 		static int repeatTime = 0;
 		id = rand();
 		try {
@@ -225,11 +225,12 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 
-			std::cerr <<"PD0Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+//			std::cerr <<"PD0Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			err =  ClientErr(ClientErrCode::Unknown);
-			if (repeatTime < 3) {
+			if (true) {
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 				++repeatTime;
-				cur = PushData;
+				cur = GetFileInfo;
 			} else {
 				cur = EndFlow;
 			}
@@ -248,11 +249,12 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		}
 		if (iter != addrs.end()) {
 
-			std::cerr <<"PD1Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+//			std::cerr <<"PD1Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			err =  ClientErr(ClientErrCode::Unknown);
-			if (repeatTime < 3) {
+			if (true) {
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 				++repeatTime;
-				cur = PushData;
+				cur = GetFileInfo;
 			} else {
 				cur = EndFlow;
 			}
@@ -262,7 +264,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
-		std::cerr << "apply chunk\n";
+//		std::cerr << "apply chunk\n";
 		try {
 			std::tie(gErr, offset)
 					= srv.RPCCall({primary, chunkPort}, "AppendChunk", handle, id, secondaries).get()
@@ -279,11 +281,12 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		}
 		if (gErr.errCode != GFSErrorCode::OK) {
 			if (true) {
-				std::cerr <<"ACError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+//				std::cerr <<"ACError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 				++repeatTime;
 				cur = GetFileInfo;
 			} else {
-				std::cerr << err.description << std::endl;
+//				std::cerr << err.description << std::endl;
 				err = ClientErrCode::Unknown;
 				cur = EndFlow;
 			}
@@ -353,7 +356,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 	length = data.size();
 
 	auto getFileInfo = [&]()->void {
-		std::cerr << "GetFileInfo\n";
+//		std::cerr << "GetFileInfo\n";
 		bool isDir;
 		std::uint64_t len;
 		try {
@@ -388,7 +391,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = GetHandle;
 	};
 	auto getHandle  = [&]()->void {
-		std::cerr << "GetHandle\n";
+//		std::cerr << "GetHandle\n";
 		chunkIdx = offset/CHUNK_SIZE;
 		try {
 			std::tie(gErr, handle) =
@@ -411,7 +414,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
-		std::cerr << "GetAddress\n";
+//		std::cerr << "GetAddress\n";
 		try {
 			std::tie(gErr, primary, secondaries, expire)
 					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
@@ -435,7 +438,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = PushData;
 	};
 	auto pushData = [&]()->void {
-		std::cerr << "PushData\n";
+//		std::cerr << "PushData\n";
 		static int repeatTime = 0;
 		id = rand();
 		try {
@@ -483,7 +486,7 @@ ClientErr Client::fileWrite_str(const std::string &dir, const std::string &data,
 		cur = ApplyChunk;
 	};
 	auto applyChunk = [&]()->void {
-		std::cerr << "ApplyChunk\n";
+//		std::cerr << "ApplyChunk\n";
 		try {
 			gErr = srv.RPCCall({primary, chunkPort}, "WriteChunk", handle, id, offset%CHUNK_SIZE, secondaries).get()
 					.as<GFSError>();
@@ -643,35 +646,32 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 		cur = ReadChunk;
 	};
 	auto readChunk = [&]()->void {
-		try {
-			std::cerr << "Romote Read Length:" << length << std::endl;
-			std::tie(gErr, data) =
-					srv.RPCCall(LightDS::User::RPCAddress::from_string(primary), "ReadChunk", handle, offset%CHUNK_SIZE, length).get()
-							.as<std::tuple<GFSError, std::string>>();
-		} catch (...) {
-			gErr.errCode = GFSErrorCode::TransmissionErr;
-			err = ClientErr(ClientErrCode::Unknown);
-			cur = EndFlow;
-			return;
-		}
-		static int repeatTime = 0;
-		if (gErr.errCode == GFSErrorCode::OperationOverflow)
-		{
-			err = ClientErr(ClientErrCode::ReadEOF);
-		}else
-		if (gErr.errCode != GFSErrorCode::OK) {
-			if (repeatTime < 3) {
-				++repeatTime;
-				cur = GetFileInfo;
-			} else {
-				err = ClientErrCode::Unknown;
-				cur = EndFlow;
+		for (auto &&replica : replicas) {
+			try {
+//				std::cerr << "Remote Read Length:" << length << std::endl;
+				std::tie(gErr, data) =
+						srv.RPCCall({replica, chunkPort}, "ReadChunk", handle,
+						            offset % CHUNK_SIZE, length).get()
+								.as<std::tuple<GFSError, std::string>>();
+			} catch (...) {
+//				std::cerr << "???\n";
+				continue;
 			}
-			return ;
-		}else
-		{
-			err = ClientErrCode::OK;
+			if (gErr.errCode == GFSErrorCode::OperationOverflow) {
+				err = ClientErr(ClientErrCode::ReadEOF);
+				cur = EndFlow;
+				return;
+			}
+			if (gErr.errCode == GFSErrorCode::OK) {
+				break;
+			}
 		}
+		if (gErr.errCode != GFSErrorCode::OK) {
+//			std::cerr << "wtf\n";
+			cur = GetFileInfo;
+			return ;
+		}
+		err = ClientErrCode::OK;
 		cur = EndFlow;
 	};
 	auto endFlow = [&]()->void {};
@@ -857,10 +857,10 @@ std::tuple<ClientErr, ChunkHandle> Client::getChunkHandle(const std::string &dir
 		return std::make_tuple(ClientErr(ClientErrCode::MasterNotFound), ChunkHandle());
 	std::tuple<GFSError, ChunkHandle> errHandle;
 	try {
-		std::cerr << "RPCCall...";
+//		std::cerr << "RPCCall...";
 		errHandle = srv.RPCCall({masterAdd, masterPort}, "GetChunkHandle", dir, idx)
 				.get().as<std::tuple<GFSError, ChunkHandle>>();
-		std::cerr << "END";
+//		std::cerr << "END";
 	} catch (...) {
 		return std::make_tuple(ClientErr(ClientErrCode::Unknown), ChunkHandle());
 	}
@@ -914,7 +914,7 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 		std::string tmp;
 		try {
 		std::tie(gErr, tmp) =
-				srv.RPCCall(LightDS::User::RPCAddress::from_string(primary), "ReadChunk", handle, offset, data.size()).get()
+				srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset, data.size()).get()
 						.as<std::tuple<GFSError, std::string>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
@@ -923,7 +923,6 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 			return;
 		}
 		data = std::vector<char>(tmp.begin(), tmp.end());
-		static int repeatTime = 0;
 		if (gErr.errCode != GFSErrorCode::OK) {
 			err = ClientErrCode::Unknown;
 			state = endFlow;
@@ -1079,7 +1078,7 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 	length = data.size();
 
 	getAddresses = [&]()->void {
-		std::cerr << "getAddress" << std::endl;
+//		std::cerr << "getAddress" << std::endl;
 		try {
 			std::tie(gErr, primary, secondaries, expire)
 					= srv.RPCCall({masterAdd, masterPort}, "GetPrimaryAndSecondaries", handle)
@@ -1106,7 +1105,7 @@ ClientErr Client::writeChunk(const ChunkHandle &handle, const std::uint64_t &off
 		state = pushData;
 	};
 	pushData = [&]()->void {
-		std::cerr <<"pushData" << std::endl;
+//		std::cerr <<"pushData" << std::endl;
 		static int repeatTime = 0;
 		id = rand();
 		try {
@@ -1198,7 +1197,7 @@ GFSError Client::Write(const std::string &dir, std::uint64_t offset, const std::
 	while( nowPosition < fileLength )
 	{
 		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
-		std::cerr << "Write+ : " << nowPosition << " " << thisLength << " " << nowOffset << std::endl;
+//		std::cerr << "Write+ : " << nowPosition << " " << thisLength << " " << nowOffset << std::endl;
 
 		er = fileWrite_str( dir, std::string( data.begin()+nowPosition, data.begin()+nowPosition+thisLength ), nowOffset );
 		if( er.code != ClientErrCode::OK )
@@ -1226,15 +1225,15 @@ Client::Read(const std::string &dir, std::uint64_t offset, std::vector<char> &da
 	while( nowPosition < fileLength )
 	{
 		thisLength = std::min( CHUNK_SIZE-nowOffset%CHUNK_SIZE, fileLength-nowPosition );
-		std::cerr << "Read+ : " << nowPosition << " " << thisLength << std::endl;
-		std::cerr << "nowOffset = " << nowOffset << std::endl;
+//		std::cerr << "Read+ : " << nowPosition << " " << thisLength << std::endl;
+//		std::cerr << "nowOffset = " << nowOffset << std::endl;
 		er = fileRead_str( dir, tmp, nowOffset, thisLength );
 		if( er.code != ClientErrCode::OK && er.code != ClientErrCode::ReadEOF )return std::make_tuple( toGFSError(er), 0 );
 		buffer = buffer + tmp;
-		std::cerr << "Real tmp length: " << tmp.size() << std::endl;
+//		std::cerr << "Real tmp length: " << tmp.size() << std::endl;
 		if( er.code == ClientErrCode::ReadEOF )
 		{
-			std::cerr << "Read EOF! Real length: " << buffer.size() << std::endl;
+//			std::cerr << "Read EOF! Real length: " << buffer.size() << std::endl;
 			er.code = ClientErrCode::OK;
 			//nowPosition += std::stoull(er.description);
 			break;

@@ -35,7 +35,7 @@ AFS::AddressServerData::checkDeadChunkServer() {
 		fout << time(nullptr) << ", " << eiter->first << " died, last beat time = "
 		     << eiter->second.lastBeatTime << std::endl;
 
-		std::cerr << eiter->first << ", last beat time = " << eiter->second.lastBeatTime << std::endl;
+//		std::cerr << eiter->first << ", last beat time = " << eiter->second.lastBeatTime << std::endl;
 		result->emplace_back(eiter->first);
 		mp.erase(eiter);
 	}

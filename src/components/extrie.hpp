@@ -177,7 +177,7 @@ public:
 	~extrie() {
 		if (header)
 			destroy(header);
-		std::cerr << "extrie destroyed\n";
+//		std::cerr << "extrie destroyed\n";
 	}
 
 
