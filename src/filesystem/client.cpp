@@ -179,6 +179,7 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		cur = GetAddresses;
 	};
 	auto getAddresses = [&]()->void {
+		static int repeatTime = 0;
 		std::cerr << "get address\n";
 		try {
 			std::tie(gErr, primary, secondaries, expire)
@@ -198,8 +199,17 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 			cur = EndFlow;
 			return;
 		}
-		if (gErr.errCode != GFSErrorCode::OK)
-			throw;
+
+		if (gErr.errCode != GFSErrorCode::OK) {
+						std::cerr <<"GAError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
+			err =  ClientErr(ClientErrCode::Unknown);
+			if (repeatTime < 3) {
+				++repeatTime;
+				cur = PushData;
+			} else {
+				cur = EndFlow;
+			}
+		}
 		cur = PushData;
 	};
 	auto pushData = [&]()->void {
@@ -212,10 +222,10 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
 			err = ClientErr(ClientErrCode::Unknown);
-			cur = EndFlow;
-			return;
 		}
 		if (gErr.errCode != GFSErrorCode::OK) {
+
+			std::cerr <<"PD0Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
 				++repeatTime;
@@ -232,13 +242,13 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 			} catch (...) {
 				gErr.errCode = GFSErrorCode::TransmissionErr;
 				err = ClientErr(ClientErrCode::Unknown);
-				cur = EndFlow;
-				return;
 			}
 			if (gErr.errCode != GFSErrorCode::OK)
 				break;
 		}
 		if (iter != addrs.end()) {
+
+			std::cerr <<"PD1Error-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			err =  ClientErr(ClientErrCode::Unknown);
 			if (repeatTime < 3) {
 				++repeatTime;
@@ -260,16 +270,15 @@ ClientErr Client::fileAppend_str(const std::string &dir, const std::string &data
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
 			err = ClientErr(ClientErrCode::Unknown);
-			cur = EndFlow;
-			return;
 		}
 		static int repeatTime = 0;
 		if (gErr.errCode == GFSErrorCode::OperationOverflow) {
 			++chunkIdx;
 			cur = GetHandle;
 			return;
-		}
+		}else
 		if (gErr.errCode != GFSErrorCode::OK) {
+			std::cerr <<"ACError-"<< (int)gErr.errCode << ":" << gErr.description << std::endl;
 			if (repeatTime < 3) {
 				++repeatTime;
 				cur = GetFileInfo;
@@ -637,7 +646,7 @@ ClientErr Client::fileRead_str(const std::string &dir, std::string &data, const 
 		try {
 			std::cerr << "Romote Read Length:" << length << std::endl;
 			std::tie(gErr, data) =
-					srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset%CHUNK_SIZE, length).get()
+					srv.RPCCall(LightDS::User::RPCAddress::from_string(primary), "ReadChunk", handle, offset%CHUNK_SIZE, length).get()
 							.as<std::tuple<GFSError, std::string>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
@@ -905,7 +914,7 @@ Client::readChunk(const ChunkHandle &handle, const std::uint64_t &offset, std::v
 		std::string tmp;
 		try {
 		std::tie(gErr, tmp) =
-				srv.RPCCall({primary, chunkPort}, "ReadChunk", handle, offset, data.size()).get()
+				srv.RPCCall(LightDS::User::RPCAddress::from_string(primary), "ReadChunk", handle, offset, data.size()).get()
 						.as<std::tuple<GFSError, std::string>>();
 		} catch (...) {
 			gErr.errCode = GFSErrorCode::TransmissionErr;
